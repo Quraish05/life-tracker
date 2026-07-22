@@ -1,8 +1,18 @@
+from contextlib import asynccontextmanager
+
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.router import api_router
 from app.core.config import settings
+from app.db.session import engine
+
+
+@asynccontextmanager
+async def lifespan(app: FastAPI):
+    # Schema is managed by Alembic migrations (`uv run alembic upgrade head`).
+    yield
+    await engine.dispose()
 
 
 def create_app() -> FastAPI:
@@ -10,6 +20,7 @@ def create_app() -> FastAPI:
         title=settings.project_name,
         version=settings.version,
         debug=settings.debug,
+        lifespan=lifespan,
     )
 
     app.add_middleware(
