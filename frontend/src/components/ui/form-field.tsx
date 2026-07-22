@@ -1,5 +1,6 @@
 import * as React from "react";
 
+import { FieldError } from "@/components/ui/form-error";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 
@@ -36,11 +37,7 @@ function FormField({
         className={className}
         {...props}
       />
-      {error && (
-        <p id={errorId} className="text-xs font-medium text-coral">
-          {error}
-        </p>
-      )}
+      <FieldError id={errorId} message={error} />
     </div>
   );
 }

@@ -12,4 +12,15 @@ function FormError({ message }: { message?: string }) {
   );
 }
 
-export { FormError };
+/** Field-level validation message shown beneath a single input. */
+function FieldError({ id, message }: { id?: string; message?: string }) {
+  if (!message) return null;
+
+  return (
+    <p id={id} className="text-xs font-medium text-coral">
+      {message}
+    </p>
+  );
+}
+
+export { FormError, FieldError };
