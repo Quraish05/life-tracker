@@ -1,36 +1,49 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# Life Tracker — Frontend
+
+Track your life, one day at a time. Habits, moods, and milestones in one joyful little place.
+
+Built with [Next.js 16](https://nextjs.org) (App Router), TypeScript, and Tailwind CSS v4.
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) — the root redirects to `/login`.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Screens
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+- **`/login`** — split-screen sign-in: brand panel + tagline on one side, login form card on the other. _(auth is stubbed for now; submitting takes you to the dashboard)_
+- **`/dashboard`** — the authenticated home, rendered inside the app shell with a full-height sidebar. More sidebar menus are coming.
 
-## Learn More
+## Project structure
 
-To learn more about Next.js, take a look at the following resources:
+```
+src/
+  app/
+    layout.tsx        # root layout — fonts (Inter + Fraunces) & metadata
+    globals.css       # Tailwind theme + pastel palette
+    page.tsx          # redirects to /login
+    login/            # split-screen login
+    (app)/            # authenticated shell (sidebar + main)
+      layout.tsx
+      dashboard/
+  components/
+    Sidebar.tsx       # full-height nav (menus to come)
+```
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+## Design
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+- **Fonts:** Inter for body, Fraunces (display serif) for highlighted keywords.
+- **Palette:** a lively pastel scheme (`cream`, `blush`, `peach`, `butter`, `mint`, `sky`, `lilac`) with `grape`/`coral` accents, defined as Tailwind theme colors in `globals.css`.
 
-## Deploy on Vercel
+## Scripts
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
-
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+| Command | Description |
+| --- | --- |
+| `npm run dev` | Start the dev server |
+| `npm run build` | Production build |
+| `npm run start` | Serve the production build |
+| `npm run lint` | Run ESLint |
