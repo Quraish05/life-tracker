@@ -48,7 +48,7 @@ export function TagInput({ value, onChange, suggestions = [], max = MAX_TAGS }: 
 
   return (
     <div>
-      <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-transparent bg-cream/80 px-2.5 py-2 transition focus-within:border-grape focus-within:bg-white focus-within:ring-4 focus-within:ring-lilac">
+      <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-lilac/60 bg-cream/80 px-2.5 py-2 transition focus-within:border-grape focus-within:bg-white focus-within:ring-4 focus-within:ring-lilac">
         {value.map((tag) => (
           <span
             key={tag}
