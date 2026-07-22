@@ -16,6 +16,16 @@ export type AuthResponse = {
   user: User;
 };
 
+const TOKEN_KEY = "lt.token";
+
+/** The auth token, persisted in localStorage and shared by every API client. */
+export const tokenStore = {
+  get: (): string | null =>
+    typeof window === "undefined" ? null : localStorage.getItem(TOKEN_KEY),
+  set: (token: string): void => localStorage.setItem(TOKEN_KEY, token),
+  clear: (): void => localStorage.removeItem(TOKEN_KEY),
+};
+
 /** An error carrying the HTTP status and the backend's `detail` message. */
 export class ApiError extends Error {
   status: number;
@@ -33,7 +43,7 @@ type RequestOptions = {
   token?: string;
 };
 
-async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+export async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
   const { method = "GET", body, token } = options;
 
   const headers: Record<string, string> = {};
