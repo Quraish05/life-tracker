@@ -3,6 +3,8 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
+import { useAuth } from "@/lib/auth-context";
+
 type NavItem = {
   label: string;
   href: string;
@@ -17,11 +19,14 @@ const NAV_ITEMS: NavItem[] = [
 export default function Sidebar() {
   const pathname = usePathname();
   const router = useRouter();
+  const { user, logout } = useAuth();
 
   function handleLogout() {
-    // TODO: clear real session. For now, return to the login screen.
-    router.push("/login");
+    logout();
+    router.replace("/login");
   }
+
+  const initial = user?.username?.charAt(0).toUpperCase() ?? "U";
 
   return (
     <aside className="flex h-full w-64 shrink-0 flex-col border-r border-white/60 bg-gradient-to-b from-lilac/70 via-blush/40 to-peach/50">
@@ -65,11 +70,15 @@ export default function Sidebar() {
       <div className="m-3 rounded-2xl bg-white/60 p-3 backdrop-blur-sm">
         <div className="flex items-center gap-3 px-1 py-1">
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-sky to-mint text-xs font-bold text-ink">
-            U
+            {initial}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-ink">User</p>
-            <p className="truncate text-xs text-ink-soft">Signed in</p>
+            <p className="truncate text-sm font-semibold text-ink">
+              {user?.username ?? "User"}
+            </p>
+            <p className="truncate text-xs text-ink-soft">
+              {user?.email ?? "Signed in"}
+            </p>
           </div>
         </div>
         <button

@@ -6,15 +6,20 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { registerSchema, type RegisterInput } from "@/lib/validations/auth";
+import { useAuth } from "@/lib/auth-context";
+import { ApiError } from "@/lib/api";
 import { AuthCard, AuthScreen } from "@/components/auth/auth-layout";
 import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 import { FormField } from "@/components/ui/form-field";
 
 export default function RegisterPage() {
   const router = useRouter();
+  const { register: registerUser } = useAuth();
   const {
     register,
     handleSubmit,
+    setError,
     formState: { errors, isSubmitting },
   } = useForm<RegisterInput>({
     resolver: zodResolver(registerSchema),
@@ -22,9 +27,16 @@ export default function RegisterPage() {
   });
 
   async function onSubmit(values: RegisterInput) {
-    // TODO: wire up real registration. For now, just enter the app.
-    void values;
-    router.push("/dashboard");
+    try {
+      await registerUser(values);
+      router.push("/dashboard");
+    } catch (err) {
+      const message =
+        err instanceof ApiError
+          ? err.message
+          : "Something went wrong. Please try again.";
+      setError("root", { message });
+    }
   }
 
   return (
@@ -61,6 +73,7 @@ export default function RegisterPage() {
       }
     >
       <AuthCard onSubmit={handleSubmit(onSubmit)} noValidate>
+        <FormError message={errors.root?.message} />
         <FormField
           label="Username"
           id="username"

@@ -1,0 +1,85 @@
+import type { LoginInput, RegisterInput } from "@/lib/validations/auth";
+
+const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
+const API_PREFIX = "/api/v1";
+
+export type User = {
+  id: number;
+  username: string;
+  email: string;
+  created_at: string;
+};
+
+export type AuthResponse = {
+  access_token: string;
+  token_type: string;
+  user: User;
+};
+
+/** An error carrying the HTTP status and the backend's `detail` message. */
+export class ApiError extends Error {
+  status: number;
+
+  constructor(status: number, message: string) {
+    super(message);
+    this.name = "ApiError";
+    this.status = status;
+  }
+}
+
+type RequestOptions = {
+  method?: string;
+  body?: unknown;
+  token?: string;
+};
+
+async function request<T>(path: string, options: RequestOptions = {}): Promise<T> {
+  const { method = "GET", body, token } = options;
+
+  const headers: Record<string, string> = {};
+  if (body !== undefined) headers["Content-Type"] = "application/json";
+  if (token) headers.Authorization = `Bearer ${token}`;
+
+  let res: Response;
+  try {
+    res = await fetch(`${API_BASE}${API_PREFIX}${path}`, {
+      method,
+      headers,
+      body: body !== undefined ? JSON.stringify(body) : undefined,
+    });
+  } catch {
+    throw new ApiError(0, "Can't reach the server. Please try again.");
+  }
+
+  if (!res.ok) {
+    throw new ApiError(res.status, await extractErrorMessage(res));
+  }
+
+  // 204 and other empty bodies have nothing to parse.
+  if (res.status === 204) return undefined as T;
+  return (await res.json()) as T;
+}
+
+/** Pull the FastAPI `detail` message out of an error response, with a sane fallback. */
+async function extractErrorMessage(res: Response): Promise<string> {
+  try {
+    const data = await res.json();
+    const detail = data?.detail;
+    if (typeof detail === "string") return detail;
+    // Pydantic validation errors come back as a list of {msg, loc, ...}.
+    if (Array.isArray(detail) && detail[0]?.msg) return String(detail[0].msg);
+  } catch {
+    // fall through to the generic message
+  }
+  return "Something went wrong. Please try again.";
+}
+
+export const authApi = {
+  register: (input: RegisterInput) =>
+    request<AuthResponse>("/auth/register", { method: "POST", body: input }),
+
+  login: (input: LoginInput) =>
+    request<AuthResponse>("/auth/login", { method: "POST", body: input }),
+
+  me: (token: string) => request<User>("/auth/me", { token }),
+};
