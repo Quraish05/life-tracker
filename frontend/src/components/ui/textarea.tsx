@@ -2,11 +2,10 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-function Input({ className, type, ...props }: React.ComponentProps<"input">) {
+function Textarea({ className, ...props }: React.ComponentProps<"textarea">) {
   return (
-    <input
-      type={type}
-      data-slot="input"
+    <textarea
+      data-slot="textarea"
       className={cn(
         "w-full rounded-xl border border-lilac/60 bg-cream/80 px-4 py-2.5 text-sm text-ink placeholder:text-ink-soft/60 transition",
         "focus:border-grape focus:bg-white focus:outline-none focus:ring-4 focus:ring-lilac",
@@ -19,4 +18,4 @@ function Input({ className, type, ...props }: React.ComponentProps<"input">) {
   );
 }
 
-export { Input };
+export { Textarea };

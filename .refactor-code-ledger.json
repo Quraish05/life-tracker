@@ -1,0 +1,95 @@
+{
+  "version": 1,
+  "entries": {
+    "frontend/src/app/page.tsx": {
+      "hash": "1e583db351cb6bb0686c56462619264d113b59fb",
+      "refactoredAt": "2026-07-22",
+      "language": "typescript",
+      "summary": "Extracted Feature/FEATURES to landing/_lib and FeatureCard component; page is now a thin coordinator"
+    },
+    "frontend/src/components/landing/_lib.ts": {
+      "hash": "24d95f67524fd8464a1b91c4bbb4aba349562c07",
+      "refactoredAt": "2026-07-22",
+      "language": "typescript",
+      "summary": "New landing content constants: Feature type + FEATURES data"
+    },
+    "frontend/src/components/landing/feature-card.tsx": {
+      "hash": "a9ce82a095b85dc1fc5568bccc725dfcc823e77e",
+      "refactoredAt": "2026-07-22",
+      "language": "typescript",
+      "summary": "New reusable FeatureCard component"
+    },
+    "backend/app/api/deps.py": {
+      "hash": "520ebcdbc1f895a0badcb245a0bd19a3fa1d53ac",
+      "refactoredAt": "2026-07-22",
+      "language": "python",
+      "summary": "New shared-deps module: get_current_user, DbSession, CurrentUser, bearer_scheme, INVALID_TOKEN"
+    },
+    "backend/app/api/routes/auth.py": {
+      "hash": "163e1fda219765beaf2c01f499b9bc5b7621eeea",
+      "refactoredAt": "2026-07-22",
+      "language": "python",
+      "summary": "Moved shared deps + INVALID_TOKEN to app/api/deps.py; imports from there"
+    },
+    "backend/app/api/routes/notes.py": {
+      "hash": "e1811c16367dfe620b838a3844f2b4bb885d0c7a",
+      "refactoredAt": "2026-07-22",
+      "language": "python",
+      "summary": "Repointed shared-deps import from routes.auth to app/api/deps"
+    },
+    "frontend/src/lib/validations/note.ts": {
+      "hash": "a6eb9f68cbd7b26f219f3f03a07d8c620cf51522",
+      "refactoredAt": "2026-07-22",
+      "language": "typescript",
+      "summary": "Added MAX_TAGS constant; schema uses it"
+    },
+    "frontend/src/components/notes/_lib.ts": {
+      "hash": "29b770df0ae6bf7eb56e4c967d6b5a43b96b2803",
+      "refactoredAt": "2026-07-22",
+      "language": "typescript",
+      "summary": "New helpers file: today, formatDate, toSnippet, optionPillClass"
+    },
+    "frontend/src/components/ui/modal.tsx": {
+      "hash": "5eb06189f85544cfac23ecec6b8cf459a31face7",
+      "refactoredAt": "2026-07-22",
+      "language": "typescript",
+      "summary": "New ModalOverlay component (shared dialog backdrop)"
+    },
+    "frontend/src/components/ui/form-error.tsx": {
+      "hash": "23b0e2d6055881832f69a9287858d1bfd64d664d",
+      "refactoredAt": "2026-07-22",
+      "language": "typescript",
+      "summary": "Added FieldError component alongside FormError"
+    },
+    "frontend/src/components/ui/form-field.tsx": {
+      "hash": "c0d6cb1072e8a6179ed2e393cd45d0ba7b65d5eb",
+      "refactoredAt": "2026-07-22",
+      "language": "typescript",
+      "summary": "Uses shared FieldError for the inline error message"
+    },
+    "frontend/src/components/notes/tag-input.tsx": {
+      "hash": "3789bdc5d5febce8fbb9375ac24fb8341f7a0e6b",
+      "refactoredAt": "2026-07-22",
+      "language": "typescript",
+      "summary": "Default max now sourced from MAX_TAGS"
+    },
+    "frontend/src/components/notes/note-card.tsx": {
+      "hash": "2e952d7fc55282b148b66ee7071efb33124bfd65",
+      "refactoredAt": "2026-07-22",
+      "language": "typescript",
+      "summary": "formatDate/toSnippet moved to _lib and imported"
+    },
+    "frontend/src/components/notes/note-editor.tsx": {
+      "hash": "e63a0bddeaa9681285972f8512040153a9e99498",
+      "refactoredAt": "2026-07-22",
+      "language": "typescript",
+      "summary": "Uses ModalOverlay, optionPillClass (×3), FieldError (×2), today from _lib"
+    },
+    "frontend/src/components/notes/delete-dialog.tsx": {
+      "hash": "4946c859c56f00253938ca98237d9760c412f65a",
+      "refactoredAt": "2026-07-22",
+      "language": "typescript",
+      "summary": "Uses shared ModalOverlay for the backdrop"
+    }
+  }
+}

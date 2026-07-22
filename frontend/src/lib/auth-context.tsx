@@ -8,10 +8,8 @@ import {
   useState,
 } from "react";
 
-import { authApi, type AuthResponse, type User } from "@/lib/api";
+import { authApi, tokenStore, type AuthResponse, type User } from "@/lib/api";
 import type { LoginInput, RegisterInput } from "@/lib/validations/auth";
-
-const TOKEN_KEY = "lt.token";
 
 type AuthContextValue = {
   user: User | null;
@@ -31,7 +29,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   // On first load, restore the session from a stored token (if any).
   useEffect(() => {
     let active = true;
-    const token = localStorage.getItem(TOKEN_KEY);
+    const token = tokenStore.get();
 
     const restore = token
       ? authApi
@@ -41,7 +39,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
           })
           .catch(() => {
             // Token expired or invalid — drop it.
-            localStorage.removeItem(TOKEN_KEY);
+            tokenStore.clear();
           })
       : Promise.resolve();
 
@@ -55,7 +53,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   }, []);
 
   const applyAuth = useCallback((res: AuthResponse) => {
-    localStorage.setItem(TOKEN_KEY, res.access_token);
+    tokenStore.set(res.access_token);
     setUser(res.user);
   }, []);
 
@@ -70,7 +68,7 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
   );
 
   const logout = useCallback(() => {
-    localStorage.removeItem(TOKEN_KEY);
+    tokenStore.clear();
     setUser(null);
   }, []);
 

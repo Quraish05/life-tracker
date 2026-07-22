@@ -14,6 +14,7 @@ type NavItem = {
 // Menu items are placeholders for now — real sections come later.
 const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: "🏠" },
+  { label: "Journal & Notes", href: "/notes", icon: "📓" },
 ];
 
 export default function Sidebar() {

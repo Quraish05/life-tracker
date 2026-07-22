@@ -1,63 +1,27 @@
-from typing import Annotated, TypeAlias
-
-import jwt
-from fastapi import APIRouter, Depends, HTTPException, status
-from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
+from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import select
-from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.deps import INVALID_TOKEN, CurrentUser, DbSession
 from app.api.responses import error_response
 from app.core.security import (
     create_access_token,
-    decode_access_token,
     hash_password,
     verify_password,
 )
-from app.db.session import get_db
 from app.models.user import User
 from app.schemas.user import Token, UserCreate, UserLogin, UserRead
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
-DbSession: TypeAlias = Annotated[AsyncSession, Depends(get_db)]
-
-bearer_scheme = HTTPBearer(auto_error=True)
-
 # Error messages — single source of truth for both the handlers and the API docs.
 USER_EXISTS = "A user with this {field} already exists."
 NO_ACCOUNT = "No account found for this email. Please register first."
 BAD_CREDENTIALS = "Incorrect email or password."
-INVALID_TOKEN = "Could not validate credentials."
 
 
 def _token_for(user: User) -> Token:
     """Build the auth response (JWT + profile) for a user."""
     return Token(access_token=create_access_token(user.id), user=UserRead.model_validate(user))
-
-
-async def get_current_user(
-    credentials: Annotated[HTTPAuthorizationCredentials, Depends(bearer_scheme)],
-    db: DbSession,
-) -> User:
-    """Resolve the authenticated user from a Bearer JWT, or raise 401."""
-    unauthorized = HTTPException(
-        status_code=status.HTTP_401_UNAUTHORIZED,
-        detail=INVALID_TOKEN,
-        headers={"WWW-Authenticate": "Bearer"},
-    )
-    try:
-        payload = decode_access_token(credentials.credentials)
-        user_id = int(payload["sub"])
-    except (jwt.PyJWTError, KeyError, ValueError):
-        raise unauthorized from None
-
-    user = await db.get(User, user_id)
-    if user is None:
-        raise unauthorized
-    return user
-
-
-CurrentUser: TypeAlias = Annotated[User, Depends(get_current_user)]
 
 
 @router.post(
