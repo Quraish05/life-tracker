@@ -16,6 +16,9 @@ class Settings(BaseSettings):
     # Comma-separated list of allowed CORS origins.
     cors_origins: list[str] = ["http://localhost:3000"]
 
+    # Async SQLAlchemy connection string (asyncpg driver).
+    database_url: str = "postgresql+asyncpg://quraish@localhost:5432/life_tracker"
+
 
 @lru_cache
 def get_settings() -> Settings:
