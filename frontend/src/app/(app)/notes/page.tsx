@@ -61,7 +61,7 @@ export default function NotesPage() {
   }
 
   function togglePin(note: Note) {
-    togglePinMutation.mutate(note.id);
+    togglePinMutation.mutate({ id: note.id, pinned: !note.pinned });
   }
 
   return (

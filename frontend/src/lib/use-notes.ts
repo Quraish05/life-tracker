@@ -33,7 +33,7 @@ export function useCreateNote(): UseMutationResult<Note, Error, NoteInput> {
 export function useUpdateNote(): UseMutationResult<
   Note,
   Error,
-  { id: number; input: NoteInput }
+  { id: number; input: Partial<NoteInput> }
 > {
   const invalidate = useInvalidateNotes();
   return useMutation({
@@ -42,10 +42,15 @@ export function useUpdateNote(): UseMutationResult<
   });
 }
 
-export function useTogglePin(): UseMutationResult<Note, Error, number> {
+export function useTogglePin(): UseMutationResult<
+  Note,
+  Error,
+  { id: number; pinned: boolean }
+> {
   const invalidate = useInvalidateNotes();
   return useMutation({
-    mutationFn: (id: number) => notesApi.togglePin(id),
+    // Pinning is just a one-field partial update.
+    mutationFn: ({ id, pinned }) => notesApi.update(id, { pinned }),
     onSuccess: invalidate,
   });
 }

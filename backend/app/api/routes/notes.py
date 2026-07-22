@@ -1,10 +1,14 @@
 from fastapi import APIRouter, HTTPException, status
+from pydantic import ValidationError
 from sqlalchemy import select
 
 from app.api.deps import INVALID_TOKEN, CurrentUser, DbSession
 from app.api.responses import error_response
 from app.models.note import Note
-from app.schemas.note import NoteCreate, NoteRead, NoteUpdate
+from app.schemas.note import NoteBase, NoteCreate, NoteRead, NoteUpdate
+
+# Fields that make up a note's editable body (used to merge partial updates).
+_NOTE_FIELDS = ("kind", "title", "body_md", "entry_date", "tags", "mood", "pinned")
 
 router = APIRouter(prefix="/notes", tags=["notes"])
 
@@ -72,34 +76,41 @@ async def get_note(note_id: int, current_user: CurrentUser, db: DbSession) -> No
     return await _get_owned_note(note_id, current_user, db)
 
 
-@router.put(
+@router.patch(
     "/{note_id}",
     response_model=NoteRead,
-    summary="Update a note",
+    summary="Update a note (partial)",
     responses={**_UNAUTHORIZED, **_NOT_FOUND},
 )
 async def update_note(
     note_id: int, payload: NoteUpdate, current_user: CurrentUser, db: DbSession
 ) -> Note:
-    """Replace the contents of an existing note."""
-    note = await _get_owned_note(note_id, current_user, db)
-    for field, value in payload.model_dump().items():
-        setattr(note, field, value)
-    await db.commit()
-    await db.refresh(note)
-    return note
+    """Apply a partial update to a note.
 
-
-@router.patch(
-    "/{note_id}/pin",
-    response_model=NoteRead,
-    summary="Toggle a note's pinned state",
-    responses={**_UNAUTHORIZED, **_NOT_FOUND},
-)
-async def toggle_pin(note_id: int, current_user: CurrentUser, db: DbSession) -> Note:
-    """Flip the pin flag without opening the editor."""
+    Only the fields present in the request change; this also covers pinning —
+    send just ``{"pinned": true}`` / ``{"pinned": false}``. The patch is merged
+    onto the current values and re-validated so invariants (journal-needs-a-date,
+    notes-carry-no-date/mood) and tag normalization always hold; SQLAlchemy then
+    writes only the columns that actually changed.
+    """
     note = await _get_owned_note(note_id, current_user, db)
-    note.pinned = not note.pinned
+
+    updates = payload.model_dump(exclude_unset=True)
+    if not updates:
+        return note
+
+    merged = {field: getattr(note, field) for field in _NOTE_FIELDS} | updates
+    try:
+        validated = NoteBase.model_validate(merged)
+    except ValidationError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_422_UNPROCESSABLE_ENTITY,
+            detail=exc.errors()[0].get("msg", "Invalid note update"),
+        ) from exc
+
+    for field in _NOTE_FIELDS:
+        setattr(note, field, getattr(validated, field))
+
     await db.commit()
     await db.refresh(note)
     return note

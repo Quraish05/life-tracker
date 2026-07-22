@@ -35,12 +35,12 @@ export const notesApi = {
   create: (input: NoteInput): Promise<Note> =>
     request<Note>("/notes", { method: "POST", body: input, token: authToken() }),
 
-  update: (id: number, input: NoteInput): Promise<Note> =>
-    request<Note>(`/notes/${id}`, { method: "PUT", body: input, token: authToken() }),
-
-  /** Flip the pin flag without opening the editor. */
-  togglePin: (id: number): Promise<Note> =>
-    request<Note>(`/notes/${id}/pin`, { method: "PATCH", token: authToken() }),
+  /**
+   * Partially update a note — only the fields in `patch` change. Also used to
+   * pin/unpin (`{ pinned }`); omitted fields keep their current value.
+   */
+  update: (id: number, patch: Partial<NoteInput>): Promise<Note> =>
+    request<Note>(`/notes/${id}`, { method: "PATCH", body: patch, token: authToken() }),
 
   remove: (id: number): Promise<void> =>
     request<void>(`/notes/${id}`, { method: "DELETE", token: authToken() }),

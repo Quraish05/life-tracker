@@ -76,8 +76,22 @@ class NoteCreate(NoteBase):
     pass
 
 
-class NoteUpdate(NoteBase):
-    """Full replacement of an existing note (PUT semantics)."""
+class NoteUpdate(BaseModel):
+    """Partial update (PATCH semantics).
+
+    Every field is optional: omitted fields keep their current value, while an
+    explicit ``null`` clears a nullable field (``entry_date`` / ``mood``).
+    Cross-field rules and tag normalization are applied against the merged
+    result in the route by re-validating through ``NoteBase``.
+    """
+
+    kind: NoteKind | None = None
+    title: str | None = Field(default=None, min_length=1, max_length=120)
+    body_md: str | None = Field(default=None, min_length=1, max_length=20_000)
+    entry_date: date | None = None
+    tags: list[str] | None = None
+    mood: MoodKey | None = None
+    pinned: bool | None = None
 
 
 class NoteRead(NoteBase):
