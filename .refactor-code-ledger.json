@@ -1,6 +1,24 @@
 {
   "version": 1,
   "entries": {
+    "frontend/src/app/page.tsx": {
+      "hash": "1e583db351cb6bb0686c56462619264d113b59fb",
+      "refactoredAt": "2026-07-22",
+      "language": "typescript",
+      "summary": "Extracted Feature/FEATURES to landing/_lib and FeatureCard component; page is now a thin coordinator"
+    },
+    "frontend/src/components/landing/_lib.ts": {
+      "hash": "24d95f67524fd8464a1b91c4bbb4aba349562c07",
+      "refactoredAt": "2026-07-22",
+      "language": "typescript",
+      "summary": "New landing content constants: Feature type + FEATURES data"
+    },
+    "frontend/src/components/landing/feature-card.tsx": {
+      "hash": "a9ce82a095b85dc1fc5568bccc725dfcc823e77e",
+      "refactoredAt": "2026-07-22",
+      "language": "typescript",
+      "summary": "New reusable FeatureCard component"
+    },
     "backend/app/api/deps.py": {
       "hash": "520ebcdbc1f895a0badcb245a0bd19a3fa1d53ac",
       "refactoredAt": "2026-07-22",
