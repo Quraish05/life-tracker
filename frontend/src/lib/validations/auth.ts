@@ -20,3 +20,12 @@ export const registerSchema = z.object({
 });
 
 export type RegisterInput = z.infer<typeof registerSchema>;
+
+// Login stays lenient: verify the email is well-formed and the password isn't
+// empty, but don't re-impose the registration complexity rules here.
+export const loginSchema = z.object({
+  email: z.email("Enter a valid email address"),
+  password: z.string().min(1, "Enter your password"),
+});
+
+export type LoginInput = z.infer<typeof loginSchema>;

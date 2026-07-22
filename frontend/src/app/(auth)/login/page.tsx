@@ -1,23 +1,43 @@
 "use client";
 
 import Link from "next/link";
-import { useState } from "react";
 import { useRouter } from "next/navigation";
+import { useForm } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
 
+import { loginSchema, type LoginInput } from "@/lib/validations/auth";
+import { useAuth } from "@/lib/auth-context";
+import { ApiError } from "@/lib/api";
 import { AuthCard, AuthScreen } from "@/components/auth/auth-layout";
 import { Button } from "@/components/ui/button";
+import { FormError } from "@/components/ui/form-error";
 import { FormField } from "@/components/ui/form-field";
 
 export default function LoginPage() {
   const router = useRouter();
-  const [email, setEmail] = useState("");
-  const [password, setPassword] = useState("");
+  const { login } = useAuth();
+  const {
+    register,
+    handleSubmit,
+    setError,
+    formState: { errors, isSubmitting },
+  } = useForm<LoginInput>({
+    resolver: zodResolver(loginSchema),
+    mode: "onTouched",
+  });
 
-  const handleSubmit: React.FormEventHandler<HTMLFormElement> = (event) => {
-    event.preventDefault();
-    // TODO: wire up real authentication. For now, just enter the app.
-    router.push("/dashboard");
-  };
+  async function onSubmit(values: LoginInput) {
+    try {
+      await login(values);
+      router.push("/dashboard");
+    } catch (err) {
+      const message =
+        err instanceof ApiError
+          ? err.message
+          : "Something went wrong. Please try again.";
+      setError("root", { message });
+    }
+  }
 
   return (
     <AuthScreen
@@ -54,26 +74,24 @@ export default function LoginPage() {
         </>
       }
     >
-      <AuthCard onSubmit={handleSubmit}>
+      <AuthCard onSubmit={handleSubmit(onSubmit)} noValidate>
+        <FormError message={errors.root?.message} />
         <FormField
           label="Email"
           id="email"
           type="email"
-          required
           autoComplete="email"
           placeholder="you@example.com"
-          value={email}
-          onChange={(e) => setEmail(e.target.value)}
+          error={errors.email?.message}
+          {...register("email")}
         />
         <FormField
           label="Password"
           id="password"
           type="password"
-          required
           autoComplete="current-password"
           placeholder="••••••••"
-          value={password}
-          onChange={(e) => setPassword(e.target.value)}
+          error={errors.password?.message}
           action={
             <Link
               href="#"
@@ -82,9 +100,10 @@ export default function LoginPage() {
               Forgot?
             </Link>
           }
+          {...register("password")}
         />
-        <Button type="submit" size="block">
-          Sign in
+        <Button type="submit" size="block" disabled={isSubmitting}>
+          {isSubmitting ? "Signing in…" : "Sign in"}
         </Button>
       </AuthCard>
     </AuthScreen>

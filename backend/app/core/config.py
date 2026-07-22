@@ -19,6 +19,11 @@ class Settings(BaseSettings):
     # Async SQLAlchemy connection string (asyncpg driver).
     database_url: str = "postgresql+asyncpg://quraish@localhost:5432/life_tracker"
 
+    # JWT signing. Override secret_key in every real environment via the .env file.
+    secret_key: str = "dev-secret-change-me-in-production-0123456789abcdef"
+    jwt_algorithm: str = "HS256"
+    access_token_expire_minutes: int = 60 * 24  # 1 day
+
 
 @lru_cache
 def get_settings() -> Settings:

@@ -30,3 +30,11 @@ class UserRead(BaseModel):
     username: str
     email: EmailStr
     created_at: datetime
+
+
+class Token(BaseModel):
+    """Auth response: a bearer token plus the authenticated user's profile."""
+
+    access_token: str
+    token_type: str = "bearer"
+    user: UserRead
