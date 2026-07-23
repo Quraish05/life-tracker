@@ -18,7 +18,11 @@ import { Chip } from "@/components/ui/atoms/chip";
 import { FieldError, FormError } from "@/components/ui/atoms/form-error";
 import { FormField } from "@/components/ui/molecules/form-field";
 import { Label } from "@/components/ui/atoms/label";
-import { ModalOverlay } from "@/components/ui/molecules/modal";
+import {
+  ModalDialog,
+  ModalHeader,
+  ModalOverlay,
+} from "@/components/ui/molecules/modal";
 import { MarkdownEditor } from "@/components/notes/markdown-editor";
 import { TagInput } from "@/components/notes/tag-input";
 import { optionPillClass, today } from "@/components/notes/_lib";
@@ -105,27 +109,13 @@ export function NoteEditor({
 
   return (
     <ModalOverlay className="z-50 items-start overflow-y-auto sm:p-8">
-      <div
-        role="dialog"
-        aria-modal="true"
-        className="my-auto w-full max-w-3xl rounded-3xl border border-white/70 bg-cream shadow-2xl shadow-grape/20"
-      >
-        <div className="flex items-center justify-between border-b border-lilac/40 px-6 py-4">
-          <h2 className="text-lg font-bold text-ink">
-            {note ? "Edit" : "New"}{" "}
-            <span className="font-display italic text-grape">
-              {kind === "journal" ? "journal entry" : "note"}
-            </span>
-          </h2>
-          <button
-            type="button"
-            onClick={onClose}
-            aria-label="Close"
-            className="flex h-8 w-8 items-center justify-center rounded-full text-ink-soft transition hover:bg-coral/15 hover:text-coral"
-          >
-            ✕
-          </button>
-        </div>
+      <ModalDialog size="lg" className="my-auto">
+        <ModalHeader onClose={onClose}>
+          {note ? "Edit" : "New"}{" "}
+          <span className="font-display italic text-grape">
+            {kind === "journal" ? "journal entry" : "note"}
+          </span>
+        </ModalHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5 px-6 py-5">
           <FormError message={errors.root?.message} />
@@ -318,7 +308,7 @@ export function NoteEditor({
             </div>
           </div>
         </form>
-      </div>
+      </ModalDialog>
     </ModalOverlay>
   );
 }
