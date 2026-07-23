@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 
 import { type Note } from "@/lib/notes";
 import { useDeleteNote, useNotes, useTogglePin } from "@/lib/use-notes";
+import { useReminders } from "@/lib/use-reminders";
 import type { NoteKind } from "@/lib/validations/note";
 import { Button } from "@/components/ui/atoms/button";
 import { AccentText } from "@/components/ui/atoms/accent-text";
@@ -14,6 +15,7 @@ import { EmptyState } from "@/components/ui/molecules/empty-state";
 import { NoteCard } from "@/components/notes/note-card";
 import { NoteEditor } from "@/components/notes/note-editor";
 import { DeleteDialog } from "@/components/notes/delete-dialog";
+import { ReminderEditor } from "@/components/reminders/reminder-editor";
 
 type Filter = "all" | NoteKind;
 
@@ -25,6 +27,7 @@ const FILTERS: { value: Filter; label: string }[] = [
 
 export default function NotesPage() {
   const { data: notes = [], isLoading } = useNotes();
+  const { data: reminders = [] } = useReminders();
   const deleteNote = useDeleteNote();
   const togglePinMutation = useTogglePin();
 
@@ -35,6 +38,19 @@ export default function NotesPage() {
   // null = closed, "new" = create, Note = edit that note.
   const [editing, setEditing] = useState<Note | "new" | null>(null);
   const [deleting, setDeleting] = useState<Note | null>(null);
+  // When set, create a reminder pre-attached to this note.
+  const [remindingNote, setRemindingNote] = useState<Note | null>(null);
+
+  // How many reminders point at each note, for the card badge.
+  const reminderCountByNote = useMemo(() => {
+    const counts = new Map<number, number>();
+    for (const r of reminders) {
+      if (r.target_type === "note" && r.target_id != null) {
+        counts.set(r.target_id, (counts.get(r.target_id) ?? 0) + 1);
+      }
+    }
+    return counts;
+  }, [reminders]);
 
   // Every tag in use, most-common first, for the filter bar and suggestions.
   const allTags = useMemo(() => {
@@ -162,6 +178,7 @@ export default function NotesPage() {
               onDelete={setDeleting}
               onTogglePin={togglePin}
               onTagClick={setTagFilter}
+              reminderCount={reminderCountByNote.get(note.id) ?? 0}
             />
           ))}
         </CardGrid>
@@ -171,8 +188,21 @@ export default function NotesPage() {
         <NoteEditor
           note={editing === "new" ? null : editing}
           allTags={allTags}
+          onAddReminder={(note) => {
+            setEditing(null);
+            setRemindingNote(note);
+          }}
           onClose={() => setEditing(null)}
           onSaved={() => setEditing(null)}
+        />
+      )}
+
+      {remindingNote && (
+        <ReminderEditor
+          reminder={null}
+          presetTarget={{ targetType: "note", targetId: remindingNote.id }}
+          onClose={() => setRemindingNote(null)}
+          onSaved={() => setRemindingNote(null)}
         />
       )}
 
