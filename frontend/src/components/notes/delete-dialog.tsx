@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/ui/atoms/button";
-import { ModalOverlay } from "@/components/ui/molecules/modal";
+import { ModalDialog, ModalOverlay } from "@/components/ui/molecules/modal";
 
 type Props = {
   title: string;
@@ -13,11 +13,7 @@ type Props = {
 export function DeleteDialog({ title, onCancel, onConfirm, isDeleting }: Props) {
   return (
     <ModalOverlay className="z-[60] items-center">
-      <div
-        role="alertdialog"
-        aria-modal="true"
-        className="w-full max-w-sm rounded-3xl border border-white/70 bg-cream p-6 shadow-2xl shadow-grape/20"
-      >
+      <ModalDialog role="alertdialog" size="sm" className="p-6">
         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-coral/15 text-2xl">
           🗑️
         </div>
@@ -39,7 +35,7 @@ export function DeleteDialog({ title, onCancel, onConfirm, isDeleting }: Props) 
             {isDeleting ? "Deleting…" : "Delete"}
           </Button>
         </div>
-      </div>
+      </ModalDialog>
     </ModalOverlay>
   );
 }
