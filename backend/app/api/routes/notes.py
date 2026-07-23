@@ -2,8 +2,8 @@ from fastapi import APIRouter, HTTPException, status
 from pydantic import ValidationError
 from sqlalchemy import select
 
-from app.api.deps import INVALID_TOKEN, CurrentUser, DbSession
-from app.api.responses import error_response
+from app.api.deps import UNAUTHORIZED_RESPONSE, CurrentUser, DbSession
+from app.api.responses import not_found_response
 from app.models.note import Note
 from app.schemas.note import NoteBase, NoteCreate, NoteRead, NoteUpdate
 
@@ -14,15 +14,7 @@ router = APIRouter(prefix="/notes", tags=["notes"])
 
 NOTE_NOT_FOUND = "Note not found."
 
-# Every note endpoint requires a valid Bearer token.
-_UNAUTHORIZED = {
-    status.HTTP_401_UNAUTHORIZED: error_response(
-        "Missing or invalid token", INVALID_TOKEN
-    ),
-}
-_NOT_FOUND = {
-    status.HTTP_404_NOT_FOUND: error_response("No such note for this user", NOTE_NOT_FOUND),
-}
+_NOT_FOUND = not_found_response("No such note for this user", NOTE_NOT_FOUND)
 
 
 async def _get_owned_note(note_id: int, user: CurrentUser, db: DbSession) -> Note:
@@ -37,7 +29,7 @@ async def _get_owned_note(note_id: int, user: CurrentUser, db: DbSession) -> Not
     "",
     response_model=list[NoteRead],
     summary="List the current user's notes",
-    responses={**_UNAUTHORIZED},
+    responses={**UNAUTHORIZED_RESPONSE},
 )
 async def list_notes(current_user: CurrentUser, db: DbSession) -> list[Note]:
     """Return all of the user's notes, pinned first then most-recently updated."""
@@ -54,7 +46,7 @@ async def list_notes(current_user: CurrentUser, db: DbSession) -> list[Note]:
     response_model=NoteRead,
     status_code=status.HTTP_201_CREATED,
     summary="Create a note",
-    responses={**_UNAUTHORIZED},
+    responses={**UNAUTHORIZED_RESPONSE},
 )
 async def create_note(payload: NoteCreate, current_user: CurrentUser, db: DbSession) -> Note:
     """Create a new note or journal entry for the current user."""
@@ -69,7 +61,7 @@ async def create_note(payload: NoteCreate, current_user: CurrentUser, db: DbSess
     "/{note_id}",
     response_model=NoteRead,
     summary="Get a single note",
-    responses={**_UNAUTHORIZED, **_NOT_FOUND},
+    responses={**UNAUTHORIZED_RESPONSE, **_NOT_FOUND},
 )
 async def get_note(note_id: int, current_user: CurrentUser, db: DbSession) -> Note:
     """Return a single note owned by the current user."""
@@ -80,7 +72,7 @@ async def get_note(note_id: int, current_user: CurrentUser, db: DbSession) -> No
     "/{note_id}",
     response_model=NoteRead,
     summary="Update a note (partial)",
-    responses={**_UNAUTHORIZED, **_NOT_FOUND},
+    responses={**UNAUTHORIZED_RESPONSE, **_NOT_FOUND},
 )
 async def update_note(
     note_id: int, payload: NoteUpdate, current_user: CurrentUser, db: DbSession
@@ -120,7 +112,7 @@ async def update_note(
     "/{note_id}",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete a note",
-    responses={**_UNAUTHORIZED, **_NOT_FOUND},
+    responses={**UNAUTHORIZED_RESPONSE, **_NOT_FOUND},
 )
 async def delete_note(note_id: int, current_user: CurrentUser, db: DbSession) -> None:
     """Permanently delete a note owned by the current user."""
