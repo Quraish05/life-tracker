@@ -12,6 +12,8 @@ type Props = {
   onDelete: (note: Note) => void;
   onTogglePin: (note: Note) => void;
   onTagClick?: (tag: string) => void;
+  /** How many reminders point at this note; shows a 🔔 badge when > 0. */
+  reminderCount?: number;
 };
 
 const MOOD_EMOJI = Object.fromEntries(MOODS.map((m) => [m.key, m.emoji]));
@@ -22,6 +24,7 @@ export function NoteCard({
   onDelete,
   onTogglePin,
   onTagClick,
+  reminderCount = 0,
 }: Props) {
   const isJournal = note.kind === "journal";
   const dateLabel = isJournal && note.entry_date
@@ -40,6 +43,15 @@ export function NoteCard({
               <span className="text-lg" title={note.mood}>
                 {MOOD_EMOJI[note.mood]}
               </span>
+            )}
+            {reminderCount > 0 && (
+              <Chip
+                tone="soft"
+                size="sm"
+                title={`${reminderCount} reminder${reminderCount > 1 ? "s" : ""} attached`}
+              >
+                🔔 {reminderCount}
+              </Chip>
             )}
           </div>
           <div className="flex gap-1">

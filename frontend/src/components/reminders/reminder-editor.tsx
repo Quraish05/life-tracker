@@ -4,7 +4,11 @@ import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { reminderSchema, type ReminderInput } from "@/lib/validations/reminder";
+import {
+  reminderSchema,
+  type ReminderInput,
+  type TargetType,
+} from "@/lib/validations/reminder";
 import { type Reminder } from "@/lib/reminders";
 import { useCreateReminder, useUpdateReminder } from "@/lib/use-reminders";
 import { useNotes } from "@/lib/use-notes";
@@ -23,11 +27,18 @@ import {
 type Props = {
   /** The reminder being edited, or null when creating a new one. */
   reminder: Reminder | null;
+  /** Pre-select an attachment when creating (e.g. opened from a note). */
+  presetTarget?: { targetType: TargetType; targetId: number };
   onClose: () => void;
   onSaved: () => void;
 };
 
-export function ReminderEditor({ reminder, onClose, onSaved }: Props) {
+export function ReminderEditor({
+  reminder,
+  presetTarget,
+  onClose,
+  onSaved,
+}: Props) {
   const createReminder = useCreateReminder();
   const updateReminder = useUpdateReminder();
   const { data: notes = [] } = useNotes();
@@ -46,8 +57,8 @@ export function ReminderEditor({ reminder, onClose, onSaved }: Props) {
       title: reminder?.title ?? "",
       body: reminder?.body ?? "",
       remind_at: reminder?.remind_at ?? defaultRemindAtIso(),
-      target_type: reminder?.target_type ?? null,
-      target_id: reminder?.target_id ?? null,
+      target_type: reminder?.target_type ?? presetTarget?.targetType ?? null,
+      target_id: reminder?.target_id ?? presetTarget?.targetId ?? null,
     },
   });
 
