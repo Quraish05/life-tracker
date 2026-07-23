@@ -7,6 +7,7 @@ from fastapi import Depends, HTTPException, status
 from fastapi.security import HTTPAuthorizationCredentials, HTTPBearer
 from sqlalchemy.ext.asyncio import AsyncSession
 
+from app.api.responses import error_response
 from app.core.security import decode_access_token
 from app.db.session import get_db
 from app.models.user import User
@@ -17,6 +18,12 @@ bearer_scheme = HTTPBearer(auto_error=True)
 
 # Shared 401 message — referenced by handlers and in the API docs.
 INVALID_TOKEN = "Could not validate credentials."
+
+# OpenAPI ``responses`` entry for the 401 every authenticated route can return.
+# Spread into a route's ``responses=`` (e.g. ``responses={**UNAUTHORIZED_RESPONSE}``).
+UNAUTHORIZED_RESPONSE = {
+    status.HTTP_401_UNAUTHORIZED: error_response("Missing or invalid token", INVALID_TOKEN),
+}
 
 
 async def get_current_user(

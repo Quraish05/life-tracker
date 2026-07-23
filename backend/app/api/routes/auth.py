@@ -1,7 +1,7 @@
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import select
 
-from app.api.deps import INVALID_TOKEN, CurrentUser, DbSession
+from app.api.deps import UNAUTHORIZED_RESPONSE, CurrentUser, DbSession
 from app.api.responses import error_response
 from app.core.security import (
     create_access_token,
@@ -89,11 +89,7 @@ async def login(payload: UserLogin, db: DbSession) -> Token:
     "/me",
     response_model=UserRead,
     summary="Get the currently authenticated user",
-    responses={
-        status.HTTP_401_UNAUTHORIZED: error_response(
-            "Missing or invalid token", INVALID_TOKEN
-        ),
-    },
+    responses={**UNAUTHORIZED_RESPONSE},
 )
 async def read_me(current_user: CurrentUser) -> User:
     """Return the profile of the user identified by the Bearer token."""

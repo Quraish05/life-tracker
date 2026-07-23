@@ -4,8 +4,8 @@ from fastapi import APIRouter, HTTPException, status
 from pydantic import ValidationError
 from sqlalchemy import func, select
 
-from app.api.deps import INVALID_TOKEN, CurrentUser, DbSession
-from app.api.responses import error_response
+from app.api.deps import UNAUTHORIZED_RESPONSE, CurrentUser, DbSession
+from app.api.responses import not_found_response
 from app.models.note import Note
 from app.models.reminder import Reminder
 from app.schemas.reminder import ReminderBase, ReminderCreate, ReminderRead, ReminderUpdate
@@ -18,13 +18,7 @@ router = APIRouter(prefix="/reminders", tags=["reminders"])
 REMINDER_NOT_FOUND = "Reminder not found."
 TARGET_NOT_FOUND = "The reminder's target does not exist or isn't yours."
 
-# Every reminder endpoint requires a valid Bearer token.
-_UNAUTHORIZED = {
-    status.HTTP_401_UNAUTHORIZED: error_response("Missing or invalid token", INVALID_TOKEN),
-}
-_NOT_FOUND = {
-    status.HTTP_404_NOT_FOUND: error_response("No such reminder for this user", REMINDER_NOT_FOUND),
-}
+_NOT_FOUND = not_found_response("No such reminder for this user", REMINDER_NOT_FOUND)
 
 
 async def _get_owned_reminder(reminder_id: int, user: CurrentUser, db: DbSession) -> Reminder:
@@ -55,7 +49,7 @@ async def _validate_target(
     "",
     response_model=list[ReminderRead],
     summary="List the current user's reminders",
-    responses={**_UNAUTHORIZED},
+    responses={**UNAUTHORIZED_RESPONSE},
 )
 async def list_reminders(current_user: CurrentUser, db: DbSession) -> list[Reminder]:
     """Return all of the user's reminders, soonest first."""
@@ -71,7 +65,7 @@ async def list_reminders(current_user: CurrentUser, db: DbSession) -> list[Remin
     "/due",
     response_model=list[ReminderRead],
     summary="List reminders that are due and not yet delivered",
-    responses={**_UNAUTHORIZED},
+    responses={**UNAUTHORIZED_RESPONSE},
 )
 async def list_due_reminders(current_user: CurrentUser, db: DbSession) -> list[Reminder]:
     """Return reminders whose time has arrived and that haven't been sent.
@@ -97,7 +91,7 @@ async def list_due_reminders(current_user: CurrentUser, db: DbSession) -> list[R
     response_model=ReminderRead,
     status_code=status.HTTP_201_CREATED,
     summary="Create a reminder",
-    responses={**_UNAUTHORIZED, **_NOT_FOUND},
+    responses={**UNAUTHORIZED_RESPONSE, **_NOT_FOUND},
 )
 async def create_reminder(
     payload: ReminderCreate, current_user: CurrentUser, db: DbSession
@@ -115,7 +109,7 @@ async def create_reminder(
     "/{reminder_id}",
     response_model=ReminderRead,
     summary="Get a single reminder",
-    responses={**_UNAUTHORIZED, **_NOT_FOUND},
+    responses={**UNAUTHORIZED_RESPONSE, **_NOT_FOUND},
 )
 async def get_reminder(reminder_id: int, current_user: CurrentUser, db: DbSession) -> Reminder:
     """Return a single reminder owned by the current user."""
@@ -126,7 +120,7 @@ async def get_reminder(reminder_id: int, current_user: CurrentUser, db: DbSessio
     "/{reminder_id}",
     response_model=ReminderRead,
     summary="Update a reminder (partial)",
-    responses={**_UNAUTHORIZED, **_NOT_FOUND},
+    responses={**UNAUTHORIZED_RESPONSE, **_NOT_FOUND},
 )
 async def update_reminder(
     reminder_id: int,
@@ -170,7 +164,7 @@ async def update_reminder(
     "/{reminder_id}/ack",
     response_model=ReminderRead,
     summary="Acknowledge delivery of a reminder",
-    responses={**_UNAUTHORIZED, **_NOT_FOUND},
+    responses={**UNAUTHORIZED_RESPONSE, **_NOT_FOUND},
 )
 async def acknowledge_reminder(
     reminder_id: int, current_user: CurrentUser, db: DbSession
@@ -192,7 +186,7 @@ async def acknowledge_reminder(
     "/{reminder_id}",
     status_code=status.HTTP_204_NO_CONTENT,
     summary="Delete a reminder",
-    responses={**_UNAUTHORIZED, **_NOT_FOUND},
+    responses={**UNAUTHORIZED_RESPONSE, **_NOT_FOUND},
 )
 async def delete_reminder(reminder_id: int, current_user: CurrentUser, db: DbSession) -> None:
     """Permanently delete a reminder owned by the current user."""
