@@ -1,8 +1,8 @@
 import * as React from "react";
 
-import { FieldError } from "@/components/ui/form-error";
-import { Input } from "@/components/ui/input";
-import { Label } from "@/components/ui/label";
+import { FieldError } from "@/components/ui/atoms/form-error";
+import { Input } from "@/components/ui/atoms/input";
+import { Label } from "@/components/ui/atoms/label";
 
 interface FormFieldProps extends React.ComponentProps<"input"> {
   label: string;

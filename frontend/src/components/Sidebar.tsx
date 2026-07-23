@@ -15,6 +15,7 @@ type NavItem = {
 const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: "🏠" },
   { label: "Journal & Notes", href: "/notes", icon: "📓" },
+  { label: "Reminders", href: "/reminders", icon: "⏰" },
 ];
 
 export default function Sidebar() {

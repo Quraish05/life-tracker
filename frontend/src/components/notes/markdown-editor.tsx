@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 
-import { Textarea } from "@/components/ui/textarea";
+import { Textarea } from "@/components/ui/atoms/textarea";
 import { MarkdownPreview } from "@/components/notes/markdown-preview";
 
 type EditorProps = {

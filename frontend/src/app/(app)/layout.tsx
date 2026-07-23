@@ -4,6 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/lib/auth-context";
+import { ReminderNotificationsProvider } from "@/lib/reminder-notifications";
 import Sidebar from "@/components/Sidebar";
 
 export default function AppLayout({
@@ -28,11 +29,13 @@ export default function AppLayout({
   }
 
   return (
-    <div className="flex h-dvh">
-      <Sidebar />
-      <main className="flex-1 overflow-y-auto bg-gradient-to-br from-cream via-cream to-lilac/40">
-        {children}
-      </main>
-    </div>
+    <ReminderNotificationsProvider>
+      <div className="flex h-dvh">
+        <Sidebar />
+        <main className="flex-1 overflow-y-auto bg-gradient-to-br from-cream via-cream to-lilac/40">
+          {children}
+        </main>
+      </div>
+    </ReminderNotificationsProvider>
   );
 }

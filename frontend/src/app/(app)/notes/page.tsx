@@ -5,7 +5,12 @@ import { useMemo, useState } from "react";
 import { type Note } from "@/lib/notes";
 import { useDeleteNote, useNotes, useTogglePin } from "@/lib/use-notes";
 import type { NoteKind } from "@/lib/validations/note";
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/atoms/button";
+import { AccentText } from "@/components/ui/atoms/accent-text";
+import { Chip } from "@/components/ui/atoms/chip";
+import { CardGrid } from "@/components/ui/atoms/card-grid";
+import { PageHeader } from "@/components/ui/molecules/page-header";
+import { EmptyState } from "@/components/ui/molecules/empty-state";
 import { NoteCard } from "@/components/notes/note-card";
 import { NoteEditor } from "@/components/notes/note-editor";
 import { DeleteDialog } from "@/components/notes/delete-dialog";
@@ -66,36 +71,32 @@ export default function NotesPage() {
 
   return (
     <div className="mx-auto max-w-5xl px-6 py-10">
-      <header className="mb-8 flex flex-wrap items-end justify-between gap-4">
-        <div>
-          <p className="text-sm font-semibold text-grape">Journal &amp; Notes</p>
-          <h1 className="mt-1 text-4xl font-bold tracking-tight text-ink">
-            Your <span className="font-display italic text-coral">thoughts</span>,
-            captured
-          </h1>
-          <p className="mt-2 text-base text-ink-soft">
-            Daily journal entries and free-form notes — all in one place.
-          </p>
-        </div>
-        <Button onClick={() => setEditing("new")}>+ New entry</Button>
-      </header>
+      <PageHeader
+        eyebrow="Journal & Notes"
+        title={
+          <>
+            Your <AccentText>thoughts</AccentText>, captured
+          </>
+        }
+        subtitle="Daily journal entries and free-form notes — all in one place."
+        action={<Button onClick={() => setEditing("new")}>+ New entry</Button>}
+      />
 
       {/* Controls */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex rounded-full bg-white/60 p-1 text-sm font-semibold shadow-sm">
+        <div className="flex rounded-full bg-white/60 p-1 shadow-sm">
           {FILTERS.map((f) => (
-            <button
+            <Chip
               key={f.value}
-              type="button"
-              onClick={() => setFilter(f.value)}
-              className={`rounded-full px-4 py-1.5 transition ${
-                filter === f.value
-                  ? "bg-grape text-white shadow-sm"
-                  : "text-ink/60 hover:text-ink"
-              }`}
+              asChild
+              interactive
+              size="lg"
+              tone={filter === f.value ? "solid" : "ghost"}
             >
-              {f.label}
-            </button>
+              <button type="button" onClick={() => setFilter(f.value)}>
+                {f.label}
+              </button>
+            </Chip>
           ))}
         </div>
         <input
@@ -116,18 +117,19 @@ export default function NotesPage() {
           {allTags.map((tag) => {
             const active = tagFilter === tag;
             return (
-              <button
+              <Chip
                 key={tag}
-                type="button"
-                onClick={() => setTagFilter(active ? null : tag)}
-                className={`rounded-full px-2.5 py-1 text-xs font-semibold transition ${
-                  active
-                    ? "bg-grape text-white shadow-sm"
-                    : "bg-lilac/40 text-grape-deep hover:bg-lilac/70"
-                }`}
+                asChild
+                interactive
+                tone={active ? "solid" : "soft"}
               >
-                #{tag}
-              </button>
+                <button
+                  type="button"
+                  onClick={() => setTagFilter(active ? null : tag)}
+                >
+                  #{tag}
+                </button>
+              </Chip>
             );
           })}
           {tagFilter && (
@@ -146,12 +148,12 @@ export default function NotesPage() {
       {isLoading ? (
         <p className="text-sm text-ink-soft">Loading…</p>
       ) : visible.length === 0 ? (
-        <EmptyState
+        <NotesEmptyState
           hasNotes={notes.length > 0}
           onCreate={() => setEditing("new")}
         />
       ) : (
-        <section className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3">
+        <CardGrid>
           {visible.map((note) => (
             <NoteCard
               key={note.id}
@@ -162,7 +164,7 @@ export default function NotesPage() {
               onTagClick={setTagFilter}
             />
           ))}
-        </section>
+        </CardGrid>
       )}
 
       {editing !== null && (
@@ -186,40 +188,37 @@ export default function NotesPage() {
   );
 }
 
-function EmptyState({
+function NotesEmptyState({
   hasNotes,
   onCreate,
 }: {
   hasNotes: boolean;
   onCreate: () => void;
 }) {
+  if (hasNotes) {
+    return (
+      <EmptyState
+        icon="🔍"
+        title={
+          <>
+            Nothing <AccentText tone="grape">matches</AccentText>
+          </>
+        }
+        description="Try a different filter or search term."
+      />
+    );
+  }
+
   return (
-    <section className="flex flex-col items-center rounded-3xl border-2 border-dashed border-grape/25 bg-white/60 p-12 text-center backdrop-blur-sm">
-      <div className="flex h-16 w-16 items-center justify-center rounded-2xl bg-butter text-3xl shadow-sm">
-        {hasNotes ? "🔍" : "📓"}
-      </div>
-      <h2 className="mt-5 text-xl font-bold text-ink">
-        {hasNotes ? (
-          <>
-            Nothing <span className="font-display italic text-grape">matches</span>
-          </>
-        ) : (
-          <>
-            A blank <span className="font-display italic text-grape">page</span>{" "}
-            awaits
-          </>
-        )}
-      </h2>
-      <p className="mx-auto mt-2 max-w-sm text-sm text-ink-soft">
-        {hasNotes
-          ? "Try a different filter or search term."
-          : "Write your first journal entry or jot down a note to get started."}
-      </p>
-      {!hasNotes && (
-        <div className="mt-5">
-          <Button onClick={onCreate}>+ New entry</Button>
-        </div>
-      )}
-    </section>
+    <EmptyState
+      icon="📓"
+      title={
+        <>
+          A blank <AccentText tone="grape">page</AccentText> awaits
+        </>
+      }
+      description="Write your first journal entry or jot down a note to get started."
+      action={<Button onClick={onCreate}>+ New entry</Button>}
+    />
   );
 }

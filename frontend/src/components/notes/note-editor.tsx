@@ -12,11 +12,11 @@ import {
 } from "@/lib/validations/note";
 import { type Note } from "@/lib/notes";
 import { useCreateNote, useUpdateNote } from "@/lib/use-notes";
-import { Button } from "@/components/ui/button";
-import { FieldError, FormError } from "@/components/ui/form-error";
-import { FormField } from "@/components/ui/form-field";
-import { Label } from "@/components/ui/label";
-import { ModalOverlay } from "@/components/ui/modal";
+import { Button } from "@/components/ui/atoms/button";
+import { FieldError, FormError } from "@/components/ui/atoms/form-error";
+import { FormField } from "@/components/ui/molecules/form-field";
+import { Label } from "@/components/ui/atoms/label";
+import { ModalOverlay } from "@/components/ui/molecules/modal";
 import { MarkdownEditor } from "@/components/notes/markdown-editor";
 import { TagInput } from "@/components/notes/tag-input";
 import { optionPillClass, today } from "@/components/notes/_lib";

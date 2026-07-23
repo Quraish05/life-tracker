@@ -1,6 +1,6 @@
 import Link from "next/link";
 
-import { Button } from "@/components/ui/button";
+import { Button } from "@/components/ui/atoms/button";
 import { FeatureCard } from "@/components/landing/feature-card";
 import { FEATURES } from "@/components/landing/_lib";
 
