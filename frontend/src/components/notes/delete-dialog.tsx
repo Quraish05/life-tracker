@@ -1,7 +1,7 @@
 "use client";
 
-import { Button } from "@/components/ui/button";
-import { ModalOverlay } from "@/components/ui/modal";
+import { Button } from "@/components/ui/atoms/button";
+import { ModalOverlay } from "@/components/ui/molecules/modal";
 
 type Props = {
   title: string;

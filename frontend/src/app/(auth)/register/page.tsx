@@ -9,9 +9,9 @@ import { registerSchema, type RegisterInput } from "@/lib/validations/auth";
 import { useAuth } from "@/lib/auth-context";
 import { ApiError } from "@/lib/api";
 import { AuthCard, AuthScreen } from "@/components/auth/auth-layout";
-import { Button } from "@/components/ui/button";
-import { FormError } from "@/components/ui/form-error";
-import { FormField } from "@/components/ui/form-field";
+import { Button } from "@/components/ui/atoms/button";
+import { FormError } from "@/components/ui/atoms/form-error";
+import { FormField } from "@/components/ui/molecules/form-field";
 
 export default function RegisterPage() {
   const router = useRouter();
