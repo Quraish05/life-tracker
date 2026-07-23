@@ -9,17 +9,32 @@ import {
   useReminderNotifications,
   type PermissionState,
 } from "@/lib/reminder-notifications";
-import { reminderStatus } from "@/components/reminders/_lib";
+import {
+  compareReminders,
+  reminderStatus,
+  type ReminderSortKey,
+  type ReminderStatus,
+  type SortDir,
+} from "@/components/reminders/_lib";
 import { Button } from "@/components/ui/atoms/button";
 import { AccentText } from "@/components/ui/atoms/accent-text";
 import { Card } from "@/components/ui/atoms/card";
-import { CardGrid } from "@/components/ui/atoms/card-grid";
+import { Chip } from "@/components/ui/atoms/chip";
 import { PageHeader } from "@/components/ui/molecules/page-header";
-import { Section } from "@/components/ui/molecules/section";
 import { EmptyState } from "@/components/ui/molecules/empty-state";
-import { ReminderCard } from "@/components/reminders/reminder-card";
+import { Pagination } from "@/components/ui/molecules/pagination";
+import { ReminderTable } from "@/components/reminders/reminder-table";
 import { ReminderEditor } from "@/components/reminders/reminder-editor";
 import { DeleteDialog } from "@/components/notes/delete-dialog";
+
+const PAGE_SIZE = 10;
+
+const STATUS_FILTERS: { value: "all" | ReminderStatus; label: string }[] = [
+  { value: "all", label: "All" },
+  { value: "upcoming", label: "⏰ Upcoming" },
+  { value: "overdue", label: "⚠️ Overdue" },
+  { value: "delivered", label: "✓ Delivered" },
+];
 
 export default function RemindersPage() {
   const { data: reminders = [], isLoading } = useReminders();
@@ -31,22 +46,29 @@ export default function RemindersPage() {
   const [editing, setEditing] = useState<Reminder | "new" | null>(null);
   const [deleting, setDeleting] = useState<Reminder | null>(null);
 
+  const [statusFilter, setStatusFilter] = useState<"all" | ReminderStatus>("all");
+  const [sortKey, setSortKey] = useState<ReminderSortKey>("remind_at");
+  const [sortDir, setSortDir] = useState<SortDir>("asc");
+  const [page, setPage] = useState(1);
+
   const noteTitle = useMemo(() => {
     const map = new Map<number, string>();
     for (const note of notes) map.set(note.id, note.title);
     return map;
   }, [notes]);
 
-  const { upcoming, past } = useMemo(() => {
-    const upcoming: Reminder[] = [];
-    const past: Reminder[] = [];
-    for (const reminder of reminders) {
-      if (reminderStatus(reminder) === "upcoming") upcoming.push(reminder);
-      else past.push(reminder);
-    }
-    // The API returns soonest-first; show past ones most-recent-first.
-    return { upcoming, past: past.reverse() };
-  }, [reminders]);
+  // Filter by status, then sort by the active column.
+  const visible = useMemo(() => {
+    const filtered =
+      statusFilter === "all"
+        ? reminders
+        : reminders.filter((r) => reminderStatus(r) === statusFilter);
+    return [...filtered].sort((a, b) => compareReminders(a, b, sortKey, sortDir));
+  }, [reminders, statusFilter, sortKey, sortDir]);
+
+  const pageCount = Math.max(1, Math.ceil(visible.length / PAGE_SIZE));
+  const safePage = Math.min(page, pageCount);
+  const paged = visible.slice((safePage - 1) * PAGE_SIZE, safePage * PAGE_SIZE);
 
   async function confirmDelete() {
     if (!deleting) return;
@@ -59,6 +81,21 @@ export default function RemindersPage() {
       return noteTitle.get(reminder.target_id) ?? "Linked note";
     }
     return undefined;
+  }
+
+  function handleSort(key: ReminderSortKey) {
+    if (key === sortKey) {
+      setSortDir((d) => (d === "asc" ? "desc" : "asc"));
+    } else {
+      setSortKey(key);
+      setSortDir("asc");
+    }
+    setPage(1);
+  }
+
+  function changeFilter(value: "all" | ReminderStatus) {
+    setStatusFilter(value);
+    setPage(1);
   }
 
   return (
@@ -85,39 +122,46 @@ export default function RemindersPage() {
       ) : reminders.length === 0 ? (
         <RemindersEmptyState onCreate={() => setEditing("new")} />
       ) : (
-        <div className="space-y-10">
-          <Section title="Upcoming" count={upcoming.length}>
-            {upcoming.length === 0 ? (
-              <p className="text-sm text-ink-soft">Nothing coming up. Enjoy the calm ✨</p>
-            ) : (
-              <CardGrid>
-                {upcoming.map((reminder) => (
-                  <ReminderCard
-                    key={reminder.id}
-                    reminder={reminder}
-                    attachedLabel={attachedLabel(reminder)}
-                    onEdit={setEditing}
-                    onDelete={setDeleting}
-                  />
-                ))}
-              </CardGrid>
-            )}
-          </Section>
+        <div className="space-y-5">
+          <div className="flex w-fit rounded-full bg-white/60 p-1 shadow-sm">
+            {STATUS_FILTERS.map((f) => (
+              <Chip
+                key={f.value}
+                asChild
+                interactive
+                size="lg"
+                tone={statusFilter === f.value ? "solid" : "ghost"}
+              >
+                <button type="button" onClick={() => changeFilter(f.value)}>
+                  {f.label}
+                </button>
+              </Chip>
+            ))}
+          </div>
 
-          {past.length > 0 && (
-            <Section title="Past" count={past.length}>
-              <CardGrid>
-                {past.map((reminder) => (
-                  <ReminderCard
-                    key={reminder.id}
-                    reminder={reminder}
-                    attachedLabel={attachedLabel(reminder)}
-                    onEdit={setEditing}
-                    onDelete={setDeleting}
-                  />
-                ))}
-              </CardGrid>
-            </Section>
+          {visible.length === 0 ? (
+            <p className="text-sm text-ink-soft">
+              No reminders match this filter.
+            </p>
+          ) : (
+            <>
+              <ReminderTable
+                reminders={paged}
+                sortKey={sortKey}
+                sortDir={sortDir}
+                onSort={handleSort}
+                onEdit={setEditing}
+                onDelete={setDeleting}
+                attachedLabel={attachedLabel}
+              />
+              <Pagination
+                page={safePage}
+                pageCount={pageCount}
+                total={visible.length}
+                pageSize={PAGE_SIZE}
+                onPageChange={setPage}
+              />
+            </>
           )}
         </div>
       )}

@@ -17,6 +17,10 @@ const chipVariants = cva(
         solid: "bg-grape text-white shadow-sm",
         /** Sky blue — a secondary category. */
         sky: "bg-sky/60 text-ink",
+        /** Mint — a positive/complete status. */
+        success: "bg-mint/50 text-ink",
+        /** Coral — a warning/overdue status. */
+        danger: "bg-coral/15 text-coral",
         /** No fill — inactive segmented-control option. */
         ghost: "text-ink/60",
       },

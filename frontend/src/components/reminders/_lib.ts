@@ -46,3 +46,41 @@ export function reminderStatus(reminder: Reminder): ReminderStatus {
   if (reminder.sent_at) return "delivered";
   return new Date(reminder.remind_at).getTime() <= Date.now() ? "overdue" : "upcoming";
 }
+
+/** Label + Chip tone for each status — shared by the table and any badges. */
+export const STATUS_META: Record<
+  ReminderStatus,
+  { label: string; tone: "sky" | "danger" | "success" }
+> = {
+  upcoming: { label: "⏰ Upcoming", tone: "sky" },
+  overdue: { label: "⚠️ Overdue", tone: "danger" },
+  delivered: { label: "✓ Delivered", tone: "success" },
+};
+
+export type ReminderSortKey = "status" | "title" | "remind_at";
+export type SortDir = "asc" | "desc";
+
+// Sort priority when ordering by status: needs-attention first.
+const STATUS_ORDER: Record<ReminderStatus, number> = {
+  overdue: 0,
+  upcoming: 1,
+  delivered: 2,
+};
+
+/** Comparator for the reminders table; `dir` flips ascending/descending. */
+export function compareReminders(
+  a: Reminder,
+  b: Reminder,
+  key: ReminderSortKey,
+  dir: SortDir,
+): number {
+  let cmp: number;
+  if (key === "title") {
+    cmp = a.title.localeCompare(b.title);
+  } else if (key === "remind_at") {
+    cmp = new Date(a.remind_at).getTime() - new Date(b.remind_at).getTime();
+  } else {
+    cmp = STATUS_ORDER[reminderStatus(a)] - STATUS_ORDER[reminderStatus(b)];
+  }
+  return dir === "asc" ? cmp : -cmp;
+}
