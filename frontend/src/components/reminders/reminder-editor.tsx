@@ -90,7 +90,7 @@ export function ReminderEditor({
   }
 
   return (
-    <ModalOverlay className="z-50 items-start overflow-y-auto sm:p-8">
+    <ModalOverlay className="z-50 items-start overflow-y-auto tablet:p-8">
       <ModalDialog size="md" className="my-auto">
         <ModalHeader onClose={onClose}>
           {reminder ? "Edit" : "New"}{" "}

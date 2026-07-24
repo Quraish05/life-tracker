@@ -35,7 +35,12 @@ class Settings(BaseSettings):
     # dev server / tests don't spawn the loop; enable it in the environment
     # that should actually deliver pushes. Requires the VAPID keys above.
     push_dispatch_enabled: bool = False
-    push_dispatch_interval_seconds: int = 30
+    # The dispatch loop sleeps until the next upcoming reminder is due, but
+    # never longer than this. It's a safety net: it bounds how long an
+    # un-deliverable/overdue reminder waits before a retry, and covers a wake
+    # signal that never arrives (e.g. a reminder created in another worker
+    # process, whose in-process signal can't reach this loop).
+    push_dispatch_max_interval_seconds: int = 300
 
 
 @lru_cache

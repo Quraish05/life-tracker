@@ -12,7 +12,7 @@ const STATS = [
 
 export default function DashboardPage() {
   return (
-    <div className="mx-auto max-w-5xl px-6 py-10">
+    <div className="mx-auto max-w-5xl px-4 py-8 tablet:px-6 tablet:py-10">
       <PageHeader
         className="mb-9"
         eyebrow="Tuesday, July 21"
@@ -24,7 +24,7 @@ export default function DashboardPage() {
         subtitle="Welcome back — here's how things are looking today."
       />
 
-      <section className="grid grid-cols-1 gap-5 sm:grid-cols-3">
+      <section className="grid grid-cols-1 gap-5 tablet:grid-cols-3">
         {STATS.map((stat) => (
           <Card
             key={stat.label}

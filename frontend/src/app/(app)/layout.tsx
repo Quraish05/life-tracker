@@ -30,10 +30,12 @@ export default function AppLayout({
 
   return (
     <ReminderNotificationsProvider>
-      <div className="flex h-dvh">
+      <div className="flex h-dvh flex-col laptop:flex-row">
         <Sidebar />
+        {/* Sidebar stays flush left; only the main content region is capped
+            at max-w-content and centered on ultra-wide screens. */}
         <main className="flex-1 overflow-y-auto bg-gradient-to-br from-cream via-cream to-lilac/40">
-          {children}
+          <div className="mx-auto max-w-content">{children}</div>
         </main>
       </div>
     </ReminderNotificationsProvider>

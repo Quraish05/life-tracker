@@ -11,7 +11,7 @@ function BrandPanel({
   description: React.ReactNode;
 }) {
   return (
-    <div className="relative flex flex-col justify-between overflow-hidden bg-gradient-to-br from-lilac via-blush to-peach p-10 lg:p-14">
+    <div className="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-lilac via-blush to-peach p-10 laptop:flex laptop:p-14">
       {/* Decorative pastel blobs */}
       <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-sky/60 blur-3xl" />
       <div className="pointer-events-none absolute -bottom-28 right-0 h-80 w-80 rounded-full bg-mint/60 blur-3xl" />
@@ -26,7 +26,7 @@ function BrandPanel({
       </div>
 
       <div className="relative max-w-md">
-        <h1 className="text-5xl font-bold leading-tight tracking-tight text-ink lg:text-6xl">
+        <h1 className="text-5xl font-bold leading-tight tracking-tight text-ink laptop:text-6xl">
           {title}
         </h1>
         <p className="mt-5 text-lg text-ink-soft">{description}</p>
@@ -71,11 +71,20 @@ function AuthScreen({
   children,
 }: AuthScreenProps) {
   return (
-    <div className="grid min-h-dvh flex-1 lg:grid-cols-2">
+    <div className="grid min-h-dvh flex-1 laptop:grid-cols-2">
       <BrandPanel title={brandTitle} description={brandDescription} />
 
       <div className="flex items-center justify-center bg-cream px-4 py-12">
         <div className="w-full max-w-sm">
+          {/* Compact brand — only when the marketing panel is hidden. */}
+          <div className="mb-8 flex items-center justify-center gap-2.5 laptop:hidden">
+            <div className="flex h-9 w-9 rotate-3 items-center justify-center rounded-xl bg-gradient-to-br from-grape to-coral text-sm font-bold text-white shadow-md shadow-grape/30">
+              LT
+            </div>
+            <span className="text-lg font-bold tracking-tight text-ink">
+              Life <span className="font-display italic text-grape">Tracker</span>
+            </span>
+          </div>
           <div className="mb-8 text-center">
             <h2 className="text-3xl font-bold tracking-tight text-ink">
               {title}

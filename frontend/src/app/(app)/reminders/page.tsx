@@ -99,7 +99,7 @@ export default function RemindersPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-6 py-10">
+    <div className="mx-auto max-w-5xl px-4 py-8 tablet:px-6 tablet:py-10">
       <PageHeader
         eyebrow="Reminders"
         title={
@@ -123,7 +123,7 @@ export default function RemindersPage() {
         <RemindersEmptyState onCreate={() => setEditing("new")} />
       ) : (
         <div className="space-y-5">
-          <div className="flex w-fit rounded-full bg-white/60 p-1 shadow-sm">
+          <div className="flex w-fit max-w-full overflow-x-auto rounded-full bg-white/60 p-1 shadow-sm">
             {STATUS_FILTERS.map((f) => (
               <Chip
                 key={f.value}
