@@ -9,6 +9,7 @@ from app.api.responses import not_found_response
 from app.models.note import Note
 from app.models.reminder import Reminder
 from app.schemas.reminder import ReminderBase, ReminderCreate, ReminderRead, ReminderUpdate
+from app.services.reminder_dispatch import signal_reminder_change
 
 # Fields that make up a reminder's editable body (used to merge partial updates).
 _REMINDER_FIELDS = ("title", "body", "remind_at", "target_type", "target_id")
@@ -102,6 +103,7 @@ async def create_reminder(
     db.add(reminder)
     await db.commit()
     await db.refresh(reminder)
+    signal_reminder_change()
     return reminder
 
 
@@ -157,6 +159,7 @@ async def update_reminder(
 
     await db.commit()
     await db.refresh(reminder)
+    signal_reminder_change()
     return reminder
 
 
@@ -193,3 +196,4 @@ async def delete_reminder(reminder_id: int, current_user: CurrentUser, db: DbSes
     reminder = await _get_owned_reminder(reminder_id, current_user, db)
     await db.delete(reminder)
     await db.commit()
+    signal_reminder_change()
