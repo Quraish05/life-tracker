@@ -9,6 +9,7 @@ import {
   type SortDir,
 } from "@/components/reminders/_lib";
 import { Chip } from "@/components/ui/atoms/chip";
+import { IconButton } from "@/components/ui/atoms/icon-button";
 import {
   Table,
   TableBody,
@@ -103,22 +104,19 @@ export function ReminderTable({
                 </TableCell>
                 <TableCell className="text-right">
                   <div className="inline-flex gap-1">
-                    <button
-                      type="button"
+                    <IconButton
                       onClick={() => onEdit(reminder)}
                       aria-label="Edit"
-                      className="flex h-8 w-8 items-center justify-center rounded-full text-ink-soft transition hover:bg-lilac/50 hover:text-grape"
                     >
                       ✏️
-                    </button>
-                    <button
-                      type="button"
+                    </IconButton>
+                    <IconButton
                       onClick={() => onDelete(reminder)}
                       aria-label="Delete"
-                      className="flex h-8 w-8 items-center justify-center rounded-full text-ink-soft transition hover:bg-coral/15 hover:text-coral"
+                      tone="danger"
                     >
                       🗑️
-                    </button>
+                    </IconButton>
                   </div>
                 </TableCell>
               </TableRow>

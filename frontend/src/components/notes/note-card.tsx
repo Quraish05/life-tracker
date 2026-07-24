@@ -4,6 +4,7 @@ import type { Note } from "@/lib/notes";
 import { MOODS } from "@/lib/validations/note";
 import { Card } from "@/components/ui/atoms/card";
 import { Chip } from "@/components/ui/atoms/chip";
+import { IconButton } from "@/components/ui/atoms/icon-button";
 import { formatDate, toSnippet } from "@/components/notes/_lib";
 
 type Props = {
@@ -55,36 +56,30 @@ export function NoteCard({
             )}
           </div>
           <div className="flex gap-1">
-            <button
-              type="button"
+            <IconButton
               onClick={() => onTogglePin(note)}
               aria-label={note.pinned ? "Unpin" : "Pin"}
               aria-pressed={note.pinned}
-              className={`flex h-8 w-8 items-center justify-center rounded-full transition ${
+              tone={note.pinned ? "active" : "neutral"}
+              className={
                 note.pinned
-                  ? "text-grape"
-                  : "text-ink-soft opacity-0 hover:bg-lilac/50 hover:text-grape group-hover:opacity-100 focus-visible:opacity-100"
-              }`}
+                  ? ""
+                  : "opacity-0 group-hover:opacity-100 focus-visible:opacity-100"
+              }
             >
               📌
-            </button>
+            </IconButton>
             <div className="flex gap-1 opacity-0 transition group-hover:opacity-100 focus-within:opacity-100">
-              <button
-                type="button"
-                onClick={() => onEdit(note)}
-                aria-label="Edit"
-                className="flex h-8 w-8 items-center justify-center rounded-full text-ink-soft transition hover:bg-lilac/50 hover:text-grape"
-              >
+              <IconButton onClick={() => onEdit(note)} aria-label="Edit">
                 ✏️
-              </button>
-              <button
-                type="button"
+              </IconButton>
+              <IconButton
                 onClick={() => onDelete(note)}
                 aria-label="Delete"
-                className="flex h-8 w-8 items-center justify-center rounded-full text-ink-soft transition hover:bg-coral/15 hover:text-coral"
+                tone="danger"
               >
                 🗑️
-              </button>
+              </IconButton>
             </div>
           </div>
         </div>
