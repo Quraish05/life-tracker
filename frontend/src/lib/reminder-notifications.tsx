@@ -9,8 +9,37 @@ import {
   useState,
 } from "react";
 
+import { tokenStore } from "@/lib/api";
+import { pushApi, urlBase64ToUint8Array } from "@/lib/push";
 import { playReminderChime, unlockReminderSound } from "@/lib/reminder-sound";
 import { useAckReminder, useDueReminders } from "@/lib/use-reminders";
+
+const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
+
+/**
+ * Register the service worker, subscribe to Web Push, and hand the
+ * subscription to the backend. Idempotent — reuses an existing subscription
+ * and re-posts it (the backend upserts by endpoint). No-ops when push isn't
+ * configured or supported. Best-effort: callers swallow errors.
+ */
+async function enablePushSubscription(): Promise<void> {
+  if (!VAPID_PUBLIC_KEY) return;
+  if (!("serviceWorker" in navigator) || !("PushManager" in window)) return;
+
+  const registration = await navigator.serviceWorker.register("/sw.js");
+  await navigator.serviceWorker.ready;
+
+  const existing = await registration.pushManager.getSubscription();
+  const subscription =
+    existing ??
+    (await registration.pushManager.subscribe({
+      userVisibleOnly: true,
+      applicationServerKey: urlBase64ToUint8Array(VAPID_PUBLIC_KEY),
+    }));
+
+  const token = tokenStore.get();
+  if (token) await pushApi.subscribe(subscription.toJSON(), token);
+}
 
 /** "unsupported" = the browser has no Notification API at all. */
 export type PermissionState = NotificationPermission | "unsupported";
@@ -65,6 +94,16 @@ export function ReminderNotificationsProvider({
 
   const granted = permission === "granted";
   const { data: due } = useDueReminders({ enabled: granted });
+
+  // Once notifications are granted (now, or already on mount), register the
+  // service worker and hand a push subscription to the backend so reminders
+  // arrive even when this tab is closed. Best-effort — never breaks the app.
+  useEffect(() => {
+    if (!granted) return;
+    enablePushSubscription().catch((err) =>
+      console.error("Push subscription failed", err),
+    );
+  }, [granted]);
 
   // IDs we've already surfaced this session, so overlapping polls don't
   // double-fire the same reminder before the ack round-trips.

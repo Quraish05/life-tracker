@@ -24,6 +24,19 @@ class Settings(BaseSettings):
     jwt_algorithm: str = "HS256"
     access_token_expire_minutes: int = 60 * 24  # 1 day
 
+    # Web Push (VAPID). Generate a keypair and set these in .env. The private
+    # key is a secret and must NEVER be committed; empty keys disable push.
+    vapid_public_key: str = ""
+    vapid_private_key: str = ""
+    # The "sub" VAPID claim — a mailto: or https: contact for your service.
+    vapid_subject: str = "mailto:admin@life-tracker.local"
+
+    # Background reminder dispatch (server-side push). Off by default so the
+    # dev server / tests don't spawn the loop; enable it in the environment
+    # that should actually deliver pushes. Requires the VAPID keys above.
+    push_dispatch_enabled: bool = False
+    push_dispatch_interval_seconds: int = 30
+
 
 @lru_cache
 def get_settings() -> Settings:
