@@ -34,7 +34,7 @@ function PageHeader({
     >
       <div>
         <p className="text-sm font-semibold text-grape">{eyebrow}</p>
-        <h1 className="mt-1 text-4xl font-bold tracking-tight text-ink">
+        <h1 className="mt-1 text-3xl font-bold tracking-tight text-ink tablet:text-4xl">
           {title}
         </h1>
         {subtitle && (

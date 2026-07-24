@@ -1,5 +1,21 @@
 @import "tailwindcss";
 
+@theme {
+  /* Responsive breakpoints — mobile-first (min-width).
+     `mobile` is the unprefixed base (≤767px); the names below are the
+     min-widths where each range begins. Use like `tablet:`, `laptop:`,
+     `desktop:`. The `initial` line clears Tailwind's built-in
+     sm/md/lg/xl/2xl so ONLY these names exist — one vocabulary, no mixing. */
+  --breakpoint-*: initial;
+  --breakpoint-tablet: 768px; /* tablet   768–1024px */
+  --breakpoint-laptop: 1025px; /* laptop  1025–1600px */
+  --breakpoint-desktop: 1601px; /* desktop 1601px+     */
+
+  /* Max content width on ultra-wide screens. Use `max-w-content mx-auto`
+     so the UI stops growing past 1920px and stays centered. */
+  --container-content: 1920px;
+}
+
 @theme inline {
   /* Fonts */
   --font-sans: var(--font-inter);

@@ -8,7 +8,7 @@ function CardGrid({ className, ...props }: React.ComponentProps<"div">) {
     <div
       data-slot="card-grid"
       className={cn(
-        "grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3",
+        "grid grid-cols-1 gap-5 tablet:grid-cols-2 laptop:grid-cols-3",
         className,
       )}
       {...props}

@@ -108,7 +108,7 @@ export function NoteEditor({
   }
 
   return (
-    <ModalOverlay className="z-50 items-start overflow-y-auto sm:p-8">
+    <ModalOverlay className="z-50 items-start overflow-y-auto tablet:p-8">
       <ModalDialog size="lg" className="my-auto">
         <ModalHeader onClose={onClose}>
           {note ? "Edit" : "New"}{" "}
@@ -146,7 +146,7 @@ export function NoteEditor({
             />
           </div>
 
-          <div className="grid gap-5 sm:grid-cols-[1fr_auto]">
+          <div className="grid gap-5 tablet:grid-cols-[1fr_auto]">
             <FormField
               label="Title"
               id="title"
