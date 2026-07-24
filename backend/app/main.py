@@ -1,3 +1,5 @@
+import asyncio
+import logging
 from contextlib import asynccontextmanager
 
 from fastapi import FastAPI
@@ -6,13 +8,35 @@ from fastapi.middleware.cors import CORSMiddleware
 from app.api.router import api_router
 from app.core.config import settings
 from app.db.session import engine
+from app.services.reminder_dispatch import run_dispatch_loop
+
+logger = logging.getLogger(__name__)
 
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Schema is managed by Alembic migrations (`uv run alembic upgrade head`).
-    yield
-    await engine.dispose()
+    stop = asyncio.Event()
+    dispatch_task: asyncio.Task[None] | None = None
+
+    # Start the background push dispatcher only when it's enabled AND keys are
+    # configured — otherwise pushes would fail every tick.
+    if settings.push_dispatch_enabled:
+        if settings.vapid_private_key and settings.vapid_public_key:
+            dispatch_task = asyncio.create_task(run_dispatch_loop(stop))
+        else:
+            logger.warning(
+                "push_dispatch_enabled is set but VAPID keys are missing; "
+                "reminder push dispatch is disabled."
+            )
+
+    try:
+        yield
+    finally:
+        stop.set()
+        if dispatch_task is not None:
+            await dispatch_task
+        await engine.dispose()
 
 
 def create_app() -> FastAPI:
