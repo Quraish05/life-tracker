@@ -18,6 +18,11 @@ export const MOODS = [
 export type MoodKey = (typeof MOODS)[number]["key"];
 export const moodKeys = MOODS.map((m) => m.key) as [MoodKey, ...MoodKey[]];
 
+/** Mood lookup by key — for rendering a stored mood's emoji/label anywhere. */
+export const MOOD_BY_KEY = Object.fromEntries(
+  MOODS.map((m) => [m.key, m]),
+) as Record<MoodKey, (typeof MOODS)[number]>;
+
 /** Max tags per note — kept in one place for the schema and the tag input. */
 export const MAX_TAGS = 10;
 
