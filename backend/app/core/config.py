@@ -42,6 +42,17 @@ class Settings(BaseSettings):
     # process, whose in-process signal can't reach this loop).
     push_dispatch_max_interval_seconds: int = 300
 
+    # AI features (structured extraction). Provider-swappable: set AI_PROVIDER to
+    # "anthropic" or "gemini" and supply that provider's key. A missing key
+    # disables the feature and the endpoints return 503. Gemini's flash tier is
+    # free and its key is self-serve at aistudio.google.com.
+    ai_provider: str = "anthropic"  # "anthropic" | "gemini"
+    anthropic_api_key: str = ""
+    gemini_api_key: str = ""
+    # Blank uses the provider's default model (see follow_up_extraction._DEFAULT_MODELS).
+    ai_model: str = ""
+    ai_max_output_tokens: int = 2048
+
 
 @lru_cache
 def get_settings() -> Settings:

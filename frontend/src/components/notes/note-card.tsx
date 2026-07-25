@@ -1,7 +1,9 @@
 "use client";
 
+import Link from "next/link";
+
 import type { Note } from "@/lib/notes";
-import { MOODS } from "@/lib/validations/note";
+import { MOOD_BY_KEY } from "@/lib/validations/note";
 import { Card } from "@/components/ui/atoms/card";
 import { Chip } from "@/components/ui/atoms/chip";
 import { IconButton } from "@/components/ui/atoms/icon-button";
@@ -17,8 +19,6 @@ type Props = {
   reminderCount?: number;
 };
 
-const MOOD_EMOJI = Object.fromEntries(MOODS.map((m) => [m.key, m.emoji]));
-
 export function NoteCard({
   note,
   onEdit,
@@ -32,6 +32,15 @@ export function NoteCard({
     ? formatDate(note.entry_date)
     : `Updated ${formatDate(note.updated_at)}`;
 
+  const preview = (
+    <>
+      <h3 className="line-clamp-2 text-lg font-bold text-ink">{note.title}</h3>
+      <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-ink-soft">
+        {toSnippet(note.body_md) || "No content yet."}
+      </p>
+    </>
+  );
+
   return (
     <Card asChild interactive className="group flex flex-col">
       <article>
@@ -41,8 +50,8 @@ export function NoteCard({
               {isJournal ? "📓 Journal" : "🗒️ Note"}
             </Chip>
             {isJournal && note.mood && (
-              <span className="text-lg" title={note.mood}>
-                {MOOD_EMOJI[note.mood]}
+              <span className="text-lg" title={MOOD_BY_KEY[note.mood].label}>
+                {MOOD_BY_KEY[note.mood].emoji}
               </span>
             )}
             {reminderCount > 0 && (
@@ -84,18 +93,23 @@ export function NoteCard({
           </div>
         </div>
 
-        <button
-          type="button"
-          onClick={() => onEdit(note)}
-          className="flex-1 text-left"
-        >
-          <h3 className="line-clamp-2 text-lg font-bold text-ink">
-            {note.title}
-          </h3>
-          <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-ink-soft">
-            {toSnippet(note.body_md) || "No content yet."}
-          </p>
-        </button>
+        {/*
+          Journals open a read view (a Link); plain notes jump straight into
+          editing (a button). Only the wrapper differs — the preview is shared.
+        */}
+        {isJournal ? (
+          <Link href={`/notes/${note.id}`} className="flex-1 text-left">
+            {preview}
+          </Link>
+        ) : (
+          <button
+            type="button"
+            onClick={() => onEdit(note)}
+            className="flex-1 text-left"
+          >
+            {preview}
+          </button>
+        )}
 
         {note.tags.length > 0 && (
           <div className="mt-4 flex flex-wrap gap-1.5">

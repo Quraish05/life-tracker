@@ -10,7 +10,7 @@ import {
   type NoteInput,
   type NoteKind,
 } from "@/lib/validations/note";
-import { type Note } from "@/lib/notes";
+import { canSuggestFollowUps, type Note } from "@/lib/notes";
 import { useCreateNote, useUpdateNote } from "@/lib/use-notes";
 import { useReminders } from "@/lib/use-reminders";
 import { Button } from "@/components/ui/atoms/button";
@@ -25,6 +25,7 @@ import {
 } from "@/components/ui/molecules/modal";
 import { MarkdownEditor } from "@/components/notes/markdown-editor";
 import { TagInput } from "@/components/notes/tag-input";
+import { TagSuggestions } from "@/components/notes/tag-suggestions";
 import { optionPillClass, today } from "@/components/notes/_lib";
 import {
   formatWhen,
@@ -44,6 +45,8 @@ type Props = {
   allTags?: string[];
   /** Open the reminder editor pre-attached to this note. */
   onAddReminder?: (note: Note) => void;
+  /** Open the AI follow-up suggestions for this note. */
+  onSuggestFollowUps?: (note: Note) => void;
   onClose: () => void;
   onSaved: () => void;
 };
@@ -52,6 +55,7 @@ export function NoteEditor({
   note,
   allTags = [],
   onAddReminder,
+  onSuggestFollowUps,
   onClose,
   onSaved,
 }: Props) {
@@ -223,11 +227,20 @@ export function NoteEditor({
               control={control}
               name="tags"
               render={({ field }) => (
-                <TagInput
-                  value={field.value}
-                  onChange={field.onChange}
-                  suggestions={allTags}
-                />
+                <div className="space-y-2.5">
+                  <TagInput
+                    value={field.value}
+                    onChange={field.onChange}
+                    suggestions={allTags}
+                  />
+                  <TagSuggestions
+                    control={control}
+                    current={field.value}
+                    // TagSuggestions only offers tags not already applied and
+                    // disables itself at the max, so this just appends.
+                    onAdd={(tag) => field.onChange([...field.value, tag])}
+                  />
+                </div>
               )}
             />
             <FieldError message={errors.tags?.message} />
@@ -236,18 +249,36 @@ export function NoteEditor({
           {/* Attached reminders — read-only mention + quick create */}
           {note && (
             <div className="space-y-2.5 rounded-2xl border border-lilac/40 bg-white/50 p-4">
-              <div className="flex items-center justify-between gap-2">
+              <div className="flex flex-wrap items-center justify-between gap-2">
                 <Label>Reminders</Label>
-                {onAddReminder && (
-                  <Button
-                    type="button"
-                    variant="secondary"
-                    size="sm"
-                    onClick={() => onAddReminder(note)}
-                  >
-                    🔔 Remind me about this
-                  </Button>
-                )}
+                <div className="flex flex-wrap gap-2">
+                  {onSuggestFollowUps && (
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => onSuggestFollowUps(note)}
+                      disabled={!canSuggestFollowUps(note)}
+                      title={
+                        canSuggestFollowUps(note)
+                          ? undefined
+                          : "Add a bit more detail to this entry to get follow-up suggestions."
+                      }
+                    >
+                      ✨ Suggest follow-ups
+                    </Button>
+                  )}
+                  {onAddReminder && (
+                    <Button
+                      type="button"
+                      variant="secondary"
+                      size="sm"
+                      onClick={() => onAddReminder(note)}
+                    >
+                      🔔 Remind me about this
+                    </Button>
+                  )}
+                </div>
               </div>
               {attachedReminders.length === 0 ? (
                 <p className="text-sm text-ink-soft">

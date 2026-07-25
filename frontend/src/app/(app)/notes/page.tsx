@@ -15,6 +15,7 @@ import { EmptyState } from "@/components/ui/molecules/empty-state";
 import { NoteCard } from "@/components/notes/note-card";
 import { NoteEditor } from "@/components/notes/note-editor";
 import { DeleteDialog } from "@/components/notes/delete-dialog";
+import { FollowUpSuggestions } from "@/components/notes/follow-up-suggestions";
 import { ReminderEditor } from "@/components/reminders/reminder-editor";
 
 type Filter = "all" | NoteKind;
@@ -40,6 +41,8 @@ export default function NotesPage() {
   const [deleting, setDeleting] = useState<Note | null>(null);
   // When set, create a reminder pre-attached to this note.
   const [remindingNote, setRemindingNote] = useState<Note | null>(null);
+  // When set, show AI follow-up suggestions for this note.
+  const [suggestingNote, setSuggestingNote] = useState<Note | null>(null);
 
   // How many reminders point at each note, for the card badge.
   const reminderCountByNote = useMemo(() => {
@@ -192,6 +195,10 @@ export default function NotesPage() {
             setEditing(null);
             setRemindingNote(note);
           }}
+          onSuggestFollowUps={(note) => {
+            setEditing(null);
+            setSuggestingNote(note);
+          }}
           onClose={() => setEditing(null)}
           onSaved={() => setEditing(null)}
         />
@@ -203,6 +210,14 @@ export default function NotesPage() {
           presetTarget={{ targetType: "note", targetId: remindingNote.id }}
           onClose={() => setRemindingNote(null)}
           onSaved={() => setRemindingNote(null)}
+        />
+      )}
+
+      {suggestingNote && (
+        <FollowUpSuggestions
+          note={suggestingNote}
+          onClose={() => setSuggestingNote(null)}
+          onDone={() => setSuggestingNote(null)}
         />
       )}
 
