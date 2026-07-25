@@ -1,3 +1,5 @@
+from contextlib import contextmanager
+
 from fastapi import APIRouter, HTTPException, status
 from pydantic import ValidationError
 from sqlalchemy import select
@@ -31,6 +33,28 @@ async def _get_owned_note(note_id: int, user: CurrentUser, db: DbSession) -> Not
     if note is None or note.user_id != user.id:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=NOTE_NOT_FOUND)
     return note
+
+
+@contextmanager
+def _ai_errors_as_http(failure_detail: str):
+    """Map AI service errors to HTTP responses, the same way for every AI route.
+
+    Wrap the ``await`` on an AI service call with this: a missing/rejected
+    provider key becomes a 503 (surfacing the setup message), any other AI
+    failure a 502 with ``failure_detail`` (generic and retryable). The call is
+    awaited inside the ``with`` block; the exception surfaces at the block
+    boundary, which is where this maps it.
+    """
+    try:
+        yield
+    except AINotConfiguredError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)
+        ) from exc
+    except AIError as exc:
+        raise HTTPException(
+            status_code=status.HTTP_502_BAD_GATEWAY, detail=failure_detail
+        ) from exc
 
 
 @router.get(
@@ -133,22 +157,13 @@ async def suggest_note_follow_ups(
     links back to this note (human-in-the-loop, CCAF Domain 5.5).
     """
     note = await _get_owned_note(note_id, current_user, db)
-    try:
+    with _ai_errors_as_http("Could not extract follow-ups right now. Please try again."):
         suggestions, model = await suggest_follow_ups(
             title=note.title,
             body=note.body_md,
             kind=note.kind,
             entry_date=note.entry_date,
         )
-    except AINotConfiguredError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)
-        ) from exc
-    except AIError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            detail="Could not extract follow-ups right now. Please try again.",
-        ) from exc
 
     return FollowUpSuggestionsResponse(
         note_id=note.id, model=model, suggestions=suggestions
@@ -171,19 +186,10 @@ async def suggest_note_tags(
     client applies the tags the user taps, then saves the note normally.
     ``current_user`` gates the AI cost behind authentication.
     """
-    try:
+    with _ai_errors_as_http("Could not suggest tags right now. Please try again."):
         suggestions, model = await suggest_tags(
             title=payload.title, body=payload.body_md
         )
-    except AINotConfiguredError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=str(exc)
-        ) from exc
-    except AIError as exc:
-        raise HTTPException(
-            status_code=status.HTTP_502_BAD_GATEWAY,
-            detail="Could not suggest tags right now. Please try again.",
-        ) from exc
 
     return TagSuggestionsResponse(model=model, suggestions=suggestions)
 
