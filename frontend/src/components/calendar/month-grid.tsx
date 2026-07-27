@@ -10,10 +10,21 @@ type Props = {
   mealCounts: Map<string, number>;
   /** iso dates that have at least one exercise logged. */
   workoutDays: Set<string>;
+  /** iso dates that have at least one journal entry. */
+  journalDays: Set<string>;
+  /** iso dates that have at least one reminder. */
+  reminderDays: Set<string>;
   todayIso: string;
 };
 
-export function MonthGrid({ weeks, mealCounts, workoutDays, todayIso }: Props) {
+export function MonthGrid({
+  weeks,
+  mealCounts,
+  workoutDays,
+  journalDays,
+  reminderDays,
+  todayIso,
+}: Props) {
   return (
     <div>
       <div className="mb-2 grid grid-cols-7 gap-1.5">
@@ -31,6 +42,9 @@ export function MonthGrid({ weeks, mealCounts, workoutDays, todayIso }: Props) {
         {weeks.flat().map((cell) => {
           const count = mealCounts.get(cell.iso) ?? 0;
           const trained = workoutDays.has(cell.iso);
+          const journaled = journalDays.has(cell.iso);
+          const reminded = reminderDays.has(cell.iso);
+          const hasActivity = count > 0 || trained || journaled || reminded;
           const isToday = cell.iso === todayIso;
           return (
             <Link
@@ -54,7 +68,7 @@ export function MonthGrid({ weeks, mealCounts, workoutDays, todayIso }: Props) {
                 {cell.date.getDate()}
               </span>
 
-              {cell.inMonth && (count > 0 || trained) && (
+              {cell.inMonth && hasActivity && (
                 <div className="mt-auto flex flex-wrap items-center gap-1 pt-1">
                   {count > 0 && (
                     <span className="inline-flex items-center gap-0.5 rounded-full bg-lilac/40 px-1.5 py-0.5 text-[11px] font-semibold text-grape-deep">
@@ -62,6 +76,8 @@ export function MonthGrid({ weeks, mealCounts, workoutDays, todayIso }: Props) {
                     </span>
                   )}
                   {trained && <span className="text-[11px]">💪</span>}
+                  {journaled && <span className="text-[11px]">📓</span>}
+                  {reminded && <span className="text-[11px]">🔔</span>}
                 </div>
               )}
             </Link>

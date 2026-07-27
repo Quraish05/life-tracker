@@ -79,6 +79,16 @@ export function monthRange(year: number, month: number): { start: string; end: s
   };
 }
 
+/** Inclusive Monday–Sunday ISO range for the week containing `iso` (default today). */
+export function weekRange(iso?: string): { start: string; end: string } {
+  const base = iso ? parseISODate(iso) : new Date();
+  const offset = (base.getDay() + 6) % 7; // 0 = Monday
+  const monday = new Date(base.getFullYear(), base.getMonth(), base.getDate() - offset);
+  const sunday = new Date(monday);
+  sunday.setDate(monday.getDate() + 6);
+  return { start: toISODate(monday), end: toISODate(sunday) };
+}
+
 /** Move `delta` months from (year, month), normalizing the rollover. */
 export function addMonths(
   year: number,

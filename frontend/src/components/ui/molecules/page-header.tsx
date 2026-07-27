@@ -2,8 +2,10 @@ import * as React from "react";
 
 import { cn } from "@/lib/utils";
 
-interface PageHeaderProps
-  extends Omit<React.ComponentProps<"header">, "title"> {
+interface PageHeaderProps extends Omit<
+  React.ComponentProps<"header">,
+  "title"
+> {
   /** Small colored kicker above the title. */
   eyebrow: React.ReactNode;
   /** Main heading — compose an <AccentText> inside to highlight a word. */
@@ -34,12 +36,10 @@ function PageHeader({
     >
       <div>
         <p className="text-sm font-semibold text-grape">{eyebrow}</p>
-        <h1 className="mt-1 text-3xl font-bold tracking-tight text-ink tablet:text-4xl">
+        <h1 className="mt-1 text-3xl font-normal tracking-tight text-ink tablet:text-4xl">
           {title}
         </h1>
-        {subtitle && (
-          <p className="mt-2 text-base text-ink-soft">{subtitle}</p>
-        )}
+        {subtitle && <p className="mt-2 text-base text-ink-soft">{subtitle}</p>}
       </div>
       {action}
     </header>
