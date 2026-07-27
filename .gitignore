@@ -14,5 +14,9 @@
 # Logs
 *.log
 
+# Stray Next.js build output if a build is ever run from the repo root
+# (the real app builds under frontend/.next, ignored by frontend/.gitignore).
+/.next/
+
 # Note: frontend/ and backend/ each have their own .gitignore
 # covering node_modules, .next, .venv, caches, etc.

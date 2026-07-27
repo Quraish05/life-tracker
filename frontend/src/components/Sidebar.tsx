@@ -17,7 +17,9 @@ type NavItem = {
 // Menu items are placeholders for now — real sections come later.
 const NAV_ITEMS: NavItem[] = [
   { label: "Dashboard", href: "/dashboard", icon: "🏠" },
+  { label: "Calendar", href: "/calendar", icon: "📅" },
   { label: "Journal & Notes", href: "/notes", icon: "📓" },
+  { label: "Dishes", href: "/dishes", icon: "🍽️" },
   { label: "Reminders", href: "/reminders", icon: "⏰" },
 ];
 
