@@ -133,10 +133,6 @@ function SidebarPanel({ onNavigate }: { onNavigate?: () => void }) {
             </Link>
           );
         })}
-
-        <p className="px-3.5 pt-5 text-xs font-semibold uppercase tracking-wide text-ink-soft/70">
-          More menus coming soon
-        </p>
       </nav>
 
       {/* User / logout */}

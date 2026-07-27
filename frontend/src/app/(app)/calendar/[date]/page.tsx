@@ -10,15 +10,20 @@ import {
   useDeleteExercise,
   useExercises,
 } from "@/lib/use-exercises";
+import { useNotes } from "@/lib/use-notes";
+import { useReminders } from "@/lib/use-reminders";
 import type { MealSlot } from "@/lib/validations/meal";
 import {
   MAIN_SLOTS,
   MAX_SNACKS,
   SNACK_SLOT,
   formatDayLong,
+  toISODate,
 } from "@/components/calendar/_lib";
 import { MealSlotSection } from "@/components/calendar/meal-slot-section";
 import { DayExercises } from "@/components/calendar/day-exercises";
+import { DayJournal } from "@/components/calendar/day-journal";
+import { DayReminders } from "@/components/calendar/day-reminders";
 import { DishEditor } from "@/components/dishes/dish-editor";
 import { AccentText } from "@/components/ui/atoms/accent-text";
 
@@ -32,10 +37,20 @@ export default function DayPage({
   const { data: meals = [], isLoading } = useMeals(date, date);
   const { data: dishes = [] } = useDishes();
   const { data: exercises = [] } = useExercises(date, date);
+  const { data: notes = [] } = useNotes();
+  const { data: reminders = [] } = useReminders();
   const createMeal = useCreateMeal();
   const deleteMeal = useDeleteMeal();
   const createExercise = useCreateExercise();
   const deleteExercise = useDeleteExercise();
+
+  // Other activities that belong to this day (read-only summary).
+  const journalEntries = notes.filter(
+    (n) => n.kind === "journal" && n.entry_date === date,
+  );
+  const dayReminders = reminders
+    .filter((r) => toISODate(new Date(r.remind_at)) === date)
+    .sort((a, b) => a.remind_at.localeCompare(b.remind_at));
 
   // When set, the dish editor is open to create a dish for this slot; on save
   // the new dish is logged straight into that slot.
@@ -112,6 +127,16 @@ export default function DayPage({
             }
             onDelete={(ex) => deleteExercise.mutate(ex.id)}
           />
+
+          {(journalEntries.length > 0 || dayReminders.length > 0) && (
+            <div className="space-y-4 border-t border-lilac/40 pt-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-ink-soft/70">
+                Also on this day
+              </p>
+              <DayJournal entries={journalEntries} />
+              <DayReminders reminders={dayReminders} />
+            </div>
+          )}
         </div>
       )}
 

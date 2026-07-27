@@ -18,8 +18,8 @@
 
 @theme inline {
   /* Fonts */
-  --font-sans: var(--font-inter);
-  --font-display: var(--font-fraunces);
+  --font-sans: var(--font-montserrat);
+  --font-display: var(--font-dm-serif-display);
 
   /* Joyful pastel palette */
   --color-cream: #fdf7f1;
@@ -41,7 +41,7 @@
 /* Fancy display font helper for highlighted keywords */
 .font-display {
   font-family: var(--font-display), Georgia, serif;
-  font-weight: 500;
+  font-weight: 400;
 }
 
 body {
