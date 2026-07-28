@@ -16,37 +16,38 @@ export const FEATURES: Feature[] = [
     status: "live",
   },
   {
-    icon: "🏠",
-    title: "Dashboard",
+    icon: "🍽️",
+    title: "Meals & dishes",
     description:
-      "A friendly home base that pulls your day together at a glance.",
+      "Build a library of the dishes you eat — recipes and ingredients — and log them against each day.",
     status: "live",
   },
   {
-    icon: "✅",
-    title: "Habits",
+    icon: "📅",
+    title: "Calendar",
     description:
-      "Build streaks and track the little routines that add up over time.",
-    status: "soon",
-  },
-  {
-    icon: "📈",
-    title: "Mood trends",
-    description:
-      "See how you've been feeling across weeks and months, beautifully.",
-    status: "soon",
-  },
-  {
-    icon: "🎯",
-    title: "Goals & milestones",
-    description: "Set intentions, celebrate wins, and watch your progress grow.",
-    status: "soon",
+      "Log meals and workouts on a day, and see your whole month of activity at a glance.",
+    status: "live",
   },
   {
     icon: "✨",
-    title: "…and more",
+    title: "AI insights",
     description:
-      "Life Tracker is just getting started. New features land regularly.",
-    status: "soon",
+      "An AI summary of each day's calories in vs out, whether you're on track for your goal, and a quick tip.",
+    status: "live",
+  },
+  {
+    icon: "🎯",
+    title: "Goals & progress",
+    description:
+      "Set a health goal, save your daily summaries, and watch your week and month take shape.",
+    status: "live",
+  },
+  {
+    icon: "⏰",
+    title: "Reminders",
+    description:
+      "Gentle nudges delivered as browser push notifications, so nothing slips.",
+    status: "live",
   },
 ];

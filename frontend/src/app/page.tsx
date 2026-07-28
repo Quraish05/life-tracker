@@ -1,5 +1,6 @@
 import { FeatureCard } from "@/components/landing/feature-card";
 import { FEATURES } from "@/components/landing/_lib";
+import { HowItWorks } from "@/components/landing/how-it-works";
 import {
   ClosingCtaButton,
   FooterLinks,
@@ -17,7 +18,7 @@ export default function LandingPage() {
           height so tall monitors don't leave a huge gap before the features. */}
       <div className="flex min-h-[min(100dvh,900px)] flex-col">
         {/* Header */}
-        <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
+        {/* <header className="mx-auto flex w-full max-w-6xl items-center justify-between px-6 py-5">
           <div className="flex items-center gap-2.5">
             <div className="flex h-9 w-9 rotate-3 items-center justify-center rounded-xl bg-gradient-to-br from-grape to-coral text-sm font-bold text-white shadow-md shadow-grape/30">
               LT
@@ -27,7 +28,7 @@ export default function LandingPage() {
             </span>
           </div>
           <HeaderActions />
-        </header>
+        </header> */}
 
         {/* Hero — grows to fill the remaining height, centered */}
         <section className="mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-center px-6 py-12 text-center">
@@ -38,9 +39,8 @@ export default function LandingPage() {
           <h1 className="mt-6 text-4xl font-bold leading-tight tracking-tight tablet:text-6xl">
             Track your life,{" "}
             <span className="font-display italic text-grape">
-              one day at a time
+              one day at a time.
             </span>
-            .
           </h1>
           <p className="mx-auto mt-5 max-w-xl text-base text-ink-soft tablet:text-lg">
             Habits, moods, and milestones — all in one joyful little place that
@@ -51,8 +51,100 @@ export default function LandingPage() {
         </section>
       </div>
 
+      {/* AI highlight */}
+      <section className="mx-auto max-w-6xl px-6 pt-16 tablet:pt-14">
+        <div className="relative overflow-hidden rounded-[2rem] border border-white/60 bg-gradient-to-br from-grape/15 via-lilac/40 to-blush/40 p-8 shadow-xl shadow-grape/10 tablet:p-12">
+          {/* soft decorative glows for depth */}
+          <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-coral/20 blur-3xl" />
+          <div className="pointer-events-none absolute -bottom-24 -left-12 h-56 w-56 rounded-full bg-sky/30 blur-3xl" />
+
+          <div className="relative grid items-center gap-10 laptop:grid-cols-2">
+            {/* copy */}
+            <div>
+              <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wide text-grape shadow-sm">
+                ✨ Powered by AI
+              </span>
+              <h2 className="mt-5 text-3xl font-bold leading-tight tablet:text-4xl">
+                Your day,{" "}
+                <span className="font-display italic text-grape">
+                  actually understood
+                </span>
+              </h2>
+              <p className="mt-4 max-w-md text-base text-ink-soft">
+                Just log what you ate and how you moved — the AI does the rest.
+                No calorie counting, no spreadsheets.
+              </p>
+              <ul className="mt-6 space-y-3">
+                {[
+                  {
+                    icon: "🔥",
+                    text: "Estimates calories in vs out from your plain-text logs",
+                  },
+                  {
+                    icon: "🎯",
+                    text: "Tells you if you're on track for your goal",
+                  },
+                  {
+                    icon: "💡",
+                    text: "Gives one quick tip — then saves it to your progress",
+                  },
+                ].map((row) => (
+                  <li key={row.text} className="flex items-start gap-3">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/80 text-base shadow-sm">
+                      {row.icon}
+                    </span>
+                    <span className="pt-1.5 text-sm font-medium text-ink">
+                      {row.text}
+                    </span>
+                  </li>
+                ))}
+              </ul>
+            </div>
+
+            {/* product preview: a mock of the real AI summary card */}
+            <div className="relative mx-auto w-full max-w-sm">
+              <div className="rotate-1 rounded-3xl border border-white/70 bg-white/90 p-5 shadow-2xl shadow-grape/20 backdrop-blur-sm">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <span className="text-lg">✨</span>
+                    <span className="font-bold text-ink">AI day summary</span>
+                  </div>
+                  <span className="rounded-full bg-mint/60 px-2.5 py-1 text-xs font-bold text-ink">
+                    ✓ On track
+                  </span>
+                </div>
+                <p className="mt-4 text-sm text-ink-soft">
+                  🔥 <span className="font-semibold text-ink">~1,650</span> kcal
+                  in · <span className="font-semibold text-ink">~420</span> out
+                  · target ~1,900
+                </p>
+                <p className="mt-3 font-display text-xl text-ink">
+                  Solid deficit day — nice work.
+                </p>
+                <p className="mt-2 text-sm text-ink-soft">
+                  💡 Add a protein source at dinner to hit your target.
+                </p>
+                <p className="mt-4 border-t border-lilac/40 pt-3 text-xs text-ink-soft/70">
+                  Saved to progress ✓
+                </p>
+              </div>
+              {/* floating log chips for a touch of life */}
+              <div className="absolute -left-3 -top-4 hidden -rotate-6 rounded-2xl bg-white/90 px-3 py-1.5 text-xs font-semibold text-ink shadow-lg tablet:block">
+                🥗 Big green salad
+              </div>
+              <div className="absolute -bottom-4 -right-2 hidden rotate-6 rounded-2xl bg-white/90 px-3 py-1.5 text-xs font-semibold text-ink shadow-lg tablet:block">
+                💪 Running · 30 min
+              </div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* How it works */}
+      <HowItWorks />
+
       {/* Features */}
-      <section className="mx-auto max-w-6xl px-6 pb-20 pt-8 tablet:pt-16">
+      {/* <section className="mx-auto max-w-6xl px-6 pb-20 pt-8 tablet:pt-16">
         <div className="mb-10 text-center">
           <h2 className="text-2xl font-bold tablet:text-3xl">
             What&rsquo;s{" "}
@@ -67,10 +159,10 @@ export default function LandingPage() {
             <FeatureCard key={feature.title} feature={feature} />
           ))}
         </div>
-      </section>
+      </section> */}
 
       {/* Closing CTA */}
-      <section className="mx-auto max-w-4xl px-6 pb-24">
+      <section className="mx-auto max-w-4xl px-6 pb-24 pt-16 tablet:pt-40">
         <div className="rounded-3xl bg-gradient-to-br from-grape to-coral px-6 py-10 text-center shadow-xl shadow-grape/30 tablet:px-8 tablet:py-12">
           <h2 className="text-2xl font-bold text-white tablet:text-3xl">
             Ready to start your story?
@@ -89,7 +181,8 @@ export default function LandingPage() {
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-6 py-6 text-sm text-ink-soft tablet:flex-row">
           <span className="flex items-center gap-2">
             <span className="font-bold text-ink">
-              Life <span className="font-display italic text-grape">Tracker</span>
+              Life{" "}
+              <span className="font-display italic text-grape">Tracker</span>
             </span>
             · Track your life, one day at a time.
           </span>

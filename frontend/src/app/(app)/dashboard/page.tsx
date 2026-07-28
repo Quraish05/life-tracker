@@ -10,6 +10,7 @@ import { useNotes } from "@/lib/use-notes";
 import { useReminders } from "@/lib/use-reminders";
 import { todayISO, weekRange } from "@/components/calendar/_lib";
 import { reminderStatus } from "@/components/reminders/_lib";
+import { JourneyMap } from "@/components/journey/journey-map";
 import { AccentText } from "@/components/ui/atoms/accent-text";
 import { Button } from "@/components/ui/atoms/button";
 import { Card } from "@/components/ui/atoms/card";
@@ -96,6 +97,9 @@ export default function DashboardPage() {
           </Button>
         </div>
       </Card>
+
+      {/* Getting-started journey (hides once complete) */}
+      <JourneyMap />
 
       {/* This week */}
       <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-ink-soft/70">

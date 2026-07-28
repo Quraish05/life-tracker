@@ -24,6 +24,7 @@ import { MealSlotSection } from "@/components/calendar/meal-slot-section";
 import { DayExercises } from "@/components/calendar/day-exercises";
 import { DayJournal } from "@/components/calendar/day-journal";
 import { DayReminders } from "@/components/calendar/day-reminders";
+import { DaySummary } from "@/components/calendar/day-summary";
 import { DishEditor } from "@/components/dishes/dish-editor";
 import { AccentText } from "@/components/ui/atoms/accent-text";
 
@@ -86,6 +87,10 @@ export default function DayPage({
       <p className="mt-1 text-base text-ink-soft">
         What you <AccentText>ate</AccentText> and how you moved.
       </p>
+
+      <div className="mt-6">
+        <DaySummary date={date} />
+      </div>
 
       {isLoading ? (
         <p className="mt-6 text-sm text-ink-soft">Loading…</p>
