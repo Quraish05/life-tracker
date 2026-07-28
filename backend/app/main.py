@@ -6,6 +6,7 @@ from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
 from app.api.router import api_router
+from app.core.bootstrap import sync_superadmin
 from app.core.config import settings
 from app.db.session import engine
 from app.services.reminder_dispatch import run_dispatch_loop
@@ -16,6 +17,15 @@ logger = logging.getLogger(__name__)
 @asynccontextmanager
 async def lifespan(app: FastAPI):
     # Schema is managed by Alembic migrations (`uv run alembic upgrade head`).
+    # Reconcile the superadmin from SUPERADMIN_EMAIL before serving requests.
+    # Guarded so a transient DB hiccup at boot degrades (log + serve) rather
+    # than crash-looping the whole service — the next request will surface any
+    # real DB problem.
+    try:
+        await sync_superadmin()
+    except Exception:
+        logger.exception("Superadmin bootstrap failed; continuing startup.")
+
     stop = asyncio.Event()
     dispatch_task: asyncio.Task[None] | None = None
 

@@ -1,5 +1,7 @@
 from functools import lru_cache
+from urllib.parse import parse_qsl, urlencode, urlsplit, urlunsplit
 
+from pydantic import field_validator
 from pydantic_settings import BaseSettings, SettingsConfigDict
 
 
@@ -52,6 +54,44 @@ class Settings(BaseSettings):
     # Blank uses the provider's default model (see follow_up_extraction._DEFAULT_MODELS).
     ai_model: str = ""
     ai_max_output_tokens: int = 2048
+
+    # AI usage quota (MVP cost control). Regular users get a lifetime pool of
+    # this many AI calls shared across every AI feature; once spent, the AI
+    # endpoints return 429 until they "upgrade" (no payment gateway yet, so the
+    # cap is currently hard). The superadmin bypasses the limit entirely.
+    ai_free_limit: int = 10
+    # Email of the account promoted to superadmin on startup (unlimited AI,
+    # for the maintainer's own testing). Blank = no superadmin.
+    superadmin_email: str = ""
+
+    @field_validator("database_url", mode="after")
+    @classmethod
+    def _normalize_database_url(cls, value: str) -> str:
+        """Make a managed-Postgres URL usable by SQLAlchemy's asyncpg driver.
+
+        Providers like Neon hand out ``postgres://…?sslmode=require`` (libpq
+        style). asyncpg needs the ``postgresql+asyncpg`` scheme and the ``ssl``
+        query key, and rejects ``channel_binding``. Normalizing here means both
+        the app engine and Alembic (which read ``settings.database_url``) get a
+        working URL straight from the provider's copy-paste string.
+        """
+        parts = urlsplit(value)
+        scheme = parts.scheme
+        if scheme in ("postgres", "postgresql"):
+            scheme = "postgresql+asyncpg"
+
+        query = []
+        for key, val in parse_qsl(parts.query):
+            if key == "sslmode":
+                query.append(("ssl", val))
+            elif key == "channel_binding":
+                continue  # asyncpg doesn't accept this libpq option
+            else:
+                query.append((key, val))
+
+        return urlunsplit(
+            (scheme, parts.netloc, parts.path, urlencode(query), parts.fragment)
+        )
 
 
 @lru_cache

@@ -3,6 +3,11 @@ from pydantic import ValidationError
 from sqlalchemy import select
 
 from app.api.ai_errors import ai_errors_as_http
+from app.api.ai_quota import (
+    QUOTA_EXCEEDED_RESPONSE,
+    enforce_ai_quota,
+    record_ai_usage,
+)
 from app.api.deps import UNAUTHORIZED_RESPONSE, CurrentUser, DbSession
 from app.api.responses import not_found_response
 from app.models.note import Note
@@ -120,7 +125,7 @@ async def update_note(
     "/{note_id}/follow-up-suggestions",
     response_model=FollowUpSuggestionsResponse,
     summary="Suggest reminders (follow-ups) implied by a note",
-    responses={**UNAUTHORIZED_RESPONSE, **_NOT_FOUND},
+    responses={**UNAUTHORIZED_RESPONSE, **QUOTA_EXCEEDED_RESPONSE, **_NOT_FOUND},
 )
 async def suggest_note_follow_ups(
     note_id: int, current_user: CurrentUser, db: DbSession
@@ -133,6 +138,7 @@ async def suggest_note_follow_ups(
     links back to this note (human-in-the-loop, CCAF Domain 5.5).
     """
     note = await _get_owned_note(note_id, current_user, db)
+    enforce_ai_quota(current_user)
     with ai_errors_as_http("Could not extract follow-ups right now. Please try again."):
         suggestions, model = await suggest_follow_ups(
             title=note.title,
@@ -140,6 +146,7 @@ async def suggest_note_follow_ups(
             kind=note.kind,
             entry_date=note.entry_date,
         )
+    await record_ai_usage(current_user, db)
 
     return FollowUpSuggestionsResponse(
         note_id=note.id, model=model, suggestions=suggestions
@@ -150,22 +157,24 @@ async def suggest_note_follow_ups(
     "/tag-suggestions",
     response_model=TagSuggestionsResponse,
     summary="Suggest topic tags for draft note text",
-    responses={**UNAUTHORIZED_RESPONSE},
+    responses={**UNAUTHORIZED_RESPONSE, **QUOTA_EXCEEDED_RESPONSE},
 )
 async def suggest_note_tags(
-    payload: TagSuggestionRequest, current_user: CurrentUser
+    payload: TagSuggestionRequest, current_user: CurrentUser, db: DbSession
 ) -> TagSuggestionsResponse:
     """Read the *draft* text of an entry and propose topic tags.
 
     Content-in-body (not a saved note id) so suggestions reflect what's being
     written right now and work on unsaved entries. Nothing is created — the
     client applies the tags the user taps, then saves the note normally.
-    ``current_user`` gates the AI cost behind authentication.
+    ``current_user`` gates the AI cost behind authentication and the free quota.
     """
+    enforce_ai_quota(current_user)
     with ai_errors_as_http("Could not suggest tags right now. Please try again."):
         suggestions, model = await suggest_tags(
             title=payload.title, body=payload.body_md
         )
+    await record_ai_usage(current_user, db)
 
     return TagSuggestionsResponse(model=model, suggestions=suggestions)
 

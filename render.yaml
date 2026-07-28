@@ -1,0 +1,28 @@
+# Render Blueprint for the Life Tracker API (backend).
+# Render → New → Blueprint → pick this repo. Secrets (sync:false) are filled in
+# the dashboard, never committed. The frontend deploys separately on Vercel.
+services:
+  - type: web
+    name: life-tracker-api
+    runtime: docker
+    plan: free # sleeps after ~15 min idle; upgrade to a paid plan for always-on
+    region: singapore # closest Render region to India; others: oregon, frankfurt, ohio, virginia
+    rootDir: backend
+    dockerfilePath: ./Dockerfile
+    dockerContext: .
+    healthCheckPath: /api/v1/health
+    autoDeploy: true # redeploy on push to the connected branch
+    envVars:
+      - key: AI_PROVIDER
+        value: anthropic # or "gemini"
+      # Secrets — set these in the Render dashboard (Environment tab):
+      - key: DATABASE_URL # Neon connection string (pasted as-is)
+        sync: false
+      - key: SECRET_KEY # `python -c "import secrets; print(secrets.token_urlsafe(32))"`
+        sync: false
+      - key: ANTHROPIC_API_KEY
+        sync: false
+      - key: SUPERADMIN_EMAIL # your account email → unlimited AI
+        sync: false
+      - key: CORS_ORIGINS # e.g. ["https://your-app.vercel.app"]  (JSON array)
+        sync: false
