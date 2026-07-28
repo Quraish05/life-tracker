@@ -1,6 +1,9 @@
 from datetime import datetime
 
-from pydantic import BaseModel, ConfigDict, EmailStr, Field
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, computed_field
+
+from app.core.config import settings
+from app.models.user import ROLE_SUPERADMIN
 
 
 class UserCreate(BaseModel):
@@ -29,7 +32,23 @@ class UserRead(BaseModel):
     id: int
     username: str
     email: EmailStr
+    role: str
+    ai_usage_count: int
     created_at: datetime
+
+    @computed_field
+    @property
+    def ai_limit(self) -> int:
+        """The free AI-call pool size (informational; superadmin ignores it)."""
+        return settings.ai_free_limit
+
+    @computed_field
+    @property
+    def ai_remaining(self) -> int | None:
+        """Free AI calls left, or ``None`` when the user is unlimited."""
+        if self.role == ROLE_SUPERADMIN:
+            return None
+        return max(0, settings.ai_free_limit - self.ai_usage_count)
 
 
 class Token(BaseModel):

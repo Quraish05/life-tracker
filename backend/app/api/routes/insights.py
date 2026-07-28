@@ -4,6 +4,11 @@ from fastapi import APIRouter
 from sqlalchemy import select
 
 from app.api.ai_errors import ai_errors_as_http
+from app.api.ai_quota import (
+    QUOTA_EXCEEDED_RESPONSE,
+    enforce_ai_quota,
+    record_ai_usage,
+)
 from app.api.deps import UNAUTHORIZED_RESPONSE, CurrentUser, DbSession
 from app.models.daily_summary import DailySummaryRecord
 from app.models.exercise_log import ExerciseLog
@@ -34,7 +39,7 @@ _RECORD_FIELDS = (
     "/daily",
     response_model=DailySummaryResponse,
     summary="AI summary of a day's meals + workouts vs the user's goal",
-    responses={**UNAUTHORIZED_RESPONSE},
+    responses={**UNAUTHORIZED_RESPONSE, **QUOTA_EXCEEDED_RESPONSE},
 )
 async def daily_summary(
     date: date, current_user: CurrentUser, db: DbSession
@@ -43,8 +48,9 @@ async def daily_summary(
 
     Aggregates the user's meals + exercises for the day and their health goal,
     then asks the AI for a short on-track summary. A day with nothing logged
-    returns a ``no_data`` summary without an API call; a missing provider key
-    surfaces as 503 (setup message) via ``ai_errors_as_http``.
+    returns a ``no_data`` summary without an API call (and doesn't touch the AI
+    quota); a missing provider key surfaces as 503 (setup message) via
+    ``ai_errors_as_http``; an exhausted free quota as 429.
     """
     meals = list(
         await db.scalars(
@@ -64,10 +70,19 @@ async def daily_summary(
         select(HealthGoal).where(HealthGoal.user_id == current_user.id)
     )
 
+    # A day with nothing logged short-circuits to a no_data summary below
+    # without an API call, so it neither checks nor spends the AI quota.
+    makes_ai_call = bool(meals or exercises)
+    if makes_ai_call:
+        enforce_ai_quota(current_user)
+
     with ai_errors_as_http("Could not summarize your day right now. Please try again."):
         summary, model = await summarize_day(
             on_date=date, goal=goal, meals=meals, exercises=exercises
         )
+
+    if makes_ai_call:
+        await record_ai_usage(current_user, db)
 
     return DailySummaryResponse(model=model, summary=summary)
 

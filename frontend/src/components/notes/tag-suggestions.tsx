@@ -2,13 +2,16 @@
 
 import { useWatch, type Control } from "react-hook-form";
 
+import { isQuotaError } from "@/lib/api";
 import { canSuggestTags } from "@/lib/notes";
+import { useAiQuota } from "@/lib/use-ai-quota";
 import { useSuggestTags } from "@/lib/use-notes";
 import {
   MAX_TAGS,
   normalizeTag,
   type NoteInput,
 } from "@/lib/validations/note";
+import { AiLimitNotice, AiQuotaHint } from "@/components/ai/ai-quota";
 import { Button } from "@/components/ui/atoms/button";
 import { Chip } from "@/components/ui/atoms/chip";
 
@@ -33,8 +36,10 @@ export function TagSuggestions({ control, current, onAdd }: Props) {
   const body = useWatch({ control, name: "body_md" });
 
   const suggest = useSuggestTags();
+  const quota = useAiQuota();
   const enoughContent = canSuggestTags(title, body);
   const atMax = current.length >= MAX_TAGS;
+  const outOfCredits = quota.exhausted || isQuotaError(suggest.error);
 
   // Normalize + drop any already applied, so tapping is always additive.
   const fresh = (suggest.data?.suggestions ?? [])
@@ -48,18 +53,26 @@ export function TagSuggestions({ control, current, onAdd }: Props) {
           type="button"
           variant="secondary"
           size="sm"
-          onClick={() => suggest.mutate({ title, body_md: body })}
-          disabled={!enoughContent || atMax || suggest.isPending}
+          onClick={() =>
+            suggest.mutate(
+              { title, body_md: body },
+              { onSuccess: () => quota.refresh() },
+            )
+          }
+          disabled={!enoughContent || atMax || suggest.isPending || outOfCredits}
           title={
-            atMax
-              ? `You already have the max ${MAX_TAGS} tags.`
-              : enoughContent
-                ? undefined
-                : "Write a bit more to get tag ideas."
+            outOfCredits
+              ? "You've used all your free AI actions."
+              : atMax
+                ? `You already have the max ${MAX_TAGS} tags.`
+                : enoughContent
+                  ? undefined
+                  : "Write a bit more to get tag ideas."
           }
         >
           {suggest.isPending ? "✨ Thinking…" : "✨ Suggest tags"}
         </Button>
+        {!outOfCredits && <AiQuotaHint />}
         {suggest.isSuccess && fresh.length === 0 && (
           <span className="text-xs text-ink-soft">
             {suggest.data.suggestions.length === 0
@@ -69,10 +82,14 @@ export function TagSuggestions({ control, current, onAdd }: Props) {
         )}
       </div>
 
-      {suggest.isError && (
-        <p className="text-xs text-coral">
-          {suggest.error.message || "Couldn't suggest tags. Please try again."}
-        </p>
+      {outOfCredits ? (
+        <AiLimitNotice />
+      ) : (
+        suggest.isError && (
+          <p className="text-xs text-coral">
+            {suggest.error.message || "Couldn't suggest tags. Please try again."}
+          </p>
+        )
       )}
 
       {fresh.length > 0 && (
