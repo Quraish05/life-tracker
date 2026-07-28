@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import type { Dish } from "@/lib/dishes";
+import type { Dish } from "@/types/dish";
 import { Card } from "@/components/ui/atoms/card";
 import { IconButton } from "@/components/ui/atoms/icon-button";
 import { MarkdownPreview } from "@/components/notes/markdown-preview";

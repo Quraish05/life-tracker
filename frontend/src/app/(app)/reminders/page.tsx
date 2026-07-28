@@ -2,7 +2,8 @@
 
 import { useMemo, useState } from "react";
 
-import { type Reminder } from "@/lib/reminders";
+import type { Reminder } from "@/types/reminder";
+import { PAGE_SIZE, STATUS_FILTERS } from "@/constants/reminders";
 import { useDeleteReminder, useReminders } from "@/lib/use-reminders";
 import { useNotes } from "@/lib/use-notes";
 import {
@@ -26,15 +27,6 @@ import { Pagination } from "@/components/ui/molecules/pagination";
 import { ReminderTable } from "@/components/reminders/reminder-table";
 import { ReminderEditor } from "@/components/reminders/reminder-editor";
 import { DeleteDialog } from "@/components/notes/delete-dialog";
-
-const PAGE_SIZE = 10;
-
-const STATUS_FILTERS: { value: "all" | ReminderStatus; label: string }[] = [
-  { value: "all", label: "All" },
-  { value: "upcoming", label: "⏰ Upcoming" },
-  { value: "overdue", label: "⚠️ Overdue" },
-  { value: "delivered", label: "✓ Delivered" },
-];
 
 export default function RemindersPage() {
   const { data: reminders = [], isLoading } = useReminders();

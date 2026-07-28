@@ -2,9 +2,12 @@
 
 import { useEffect, useState } from "react";
 
-import { type Confidence, type FollowUpKind, type Note } from "@/lib/notes";
+import { isQuotaError } from "@/lib/api";
+import type { Confidence, FollowUpKind, Note } from "@/types/note";
+import { useAiQuota } from "@/lib/use-ai-quota";
 import { useFollowUpSuggestions } from "@/lib/use-notes";
 import { useCreateReminder } from "@/lib/use-reminders";
+import { AiLimitNotice } from "@/components/ai/ai-quota";
 import { Button } from "@/components/ui/atoms/button";
 import { Chip, type ChipProps } from "@/components/ui/atoms/chip";
 import { FormError } from "@/components/ui/atoms/form-error";
@@ -53,8 +56,18 @@ type Row = {
 };
 
 export function FollowUpSuggestions({ note, onClose, onDone }: Props) {
-  const suggest = useFollowUpSuggestions(note);
+  const quota = useAiQuota();
+  const suggest = useFollowUpSuggestions(note, !quota.exhausted);
   const createReminder = useCreateReminder();
+  const outOfCredits = quota.exhausted || isQuotaError(suggest.error);
+  const refreshQuota = quota.refresh;
+
+  // The extraction spends one AI credit on success — sync the counter.
+  // Depend on the stable `refresh` (not the whole quota object, which is a new
+  // literal each render) so this fires once per success, not in a loop.
+  useEffect(() => {
+    if (suggest.isSuccess) refreshQuota();
+  }, [suggest.isSuccess, refreshQuota]);
 
   const [rows, setRows] = useState<Row[]>([]);
   const [seeded, setSeeded] = useState(false);
@@ -152,13 +165,15 @@ export function FollowUpSuggestions({ note, onClose, onDone }: Props) {
 
           <FormError message={formError ?? undefined} />
 
-          {suggest.isLoading && (
+          {outOfCredits && <AiLimitNotice />}
+
+          {!outOfCredits && suggest.isLoading && (
             <p className="py-6 text-center text-sm text-ink-soft">
               Reading your note…
             </p>
           )}
 
-          {suggest.isError && (
+          {!outOfCredits && suggest.isError && (
             <div className="rounded-2xl border border-coral/30 bg-coral/10 px-4 py-3 text-sm text-coral">
               {suggest.error.message}
             </div>

@@ -4,13 +4,10 @@ import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import {
-  MOODS,
-  noteSchema,
-  type NoteInput,
-  type NoteKind,
-} from "@/lib/validations/note";
-import { canSuggestFollowUps, type Note } from "@/lib/notes";
+import { MOODS, noteSchema, type NoteInput } from "@/lib/validations/note";
+import { canSuggestFollowUps } from "@/lib/notes";
+import type { Note } from "@/types/note";
+import { KIND_OPTIONS } from "@/constants/notes";
 import { useCreateNote, useUpdateNote } from "@/lib/use-notes";
 import { useReminders } from "@/lib/use-reminders";
 import { Button } from "@/components/ui/atoms/button";
@@ -32,11 +29,6 @@ import {
   reminderStatus,
   STATUS_META,
 } from "@/components/reminders/_lib";
-
-const KIND_OPTIONS: { value: NoteKind; label: string; emoji: string }[] = [
-  { value: "journal", label: "Journal", emoji: "📓" },
-  { value: "note", label: "Note", emoji: "🗒️" },
-];
 
 type Props = {
   /** The note being edited, or null when creating a new one. */

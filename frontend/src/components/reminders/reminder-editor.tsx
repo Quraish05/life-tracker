@@ -9,7 +9,7 @@ import {
   type ReminderInput,
   type TargetType,
 } from "@/lib/validations/reminder";
-import { type Reminder } from "@/lib/reminders";
+import type { Reminder } from "@/types/reminder";
 import { useCreateReminder, useUpdateReminder } from "@/lib/use-reminders";
 import { useNotes } from "@/lib/use-notes";
 import { Button } from "@/components/ui/atoms/button";

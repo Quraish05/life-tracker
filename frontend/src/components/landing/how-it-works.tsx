@@ -1,13 +1,5 @@
 import { JOURNEY_STEPS } from "@/components/journey/steps";
-
-// Soft per-step tints so the timeline reads as colorful, not uniform.
-const TINTS = [
-  "bg-lilac/50",
-  "bg-blush/50",
-  "bg-sky/50",
-  "bg-mint/50",
-  "bg-peach/60",
-];
+import { TINTS } from "@/constants/landing";
 
 /** Static "how it works" timeline for the public landing page — the core loop. */
 export function HowItWorks() {

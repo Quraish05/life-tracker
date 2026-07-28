@@ -5,7 +5,8 @@ import {
   type UseMutationResult,
 } from "@tanstack/react-query";
 
-import { healthGoalApi, type HealthGoal } from "@/lib/health-goal";
+import { healthGoalApi } from "@/lib/health-goal";
+import type { HealthGoal } from "@/types/health-goal";
 import type { HealthGoalInput } from "@/lib/validations/health-goal";
 
 export const healthGoalKey = ["health-goal"] as const;

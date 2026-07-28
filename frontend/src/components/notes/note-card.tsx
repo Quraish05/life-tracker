@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-import type { Note } from "@/lib/notes";
+import type { Note } from "@/types/note";
 import { MOOD_BY_KEY } from "@/lib/validations/note";
 import { Card } from "@/components/ui/atoms/card";
 import { Chip } from "@/components/ui/atoms/chip";

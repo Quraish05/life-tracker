@@ -5,7 +5,8 @@ import {
   type UseMutationResult,
 } from "@tanstack/react-query";
 
-import { dishesApi, type Dish } from "@/lib/dishes";
+import { dishesApi } from "@/lib/dishes";
+import type { Dish } from "@/types/dish";
 import type { DishInput } from "@/lib/validations/dish";
 
 /** Single cache key for the dishes list — mutations invalidate it to refetch. */

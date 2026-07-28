@@ -1,7 +1,7 @@
 "use client";
 
-import type { Dish } from "@/lib/dishes";
-import type { MealLog } from "@/lib/meals";
+import type { Dish } from "@/types/dish";
+import type { MealLog } from "@/types/meal";
 import { IconButton } from "@/components/ui/atoms/icon-button";
 import { DishPicker } from "@/components/calendar/dish-picker";
 

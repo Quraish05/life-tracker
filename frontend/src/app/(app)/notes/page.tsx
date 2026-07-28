@@ -2,10 +2,10 @@
 
 import { useMemo, useState } from "react";
 
-import { type Note } from "@/lib/notes";
+import type { Note } from "@/types/note";
 import { useDeleteNote, useNotes, useTogglePin } from "@/lib/use-notes";
 import { useReminders } from "@/lib/use-reminders";
-import type { NoteKind } from "@/lib/validations/note";
+import { FILTERS, type Filter } from "@/constants/notes";
 import { Button } from "@/components/ui/atoms/button";
 import { AccentText } from "@/components/ui/atoms/accent-text";
 import { Chip } from "@/components/ui/atoms/chip";
@@ -17,14 +17,6 @@ import { NoteEditor } from "@/components/notes/note-editor";
 import { DeleteDialog } from "@/components/notes/delete-dialog";
 import { FollowUpSuggestions } from "@/components/notes/follow-up-suggestions";
 import { ReminderEditor } from "@/components/reminders/reminder-editor";
-
-type Filter = "all" | NoteKind;
-
-const FILTERS: { value: Filter; label: string }[] = [
-  { value: "all", label: "All" },
-  { value: "journal", label: "📓 Journal" },
-  { value: "note", label: "🗒️ Notes" },
-];
 
 export default function NotesPage() {
   const { data: notes = [], isLoading } = useNotes();

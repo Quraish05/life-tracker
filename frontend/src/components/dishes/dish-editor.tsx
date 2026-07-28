@@ -5,7 +5,7 @@ import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
 import { dishSchema, type DishInput } from "@/lib/validations/dish";
-import { type Dish } from "@/lib/dishes";
+import type { Dish } from "@/types/dish";
 import { useCreateDish, useUpdateDish } from "@/lib/use-dishes";
 import { Button } from "@/components/ui/atoms/button";
 import { FieldError, FormError } from "@/components/ui/atoms/form-error";

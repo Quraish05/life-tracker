@@ -1,6 +1,6 @@
 // Shared helpers for the reminders feature.
 
-import type { Reminder } from "@/lib/reminders";
+import type { Reminder } from "@/types/reminder";
 
 /**
  * Convert an ISO string (or now) into a value for an `<input type="datetime-local">`,

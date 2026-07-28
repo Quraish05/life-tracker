@@ -5,7 +5,8 @@ import {
   type UseMutationResult,
 } from "@tanstack/react-query";
 
-import { notesApi, type Note, type TagSuggestions } from "@/lib/notes";
+import { notesApi } from "@/lib/notes";
+import type { Note, TagSuggestions } from "@/types/note";
 import type { NoteInput } from "@/lib/validations/note";
 
 /** Single cache key for the notes list — mutations invalidate it to refetch. */
@@ -61,13 +62,15 @@ export function useTogglePin(): UseMutationResult<
  * StrictMode's double-mount, cached (editing the note busts the key), and never
  * re-fetches on window focus — one billable call per open of an unchanged note.
  */
-export function useFollowUpSuggestions(note: Note) {
+export function useFollowUpSuggestions(note: Note, enabled = true) {
   return useQuery({
     queryKey: ["notes", note.id, "follow-ups", note.updated_at],
     queryFn: () => notesApi.suggestFollowUps(note.id),
     staleTime: Infinity,
     retry: false,
     refetchOnWindowFocus: false,
+    // Skip the (guaranteed-429) call when the user's out of AI credits.
+    enabled,
   });
 }
 

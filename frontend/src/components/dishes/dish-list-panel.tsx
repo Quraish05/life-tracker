@@ -1,6 +1,6 @@
 "use client";
 
-import type { Dish } from "@/lib/dishes";
+import type { Dish } from "@/types/dish";
 
 type Props = {
   /** The dishes to list (already filtered by the current search). */

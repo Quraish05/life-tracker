@@ -1,20 +1,8 @@
 import type { LoginInput, RegisterInput } from "@/lib/validations/auth";
+import type { AuthResponse, User } from "@/types/auth";
 
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 const API_PREFIX = "/api/v1";
-
-export type User = {
-  id: number;
-  username: string;
-  email: string;
-  created_at: string;
-};
-
-export type AuthResponse = {
-  access_token: string;
-  token_type: string;
-  user: User;
-};
 
 const TOKEN_KEY = "lt.token";
 
@@ -35,6 +23,11 @@ export class ApiError extends Error {
     this.name = "ApiError";
     this.status = status;
   }
+}
+
+/** Whether an error is the "free AI quota exhausted" 429 from the backend. */
+export function isQuotaError(err: unknown): err is ApiError {
+  return err instanceof ApiError && err.status === 429;
 }
 
 type RequestOptions = {

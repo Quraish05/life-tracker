@@ -1,25 +1,11 @@
 import { ApiError, request, tokenStore } from "@/lib/api";
-import type { DishInput, Ingredient } from "@/lib/validations/dish";
+import type { DishInput } from "@/lib/validations/dish";
+import type { Dish } from "@/types/dish";
 
 /**
  * Dishes data layer — a thin client over the backend `dishes` API.
  * Consumed through the React Query hooks in `lib/use-dishes.ts`.
- *
- * A dish is a reusable food entity: a name, an optional markdown recipe, and a
- * list of `{name, amount}` ingredients. Meal logs will reference dishes later.
  */
-
-export type { Ingredient };
-
-export type Dish = {
-  id: number;
-  name: string;
-  /** Optional markdown recipe — null when none was written. */
-  recipe_md: string | null;
-  ingredients: Ingredient[];
-  created_at: string;
-  updated_at: string;
-};
 
 /** Grab the current token, or fail loudly rather than hit the API unauthenticated. */
 function authToken(): string {
