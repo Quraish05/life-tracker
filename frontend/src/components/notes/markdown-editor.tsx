@@ -4,6 +4,7 @@ import { useRef, useState } from "react";
 
 import { Textarea } from "@/components/ui/atoms/textarea";
 import { MarkdownPreview } from "@/components/notes/markdown-preview";
+import { TOOLS, type Tool } from "@/constants/markdown-editor";
 
 type EditorProps = {
   id?: string;
@@ -12,25 +13,6 @@ type EditorProps = {
   error?: string;
   placeholder?: string;
 };
-
-type Tool = {
-  label: string;
-  title: string;
-  // Either wrap the selection (before/after) or prefix each selected line.
-  wrap?: [string, string];
-  linePrefix?: string;
-};
-
-const TOOLS: Tool[] = [
-  { label: "B", title: "Bold", wrap: ["**", "**"] },
-  { label: "i", title: "Italic", wrap: ["_", "_"] },
-  { label: "H", title: "Heading", linePrefix: "## " },
-  { label: "“”", title: "Quote", linePrefix: "> " },
-  { label: "•", title: "Bullet list", linePrefix: "- " },
-  { label: "1.", title: "Numbered list", linePrefix: "1. " },
-  { label: "<>", title: "Inline code", wrap: ["`", "`"] },
-  { label: "🔗", title: "Link", wrap: ["[", "](https://)"] },
-];
 
 export function MarkdownEditor({
   id,

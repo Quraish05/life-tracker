@@ -3,7 +3,7 @@
 import { use, useMemo, useState } from "react";
 import Link from "next/link";
 
-import type { Note } from "@/lib/notes";
+import type { Note } from "@/types/note";
 import { useNotes } from "@/lib/use-notes";
 import { Button } from "@/components/ui/atoms/button";
 import { EmptyState } from "@/components/ui/molecules/empty-state";

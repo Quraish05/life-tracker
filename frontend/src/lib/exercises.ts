@@ -1,18 +1,11 @@
 import { ApiError, request, tokenStore } from "@/lib/api";
 import type { ExerciseInput } from "@/lib/validations/exercise";
+import type { ExerciseLog } from "@/types/exercise";
 
 /**
  * Exercises data layer — a thin client over the backend `exercises` API.
  * Consumed through the React Query hooks in `lib/use-exercises.ts`.
  */
-
-export type ExerciseLog = {
-  id: number;
-  log_date: string;
-  name: string;
-  note: string | null;
-  created_at: string;
-};
 
 function authToken(): string {
   const token = tokenStore.get();

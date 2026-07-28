@@ -7,23 +7,8 @@ import { usePathname, useRouter } from "next/navigation";
 // so no route-change effect is needed here.
 
 import { useAuth } from "@/lib/auth-context";
-
-type NavItem = {
-  label: string;
-  href: string;
-  icon: string;
-};
-
-// Menu items are placeholders for now — real sections come later.
-const NAV_ITEMS: NavItem[] = [
-  { label: "Dashboard", href: "/dashboard", icon: "🏠" },
-  { label: "Calendar", href: "/calendar", icon: "📅" },
-  { label: "Journal & Notes", href: "/notes", icon: "📓" },
-  { label: "Dishes", href: "/dishes", icon: "🍽️" },
-  { label: "Goal", href: "/goal", icon: "🎯" },
-  { label: "Progress", href: "/progress", icon: "📈" },
-  { label: "Reminders", href: "/reminders", icon: "⏰" },
-];
+import { AiQuotaBadge } from "@/components/ai/ai-quota";
+import { NAV_ITEMS } from "@/constants/navigation";
 
 export default function Sidebar() {
   const [open, setOpen] = useState(false);
@@ -152,6 +137,7 @@ function SidebarPanel({ onNavigate }: { onNavigate?: () => void }) {
             </p>
           </div>
         </div>
+        <AiQuotaBadge className="mt-2 w-full justify-center" />
         <button
           type="button"
           onClick={handleLogout}

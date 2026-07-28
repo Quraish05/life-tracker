@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import type { ExerciseLog } from "@/lib/exercises";
+import type { ExerciseLog } from "@/types/exercise";
 import { EXERCISE_NAME_MAX, EXERCISE_NOTE_MAX } from "@/lib/validations/exercise";
 import { Button } from "@/components/ui/atoms/button";
 import { IconButton } from "@/components/ui/atoms/icon-button";

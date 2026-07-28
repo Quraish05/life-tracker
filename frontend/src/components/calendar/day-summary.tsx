@@ -1,11 +1,14 @@
 "use client";
 
-import type { Assessment } from "@/lib/insights";
+import { isQuotaError } from "@/lib/api";
+import type { Assessment } from "@/types/insights";
+import { useAiQuota } from "@/lib/use-ai-quota";
 import {
   useDailySummary,
   useDaySummaryRecord,
   useSaveSummary,
 } from "@/lib/use-insights";
+import { AiLimitNotice, AiQuotaHint } from "@/components/ai/ai-quota";
 import { Button } from "@/components/ui/atoms/button";
 import { Card } from "@/components/ui/atoms/card";
 import { Chip } from "@/components/ui/atoms/chip";
@@ -28,16 +31,21 @@ export function DaySummary({ date }: { date: string }) {
   const { data: saved } = useDaySummaryRecord(date);
   const generate = useDailySummary();
   const save = useSaveSummary();
+  const quota = useAiQuota();
 
   const draft = generate.data?.summary;
   // Show the freshly-generated draft if there is one, else the saved record.
   const showing = draft ?? saved ?? null;
   const model = draft ? generate.data?.model : saved?.model;
   const isUnsavedDraft = Boolean(draft) && !save.isSuccess;
+  const outOfCredits = quota.exhausted || isQuotaError(generate.error);
 
   function handleGenerate() {
     save.reset();
-    generate.mutate(date);
+    // Refresh the quota on success so the counter reflects the credit spent.
+    // (A day with nothing logged returns a no_data summary the server doesn't
+    // charge for — the refresh just re-reads the unchanged count, so it's safe.)
+    generate.mutate(date, { onSuccess: () => quota.refresh() });
   }
 
   function handleSave() {
@@ -60,6 +68,7 @@ export function DaySummary({ date }: { date: string }) {
         <div className="flex items-center gap-2">
           <span className="text-lg">✨</span>
           <h3 className="font-bold text-ink">AI day summary</h3>
+          {!outOfCredits && <AiQuotaHint />}
         </div>
         <div className="flex gap-2">
           <Button
@@ -67,7 +76,12 @@ export function DaySummary({ date }: { date: string }) {
             variant="secondary"
             size="sm"
             onClick={handleGenerate}
-            disabled={generate.isPending}
+            disabled={generate.isPending || outOfCredits}
+            title={
+              outOfCredits
+                ? "You've used all your free AI actions."
+                : undefined
+            }
           >
             {generate.isPending
               ? "Summarizing…"
@@ -88,11 +102,15 @@ export function DaySummary({ date }: { date: string }) {
         </div>
       </div>
 
-      {(generate.isError || save.isError) && (
-        <p className="mt-3 text-sm text-coral">
-          {(generate.error ?? save.error)?.message ||
-            "Something went wrong. Please try again."}
-        </p>
+      {outOfCredits ? (
+        <AiLimitNotice className="mt-3" />
+      ) : (
+        (generate.isError || save.isError) && (
+          <p className="mt-3 text-sm text-coral">
+            {(generate.error ?? save.error)?.message ||
+              "Something went wrong. Please try again."}
+          </p>
+        )
       )}
 
       {showing && (

@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-import type { Reminder } from "@/lib/reminders";
+import type { Reminder } from "@/types/reminder";
 import { Chip } from "@/components/ui/atoms/chip";
 import { STATUS_META, reminderStatus } from "@/components/reminders/_lib";
 

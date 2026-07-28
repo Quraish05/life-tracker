@@ -5,7 +5,8 @@ import {
   type UseMutationResult,
 } from "@tanstack/react-query";
 
-import { mealsApi, type MealLog } from "@/lib/meals";
+import { mealsApi } from "@/lib/meals";
+import type { MealLog } from "@/types/meal";
 import type { MealInput, MealSlot } from "@/lib/validations/meal";
 
 /** Prefix key for every meals query — mutations invalidate the whole prefix so

@@ -1,6 +1,6 @@
 "use client";
 
-import type { Reminder } from "@/lib/reminders";
+import type { Reminder } from "@/types/reminder";
 import {
   formatWhen,
   reminderStatus,
@@ -8,6 +8,7 @@ import {
   type ReminderSortKey,
   type SortDir,
 } from "@/components/reminders/_lib";
+import { COLUMNS } from "@/constants/reminders";
 import { Chip } from "@/components/ui/atoms/chip";
 import { IconButton } from "@/components/ui/atoms/icon-button";
 import {
@@ -29,12 +30,6 @@ type Props = {
   /** Resolve the title of an attached note, if any. */
   attachedLabel: (reminder: Reminder) => string | undefined;
 };
-
-const COLUMNS: { key: ReminderSortKey; label: string }[] = [
-  { key: "status", label: "Status" },
-  { key: "title", label: "Title" },
-  { key: "remind_at", label: "When" },
-];
 
 export function ReminderTable({
   reminders,

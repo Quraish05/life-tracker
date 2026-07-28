@@ -5,7 +5,8 @@ import {
   type UseMutationResult,
 } from "@tanstack/react-query";
 
-import { exercisesApi, type ExerciseLog } from "@/lib/exercises";
+import { exercisesApi } from "@/lib/exercises";
+import type { ExerciseLog } from "@/types/exercise";
 import type { ExerciseInput } from "@/lib/validations/exercise";
 
 /** Prefix key for every exercises query — mutations invalidate the whole prefix

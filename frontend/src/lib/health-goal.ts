@@ -1,16 +1,11 @@
 import { ApiError, request, tokenStore } from "@/lib/api";
 import type { HealthGoalInput } from "@/lib/validations/health-goal";
+import type { HealthGoal } from "@/types/health-goal";
 
 /**
  * Health goal data layer — a thin client over the backend `health-goal` API.
  * One goal per user; `get` resolves to null when none is set yet.
  */
-
-export type HealthGoal = HealthGoalInput & {
-  id: number;
-  created_at: string;
-  updated_at: string;
-};
 
 function authToken(): string {
   const token = tokenStore.get();

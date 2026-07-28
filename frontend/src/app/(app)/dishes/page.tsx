@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 
-import { type Dish } from "@/lib/dishes";
+import type { Dish } from "@/types/dish";
 import { useDeleteDish, useDishes } from "@/lib/use-dishes";
 import { Button } from "@/components/ui/atoms/button";
 import { AccentText } from "@/components/ui/atoms/accent-text";

@@ -8,7 +8,8 @@ import {
   useState,
 } from "react";
 
-import { authApi, tokenStore, type AuthResponse, type User } from "@/lib/api";
+import { authApi, tokenStore } from "@/lib/api";
+import type { AuthResponse, User } from "@/types/auth";
 import type { LoginInput, RegisterInput } from "@/lib/validations/auth";
 
 type AuthContextValue = {
@@ -18,6 +19,8 @@ type AuthContextValue = {
   login: (input: LoginInput) => Promise<void>;
   register: (input: RegisterInput) => Promise<void>;
   logout: () => void;
+  /** Re-fetch the signed-in user (e.g. to refresh the AI quota after a call). */
+  refreshUser: () => Promise<void>;
 };
 
 const AuthContext = createContext<AuthContextValue | null>(null);
@@ -72,8 +75,21 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     setUser(null);
   }, []);
 
+  const refreshUser = useCallback(async () => {
+    const token = tokenStore.get();
+    if (!token) return;
+    try {
+      setUser(await authApi.me(token));
+    } catch {
+      // A failed refresh just leaves the current (stale) quota in place — the
+      // next real request will surface a real auth error if the token died.
+    }
+  }, []);
+
   return (
-    <AuthContext.Provider value={{ user, isLoading, login, register, logout }}>
+    <AuthContext.Provider
+      value={{ user, isLoading, login, register, logout, refreshUser }}
+    >
       {children}
     </AuthContext.Provider>
   );

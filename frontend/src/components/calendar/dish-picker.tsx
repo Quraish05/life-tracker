@@ -2,7 +2,7 @@
 
 import { useState } from "react";
 
-import type { Dish } from "@/lib/dishes";
+import type { Dish } from "@/types/dish";
 import { MEAL_NOTE_MAX } from "@/lib/validations/meal";
 import { Button } from "@/components/ui/atoms/button";
 

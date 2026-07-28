@@ -5,7 +5,8 @@ import {
   type UseMutationResult,
 } from "@tanstack/react-query";
 
-import { remindersApi, type Reminder } from "@/lib/reminders";
+import { remindersApi } from "@/lib/reminders";
+import type { Reminder } from "@/types/reminder";
 import type { ReminderInput } from "@/lib/validations/reminder";
 
 /** Cache keys. `dueKey` is a child of `remindersKey`, so invalidating the

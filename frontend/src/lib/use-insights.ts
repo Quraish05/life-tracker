@@ -5,12 +5,12 @@ import {
   type UseMutationResult,
 } from "@tanstack/react-query";
 
-import {
-  insightsApi,
-  type DailySummaryResponse,
-  type SavedSummary,
-  type SaveSummaryInput,
-} from "@/lib/insights";
+import { insightsApi } from "@/lib/insights";
+import type {
+  DailySummaryResponse,
+  SavedSummary,
+  SaveSummaryInput,
+} from "@/types/insights";
 
 /** On-demand AI summary of a day (button-triggered, mirrors useSuggestTags). */
 export function useDailySummary(): UseMutationResult<
