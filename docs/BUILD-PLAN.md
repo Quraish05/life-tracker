@@ -81,6 +81,27 @@ Definition of done: you personally log meals + workout + journal in the **deploy
 
 Slice 13: the Coach agent (LangGraph): reads last 2 weeks of meals/workouts/tasks → proposes next week's plan → you approve → tasks/reminders created. Human-in-the-loop, traced, eval'd. Then Phase-5 polish: demo account, README, video, Cloud Run migration.
 
+## Parked: Kubernetes learning track (infra skill, not product need)
+
+**Status:** exploring K8s as a résumé skill, not because the app needs it. This app is one FastAPI container + managed Postgres + Vercel — Render/Vercel already give self-healing, rolling deploys, and scale. K8s is only justified by *many services on your own infra*, which we don't have. So to learn it honestly we adopt a **realistic requirement that actually produces that topology**, rather than K8s-ing a single container.
+
+**Recommended requirement — Async AI processing.** Today the AI features (`follow_up_extraction`, `tag_suggestion`) run *inline* in the request; the user waits 5–10s for the model. Move them off the request path:
+
+> Requirement: AI note-processing runs asynchronously — the API enqueues a job and returns immediately; a worker processes it; the UI polls/streams the result.
+
+This forces the multi-service shape K8s exists for, and each piece teaches a distinct workload type:
+
+| Component | K8s object | Teaches |
+|---|---|---|
+| FastAPI API (enqueues jobs) | Deployment + Service | (done in sandbox) config, probes, scaling |
+| AI worker (consumes queue) | separate Deployment | multi-service orchestration, scale workers independently of API |
+| Redis (queue/broker) | StatefulSet + PVC | stateful workloads, persistent storage |
+| Reminder dispatch (`reminder_dispatch.py`, currently in-process — breaks at >1 replica) | CronJob / singleton | scheduled jobs, leader election, the single-replica lesson |
+
+Backend changes needed (small): swap the inline AI call for enqueue-return-poll; add a worker entrypoint that drains the queue. That's the honest bridge from "1 container" to "needs orchestration."
+
+**Sandbox already built (Levels 1–2), then stashed for reuse:** `k8s/` has Deployment + Service + ConfigMap + Secret + liveness/readiness probes, running on a local `kind` cluster, documented in `k8s/README.md`. The work is `git stash`ed (see the stash entry tagged `k8s-learning-sandbox`) — `git stash list` to find it, `git stash apply` to restore. Next levels when resumed: L3 Postgres StatefulSet + migrations-as-initContainer, L4 scale to break the reminder loop then fix via CronJob, then the async-worker requirement above.
+
 ## Weekly operating rhythm
 
 - **One slice at a time.** A slice merges only when: migration + tests pass in CI, deployed, and you wrote the PR description explaining the code (comprehension contract).
