@@ -4,7 +4,7 @@ import { cva, type VariantProps } from "class-variance-authority";
 import { cn } from "@/lib/utils";
 
 const iconButtonVariants = cva(
-  "flex items-center justify-center rounded-full transition disabled:pointer-events-none disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-lilac",
+  "flex items-center justify-center rounded-full transition disabled:pointer-events-none disabled:opacity-60 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring",
   {
     variants: {
       size: {
@@ -13,9 +13,9 @@ const iconButtonVariants = cva(
       },
       tone: {
         /** Resting muted, grape on hover — edit and general actions. */
-        neutral: "text-ink-soft hover:bg-lilac/50 hover:text-grape",
+        neutral: "text-muted hover:bg-lilac/50 hover:text-grape",
         /** Resting muted, coral on hover — destructive/close actions. */
-        danger: "text-ink-soft hover:bg-coral/15 hover:text-coral",
+        danger: "text-muted hover:bg-coral/15 hover:text-coral",
         /** Solid grape — an on/active toggle (e.g. pinned). */
         active: "text-grape",
       },

@@ -67,7 +67,7 @@ export function DaySummary({ date }: { date: string }) {
       <div className="flex flex-wrap items-center justify-between gap-3">
         <div className="flex items-center gap-2">
           <span className="text-lg">✨</span>
-          <h3 className="font-bold text-ink">AI day summary</h3>
+          <h3 className="font-bold text-foreground">AI day summary</h3>
           {!outOfCredits && <AiQuotaHint />}
         </div>
         <div className="flex gap-2">
@@ -119,16 +119,16 @@ export function DaySummary({ date }: { date: string }) {
             <Chip tone={ASSESSMENT_META[showing.assessment].tone}>
               {ASSESSMENT_META[showing.assessment].label}
             </Chip>
-            <span className="text-sm text-ink-soft">
+            <span className="text-sm text-muted">
               🔥 ~{showing.calories_in} kcal in · ~{showing.calories_out} kcal out
               {showing.target_calories != null && (
                 <> · target ~{showing.target_calories}</>
               )}
             </span>
           </div>
-          <p className="font-semibold text-ink">{showing.headline}</p>
-          {showing.tip && <p className="text-sm text-ink-soft">💡 {showing.tip}</p>}
-          <p className="text-xs text-ink-soft/60">
+          <p className="font-semibold text-foreground">{showing.headline}</p>
+          {showing.tip && <p className="text-sm text-muted">💡 {showing.tip}</p>}
+          <p className="text-xs text-muted/60">
             {isUnsavedDraft
               ? "Rough estimate — not saved yet"
               : save.isSuccess

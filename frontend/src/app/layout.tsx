@@ -20,6 +20,10 @@ export const metadata: Metadata = {
   description: "Track your life, one day at a time.",
 };
 
+// Runs before paint to set the theme, so there's no light-then-dark flash.
+// Uses the saved choice if any, otherwise the OS preference.
+const noFlashTheme = `(function(){try{var t=localStorage.getItem("theme");if(t!=="light"&&t!=="dark"){t=window.matchMedia("(prefers-color-scheme: dark)").matches?"dark":"light";}document.documentElement.dataset.theme=t;}catch(e){}})();`;
+
 export default function RootLayout({
   children,
 }: Readonly<{
@@ -30,7 +34,10 @@ export default function RootLayout({
       lang="en"
       className={`${montserrat.variable} ${dmSerifDisplay.variable} h-full antialiased`}
     >
-      <body className="min-h-full flex flex-col font-sans text-ink">
+      <head>
+        <script dangerouslySetInnerHTML={{ __html: noFlashTheme }} />
+      </head>
+      <body className="min-h-full flex flex-col font-sans text-foreground">
         <Providers>{children}</Providers>
       </body>
     </html>

@@ -14,7 +14,7 @@ type Props = {
 };
 
 const controlClass =
-  "w-full rounded-xl border border-lilac/60 bg-cream/80 px-3 py-2 text-sm text-ink transition focus:border-grape focus:bg-white focus:outline-none focus:ring-4 focus:ring-lilac";
+  "w-full rounded-xl border border-border/60 bg-background/80 px-3 py-2 text-sm text-foreground transition focus:border-grape focus:bg-surface focus:outline-none focus:ring-4 focus:ring-ring";
 
 /** Inline "add a dish to this slot" control: pick from the library (+ note),
  * or jump to creating a brand-new dish. */
@@ -40,7 +40,7 @@ export function DishPicker({ dishes, onAdd, onCreateNew }: Props) {
       <button
         type="button"
         onClick={() => setOpen(true)}
-        className="w-full rounded-xl border-2 border-dashed border-grape/25 px-3 py-2 text-sm font-semibold text-ink/60 transition hover:border-grape/40 hover:bg-white/60 hover:text-grape"
+        className="w-full rounded-xl border-2 border-dashed border-grape/25 px-3 py-2 text-sm font-semibold text-foreground/60 transition hover:border-grape/40 hover:bg-surface/60 hover:text-grape"
       >
         + Add dish
       </button>
@@ -48,9 +48,9 @@ export function DishPicker({ dishes, onAdd, onCreateNew }: Props) {
   }
 
   return (
-    <div className="space-y-2 rounded-2xl border border-lilac/50 bg-white/70 p-3">
+    <div className="space-y-2 rounded-2xl border border-border/50 bg-surface/70 p-3">
       {dishes.length === 0 ? (
-        <p className="text-sm text-ink-soft">
+        <p className="text-sm text-muted">
           No dishes in your library yet.{" "}
           <button
             type="button"

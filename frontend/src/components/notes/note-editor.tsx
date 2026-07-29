@@ -240,7 +240,7 @@ export function NoteEditor({
 
           {/* Attached reminders — read-only mention + quick create */}
           {note && (
-            <div className="space-y-2.5 rounded-2xl border border-lilac/40 bg-white/50 p-4">
+            <div className="space-y-2.5 rounded-2xl border border-border/40 bg-surface/50 p-4">
               <div className="flex flex-wrap items-center justify-between gap-2">
                 <Label>Reminders</Label>
                 <div className="flex flex-wrap gap-2">
@@ -273,7 +273,7 @@ export function NoteEditor({
                 </div>
               </div>
               {attachedReminders.length === 0 ? (
-                <p className="text-sm text-ink-soft">
+                <p className="text-sm text-muted">
                   No reminders attached to this{" "}
                   {kind === "journal" ? "entry" : "note"} yet.
                 </p>
@@ -289,10 +289,10 @@ export function NoteEditor({
                         <Chip tone={meta.tone} size="sm">
                           {meta.label}
                         </Chip>
-                        <span className="font-semibold text-ink">
+                        <span className="font-semibold text-foreground">
                           {reminder.title}
                         </span>
-                        <span className="text-ink-soft">
+                        <span className="text-muted">
                           · {formatWhen(reminder.remind_at)}
                         </span>
                       </li>

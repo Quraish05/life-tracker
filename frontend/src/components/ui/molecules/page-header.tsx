@@ -36,10 +36,10 @@ function PageHeader({
     >
       <div>
         <p className="text-sm font-semibold text-grape">{eyebrow}</p>
-        <h1 className="mt-1 text-3xl font-normal tracking-tight text-ink tablet:text-4xl">
+        <h1 className="mt-1 text-3xl font-normal tracking-tight text-foreground tablet:text-4xl">
           {title}
         </h1>
-        {subtitle && <p className="mt-2 text-base text-ink-soft">{subtitle}</p>}
+        {subtitle && <p className="mt-2 text-base text-muted">{subtitle}</p>}
       </div>
       {action}
     </header>

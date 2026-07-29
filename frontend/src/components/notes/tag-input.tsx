@@ -48,7 +48,7 @@ export function TagInput({ value, onChange, suggestions = [], max = MAX_TAGS }: 
 
   return (
     <div>
-      <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-lilac/60 bg-cream/80 px-2.5 py-2 transition focus-within:border-grape focus-within:bg-white focus-within:ring-4 focus-within:ring-lilac">
+      <div className="flex flex-wrap items-center gap-1.5 rounded-xl border border-border/60 bg-background/80 px-2.5 py-2 transition focus-within:border-grape focus-within:bg-surface focus-within:ring-4 focus-within:ring-ring">
         {value.map((tag) => (
           <span
             key={tag}
@@ -78,7 +78,7 @@ export function TagInput({ value, onChange, suggestions = [], max = MAX_TAGS }: 
                 ? "Add another…"
                 : "personal, work, goal…"
           }
-          className="min-w-28 flex-1 bg-transparent px-1 py-0.5 text-sm text-ink placeholder:text-ink-soft/60 focus:outline-none disabled:cursor-not-allowed"
+          className="min-w-28 flex-1 bg-transparent px-1 py-0.5 text-sm text-foreground placeholder:text-muted/60 focus:outline-none disabled:cursor-not-allowed"
         />
       </div>
 
@@ -89,7 +89,7 @@ export function TagInput({ value, onChange, suggestions = [], max = MAX_TAGS }: 
               key={s}
               type="button"
               onClick={() => addTag(s)}
-              className="rounded-full border border-grape/20 bg-white/70 px-2.5 py-1 text-xs font-semibold text-ink/70 transition hover:border-grape/40 hover:text-grape"
+              className="rounded-full border border-grape/20 bg-surface/70 px-2.5 py-1 text-xs font-semibold text-foreground/70 transition hover:border-grape/40 hover:text-grape"
             >
               + #{s}
             </button>

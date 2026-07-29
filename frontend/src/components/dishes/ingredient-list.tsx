@@ -10,7 +10,7 @@ type Props = {
 };
 
 const rowInputClass =
-  "min-w-0 rounded-xl border border-lilac/60 bg-cream/80 px-3 py-2 text-sm text-ink placeholder:text-ink-soft/60 transition focus:border-grape focus:bg-white focus:outline-none focus:ring-4 focus:ring-lilac";
+  "min-w-0 rounded-xl border border-border/60 bg-background/80 px-3 py-2 text-sm text-foreground placeholder:text-muted/60 transition focus:border-grape focus:bg-surface focus:outline-none focus:ring-4 focus:ring-ring";
 
 /**
  * Editable list of `{name, amount}` ingredient rows. Blank rows are kept while
@@ -68,7 +68,7 @@ export function IngredientList({ value, onChange, max = MAX_INGREDIENTS }: Props
         type="button"
         onClick={addRow}
         disabled={atMax}
-        className="rounded-full border border-grape/20 bg-white/70 px-3.5 py-1.5 text-sm font-semibold text-ink/70 transition hover:border-grape/40 hover:text-grape disabled:cursor-not-allowed disabled:opacity-50"
+        className="rounded-full border border-grape/20 bg-surface/70 px-3.5 py-1.5 text-sm font-semibold text-foreground/70 transition hover:border-grape/40 hover:text-grape disabled:cursor-not-allowed disabled:opacity-50"
       >
         {atMax ? `Max ${max} ingredients` : "+ Add ingredient"}
       </button>

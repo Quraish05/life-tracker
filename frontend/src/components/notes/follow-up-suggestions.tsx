@@ -158,7 +158,7 @@ export function FollowUpSuggestions({ note, onClose, onDone }: Props) {
         </ModalHeader>
 
         <div className="space-y-4 px-6 py-5">
-          <p className="text-sm text-ink-soft">
+          <p className="text-sm text-muted">
             Reminders we found in “{note.title}”. Review, adjust the time, and
             add the ones you want — nothing is created until you do.
           </p>
@@ -168,7 +168,7 @@ export function FollowUpSuggestions({ note, onClose, onDone }: Props) {
           {outOfCredits && <AiLimitNotice />}
 
           {!outOfCredits && suggest.isLoading && (
-            <p className="py-6 text-center text-sm text-ink-soft">
+            <p className="py-6 text-center text-sm text-muted">
               Reading your note…
             </p>
           )}
@@ -180,7 +180,7 @@ export function FollowUpSuggestions({ note, onClose, onDone }: Props) {
           )}
 
           {suggest.isSuccess && !hasRows && (
-            <p className="py-6 text-center text-sm text-ink-soft">
+            <p className="py-6 text-center text-sm text-muted">
               No follow-ups found — nothing here looks like something to be
               reminded about.
             </p>
@@ -197,8 +197,8 @@ export function FollowUpSuggestions({ note, onClose, onDone }: Props) {
                     key={i}
                     className={`rounded-2xl border p-4 transition ${
                       row.accepted
-                        ? "border-grape/40 bg-white/70"
-                        : "border-lilac/40 bg-white/40"
+                        ? "border-grape/40 bg-surface/70"
+                        : "border-border/40 bg-surface/40"
                     }`}
                   >
                     <div className="flex items-start gap-3">
@@ -217,7 +217,7 @@ export function FollowUpSuggestions({ note, onClose, onDone }: Props) {
                           onChange={(e) =>
                             patchRow(i, { title: e.target.value })
                           }
-                          className="w-full rounded-lg border border-transparent bg-transparent px-1 py-0.5 text-sm font-semibold text-ink transition focus:border-lilac/60 focus:bg-white focus:outline-none"
+                          className="w-full rounded-lg border border-transparent bg-transparent px-1 py-0.5 text-sm font-semibold text-foreground transition focus:border-border/60 focus:bg-surface focus:outline-none"
                         />
                         <div className="flex flex-wrap items-center gap-2">
                           <Chip tone={conf.tone} size="sm">
@@ -229,15 +229,15 @@ export function FollowUpSuggestions({ note, onClose, onDone }: Props) {
                             onChange={(e) =>
                               patchRow(i, { localWhen: e.target.value })
                             }
-                            className="rounded-lg border border-lilac/60 bg-cream/80 px-2 py-1 text-xs text-ink transition focus:border-grape focus:bg-white focus:outline-none"
+                            className="rounded-lg border border-border/60 bg-background/80 px-2 py-1 text-xs text-foreground transition focus:border-grape focus:bg-surface focus:outline-none"
                           />
                           {!s.remind_at && !row.localWhen && (
-                            <span className="text-xs text-ink-soft/80">
+                            <span className="text-xs text-muted/80">
                               no time in the note — pick one
                             </span>
                           )}
                         </div>
-                        <p className="text-xs text-ink-soft">{s.reason}</p>
+                        <p className="text-xs text-muted">{s.reason}</p>
                         {row.error && (
                           <p className="text-xs font-semibold text-coral">
                             {row.error}
@@ -252,8 +252,8 @@ export function FollowUpSuggestions({ note, onClose, onDone }: Props) {
           )}
         </div>
 
-        <div className="flex items-center justify-between gap-3 border-t border-lilac/40 px-6 py-4">
-          {/*  <span className="text-xs text-ink-soft">
+        <div className="flex items-center justify-between gap-3 border-t border-border/40 px-6 py-4">
+          {/*  <span className="text-xs text-muted">
             {suggest.data ? `via ${suggest.data.model}` : ""}
           </span> */}
           <div className="flex gap-3">

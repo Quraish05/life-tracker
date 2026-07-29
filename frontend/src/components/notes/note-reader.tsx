@@ -40,7 +40,7 @@ export function NoteReader({ note, onEdit }: Props) {
       </div>
 
       {/* The paper sheet */}
-      <article className="relative overflow-hidden rounded-3xl border border-lilac/50 bg-white/80 shadow-xl shadow-grape/5 backdrop-blur-sm">
+      <article className="relative overflow-hidden rounded-3xl border border-border/50 bg-surface/80 shadow-xl shadow-grape/5 backdrop-blur-sm">
         {/* Ruled margin line, like a notebook */}
         <div
           aria-hidden
@@ -58,19 +58,19 @@ export function NoteReader({ note, onEdit }: Props) {
                 {mood.emoji} {mood.label}
               </Chip>
             )}
-            <span className="ml-auto text-sm font-semibold text-ink-soft/70">
+            <span className="ml-auto text-sm font-semibold text-muted/70">
               {dateLabel}
             </span>
           </div>
 
-          <h1 className="font-display text-3xl leading-tight text-ink sm:text-4xl">
+          <h1 className="font-display text-3xl leading-tight text-foreground sm:text-4xl">
             {note.title || "Untitled entry"}
           </h1>
 
-          <hr className="my-6 border-lilac/50" />
+          <hr className="my-6 border-border/50" />
 
           {/* Ruled reading surface */}
-          <div className="[&>*:first-child]:mt-0 text-[1.0625rem] leading-8 text-ink/90 [background:repeating-linear-gradient(transparent,transparent_31px,rgb(226_213_255_/_0.35)_32px)]">
+          <div className="[&>*:first-child]:mt-0 text-[1.0625rem] leading-8 text-foreground/90 [background:repeating-linear-gradient(transparent,transparent_31px,rgb(226_213_255_/_0.35)_32px)]">
             <MarkdownPreview>{note.body_md}</MarkdownPreview>
           </div>
 

@@ -28,6 +28,6 @@ export function toSnippet(md: string, max = 160): string {
 /** State-dependent classes for a bordered selectable pill (kind/mood/pin toggles). */
 export function optionPillClass(active: boolean): string {
   return active
-    ? "border-grape/40 bg-white text-grape shadow-sm"
-    : "border-transparent bg-cream/80 text-ink/60 hover:bg-white/70";
+    ? "border-grape/40 bg-surface text-grape shadow-sm"
+    : "border-transparent bg-background/80 text-foreground/60 hover:bg-surface/70";
 }

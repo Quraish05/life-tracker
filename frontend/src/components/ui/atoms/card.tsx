@@ -8,12 +8,12 @@ const cardVariants = cva("rounded-3xl", {
   variants: {
     tone: {
       /** Frosted white — the default content surface (e.g. note cards). */
-      glass: "border border-white/60 bg-white/70 backdrop-blur-sm",
+      glass: "border border-border/60 bg-surface/70 backdrop-blur-sm",
       /** Softer frosted panel — banners and callouts. */
-      soft: "border border-grape/20 bg-white/60 backdrop-blur-sm",
+      soft: "border border-grape/20 bg-surface/60 backdrop-blur-sm",
       /** Dashed outline — empty states and drop zones. */
       dashed:
-        "border-2 border-dashed border-grape/25 bg-white/60 backdrop-blur-sm",
+        "border-2 border-dashed border-grape/25 bg-surface/60 backdrop-blur-sm",
       /** No border or fill — supply your own background via className. */
       plain: "",
     },

@@ -17,9 +17,9 @@ export function DeleteDialog({ title, onCancel, onConfirm, isDeleting }: Props) 
         <div className="flex h-12 w-12 items-center justify-center rounded-2xl bg-coral/15 text-2xl">
           🗑️
         </div>
-        <h2 className="mt-4 text-lg font-bold text-ink">Delete this entry?</h2>
-        <p className="mt-1.5 text-sm text-ink-soft">
-          <span className="font-semibold text-ink">“{title}”</span> will be gone
+        <h2 className="mt-4 text-lg font-bold text-foreground">Delete this entry?</h2>
+        <p className="mt-1.5 text-sm text-muted">
+          <span className="font-semibold text-foreground">“{title}”</span> will be gone
           for good. This can&apos;t be undone.
         </p>
         <div className="mt-6 flex justify-end gap-3">
@@ -30,7 +30,7 @@ export function DeleteDialog({ title, onCancel, onConfirm, isDeleting }: Props) 
             type="button"
             onClick={onConfirm}
             disabled={isDeleting}
-            className="bg-gradient-to-r from-coral to-coral"
+            className="bg-coral text-white hover:bg-coral/90"
           >
             {isDeleting ? "Deleting…" : "Delete"}
           </Button>

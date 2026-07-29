@@ -28,7 +28,7 @@ function TableRow({ className, ...props }: React.ComponentProps<"tr">) {
     <tr
       data-slot="table-row"
       className={cn(
-        "border-b border-white/60 transition last:border-0 hover:bg-white/50",
+        "border-b border-border/60 transition last:border-0 hover:bg-surface/50",
         className,
       )}
       {...props}
@@ -41,7 +41,7 @@ function TableHead({ className, ...props }: React.ComponentProps<"th">) {
     <th
       data-slot="table-head"
       className={cn(
-        "px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-ink-soft/70",
+        "px-4 py-3 text-left text-xs font-semibold uppercase tracking-wide text-muted/70",
         className,
       )}
       {...props}
@@ -53,7 +53,7 @@ function TableCell({ className, ...props }: React.ComponentProps<"td">) {
   return (
     <td
       data-slot="table-cell"
-      className={cn("px-4 py-3 align-middle text-ink", className)}
+      className={cn("px-4 py-3 align-middle text-foreground", className)}
       {...props}
     />
   );

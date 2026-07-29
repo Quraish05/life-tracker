@@ -74,7 +74,7 @@ export function TagSuggestions({ control, current, onAdd }: Props) {
         </Button>
         {!outOfCredits && <AiQuotaHint />}
         {suggest.isSuccess && fresh.length === 0 && (
-          <span className="text-xs text-ink-soft">
+          <span className="text-xs text-muted">
             {suggest.data.suggestions.length === 0
               ? "No tag ideas for this yet."
               : "Those are already added."}

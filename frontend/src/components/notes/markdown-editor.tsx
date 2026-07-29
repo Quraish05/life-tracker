@@ -60,7 +60,7 @@ export function MarkdownEditor({
 
   return (
     <div>
-      <div className="flex items-center justify-between gap-2 rounded-t-xl border border-b-0 border-lilac/60 bg-lilac/20 px-2 py-1.5">
+      <div className="flex items-center justify-between gap-2 rounded-t-xl border border-b-0 border-border/60 bg-lilac/20 px-2 py-1.5">
         <div className="flex flex-wrap items-center gap-0.5">
           {TOOLS.map((tool) => (
             <button
@@ -69,20 +69,20 @@ export function MarkdownEditor({
               title={tool.title}
               onClick={() => applyTool(tool)}
               disabled={mode === "preview"}
-              className="flex h-8 min-w-8 items-center justify-center rounded-lg px-1.5 text-sm font-semibold text-ink/70 transition hover:bg-white hover:text-grape disabled:opacity-40 disabled:hover:bg-transparent"
+              className="flex h-8 min-w-8 items-center justify-center rounded-lg px-1.5 text-sm font-semibold text-foreground/70 transition hover:bg-surface hover:text-grape disabled:opacity-40 disabled:hover:bg-transparent"
             >
               {tool.label}
             </button>
           ))}
         </div>
-        <div className="flex shrink-0 rounded-lg bg-white/70 p-0.5 text-xs font-semibold">
+        <div className="flex shrink-0 rounded-lg bg-surface/70 p-0.5 text-xs font-semibold">
           {(["write", "preview"] as const).map((m) => (
             <button
               key={m}
               type="button"
               onClick={() => setMode(m)}
               className={`rounded-md px-3 py-1 capitalize transition ${
-                mode === m ? "bg-grape text-white shadow-sm" : "text-ink/60 hover:text-ink"
+                mode === m ? "bg-grape text-white shadow-sm" : "text-foreground/60 hover:text-foreground"
               }`}
             >
               {m}
@@ -103,7 +103,7 @@ export function MarkdownEditor({
           className="min-h-64 resize-y rounded-t-none font-mono text-[13px] leading-relaxed"
         />
       ) : (
-        <div className="min-h-64 rounded-b-xl border border-t-0 border-lilac/60 bg-white/70 px-4 py-3 text-sm">
+        <div className="min-h-64 rounded-b-xl border border-t-0 border-border/60 bg-surface/70 px-4 py-3 text-sm">
           <MarkdownPreview>{value}</MarkdownPreview>
         </div>
       )}

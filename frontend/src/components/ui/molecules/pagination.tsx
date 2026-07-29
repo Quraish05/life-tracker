@@ -39,7 +39,7 @@ function Pagination({
       className={cn("flex items-center justify-between gap-3", className)}
       {...props}
     >
-      <p className="text-xs font-semibold text-ink-soft/70">{label}</p>
+      <p className="text-xs font-semibold text-muted/70">{label}</p>
       <div className="flex gap-2">
         <Button
           variant="secondary"

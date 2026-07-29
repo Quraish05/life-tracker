@@ -28,7 +28,7 @@ function ModalOverlay({
 }
 
 const modalDialogVariants = cva(
-  "w-full rounded-3xl border border-white/70 bg-cream shadow-2xl shadow-grape/20",
+  "w-full rounded-3xl border border-border/70 bg-background shadow-2xl shadow-grape/20",
   {
     variants: {
       size: {
@@ -78,12 +78,12 @@ function ModalHeader({ className, children, onClose, ...props }: ModalHeaderProp
     <div
       data-slot="modal-header"
       className={cn(
-        "flex items-center justify-between border-b border-lilac/40 px-6 py-4",
+        "flex items-center justify-between border-b border-border/40 px-6 py-4",
         className,
       )}
       {...props}
     >
-      <h2 className="text-lg font-bold text-ink">{children}</h2>
+      <h2 className="text-lg font-bold text-foreground">{children}</h2>
       <IconButton tone="danger" aria-label="Close" onClick={onClose}>
         ✕
       </IconButton>

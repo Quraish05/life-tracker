@@ -16,10 +16,10 @@ export function DayJournal({ entries }: Props) {
   if (entries.length === 0) return null;
 
   return (
-    <section className="rounded-3xl border border-white/60 bg-white/50 p-4">
+    <section className="rounded-3xl border border-border/60 bg-surface/50 p-4">
       <div className="mb-2 flex items-center gap-2">
         <span className="text-lg">📓</span>
-        <h3 className="font-bold text-ink">Journal</h3>
+        <h3 className="font-bold text-foreground">Journal</h3>
         <span className="rounded-full bg-lilac/40 px-2 py-0.5 text-xs font-semibold text-grape-deep">
           {entries.length}
         </span>
@@ -30,7 +30,7 @@ export function DayJournal({ entries }: Props) {
           <li key={entry.id}>
             <Link
               href={`/notes/${entry.id}`}
-              className="group flex items-start gap-2 rounded-xl bg-white/70 px-3 py-2 transition hover:bg-white"
+              className="group flex items-start gap-2 rounded-xl bg-surface/70 px-3 py-2 transition hover:bg-surface"
             >
               {entry.mood && (
                 <span className="text-lg" title={MOOD_BY_KEY[entry.mood].label}>
@@ -38,14 +38,14 @@ export function DayJournal({ entries }: Props) {
                 </span>
               )}
               <div className="min-w-0 flex-1">
-                <p className="font-semibold text-ink group-hover:text-grape">
+                <p className="font-semibold text-foreground group-hover:text-grape">
                   {entry.title}
                 </p>
-                <p className="line-clamp-1 text-sm text-ink-soft">
+                <p className="line-clamp-1 text-sm text-muted">
                   {toSnippet(entry.body_md, 100) || "No content yet."}
                 </p>
               </div>
-              <span className="text-ink-soft/50">→</span>
+              <span className="text-muted/50">→</span>
             </Link>
           </li>
         ))}

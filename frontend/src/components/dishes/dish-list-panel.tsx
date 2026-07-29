@@ -32,13 +32,13 @@ export function DishListPanel({
           value={query}
           onChange={(e) => onQueryChange(e.target.value)}
           placeholder="Search dishes…"
-          className="rounded-xl border border-lilac/60 bg-white/70 px-3.5 py-2 text-sm text-ink placeholder:text-ink-soft/60 transition focus:border-grape focus:bg-white focus:outline-none focus:ring-4 focus:ring-lilac"
+          className="rounded-xl border border-border/60 bg-surface/70 px-3.5 py-2 text-sm text-foreground placeholder:text-muted/60 transition focus:border-grape focus:bg-surface focus:outline-none focus:ring-4 focus:ring-ring"
         />
       )}
 
       <ul className="max-h-[22rem] space-y-1 overflow-y-auto pr-0.5 laptop:max-h-[calc(100vh-15rem)]">
         {dishes.length === 0 ? (
-          <li className="px-3.5 py-2.5 text-sm text-ink-soft">No dishes match.</li>
+          <li className="px-3.5 py-2.5 text-sm text-muted">No dishes match.</li>
         ) : (
           dishes.map((dish) => {
             const active = dish.id === activeId;
@@ -50,14 +50,14 @@ export function DishListPanel({
                   aria-current={active ? "true" : undefined}
                   className={`flex w-full items-center justify-between gap-2 rounded-2xl px-3.5 py-2.5 text-left text-sm font-semibold transition ${
                     active
-                      ? "bg-white text-grape shadow-sm shadow-grape/10"
-                      : "text-ink/70 hover:bg-white/60 hover:text-ink"
+                      ? "bg-surface text-grape shadow-sm shadow-grape/10"
+                      : "text-foreground/70 hover:bg-surface/60 hover:text-foreground"
                   }`}
                 >
                   <span className="min-w-0 truncate">{dish.name}</span>
                   <span
                     className={`shrink-0 text-xs font-semibold ${
-                      active ? "text-grape/70" : "text-ink-soft/70"
+                      active ? "text-grape/70" : "text-muted/70"
                     }`}
                   >
                     {dish.ingredients.length}
@@ -72,7 +72,7 @@ export function DishListPanel({
       <button
         type="button"
         onClick={onNew}
-        className="rounded-2xl border-2 border-dashed border-grape/25 px-3.5 py-2.5 text-sm font-semibold text-ink/60 transition hover:border-grape/40 hover:bg-white/50 hover:text-grape"
+        className="rounded-2xl border-2 border-dashed border-grape/25 px-3.5 py-2.5 text-sm font-semibold text-foreground/60 transition hover:border-grape/40 hover:bg-surface/50 hover:text-grape"
       >
         + New dish
       </button>
