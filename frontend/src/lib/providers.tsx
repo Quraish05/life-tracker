@@ -4,6 +4,7 @@ import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { useState } from "react";
 
 import { AuthProvider } from "@/lib/auth-context";
+import { LiveSync } from "@/lib/live-sync";
 
 /**
  * App-wide client providers. React Query sits outermost so any consumer
@@ -23,7 +24,10 @@ export function Providers({ children }: { children: React.ReactNode }) {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <AuthProvider>{children}</AuthProvider>
+      <AuthProvider>
+        <LiveSync />
+        {children}
+      </AuthProvider>
     </QueryClientProvider>
   );
 }
