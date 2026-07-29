@@ -50,7 +50,7 @@ export function DishReader({ dish, onEdit, onDelete }: Props) {
   return (
     <Card tone="glass" padding="none" className="overflow-hidden">
       {/* Header band */}
-      <div className="flex items-start justify-between gap-3 bg-gradient-to-r from-lilac/60 via-blush/40 to-peach/50 px-6 py-5 dark:from-[#26152b] dark:via-[#211327] dark:to-[#1c1122]">
+      <div className="flex items-start justify-between gap-3 bg-gradient-to-r from-lilac/60 via-blush/40 to-peach/50 px-6 py-5 dark:from-grape/15 dark:via-grape/8 dark:to-transparent">
         <div className="min-w-0">
           <p className="text-xs font-semibold uppercase tracking-wide text-grape">
             🍽️ Dish

@@ -88,13 +88,13 @@ sequenceDiagram
     participant UI as React (useCreateReminder)
     participant API as POST /reminders
     participant DB as Postgres
-    participant Loop as Dispatch loop
+    participant Disp as Dispatch loop
 
     UI->>API: { title, remind_at, target? }
     API->>API: _validate_target() (owns the note?)
     API->>DB: INSERT reminder (sent_at = NULL)
     API->>DB: COMMIT
-    API->>Loop: signal_reminder_change()   ← wakes the sleeper
+    API->>Disp: signal_reminder_change()   -- wakes the sleeper
     API-->>UI: 201 { reminder }
     UI->>UI: React Query invalidates ["reminders"]
 ```
@@ -115,17 +115,17 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant Note as ReminderNotificationsProvider
+    participant Poll as ReminderNotificationsProvider
     participant API as GET /reminders/due
     participant DB as Postgres
 
     loop while tab visible & permission granted
-        Note->>API: listDue()
+        Poll->>API: listDue()
         API->>DB: WHERE sent_at IS NULL AND remind_at <= now()
         DB-->>API: due rows
-        API-->>Note: [ reminders ]
-        Note->>Note: new Notification() + chime, per unseen id
-        Note->>API: POST /reminders/{id}/ack  → sets sent_at
+        API-->>Poll: [ reminders ]
+        Poll->>Poll: new Notification() + chime, per unseen id
+        Poll->>API: POST /reminders/{id}/ack  -> sets sent_at
     end
 ```
 
@@ -140,25 +140,25 @@ sequenceDiagram
 
 ```mermaid
 sequenceDiagram
-    participant Loop as Dispatch loop
+    participant Disp as Dispatch loop
     participant DB as Postgres
     participant Push as Push service (browser vendor)
     participant SW as sw.js (service worker)
 
-    Loop->>DB: due = WHERE sent_at IS NULL AND remind_at <= now()
-    Loop->>DB: subscriptions for those user_ids
+    Disp->>DB: due = WHERE sent_at IS NULL AND remind_at <= now()
+    Disp->>DB: subscriptions for those user_ids
     loop per reminder
-        Loop->>Push: send_web_push(subscription, payload)
+        Disp->>Push: send_web_push(subscription, payload)
         alt 404 / 410
-            Push-->>Loop: gone → prune the subscription row
+            Push-->>Disp: gone -> prune the subscription row
         else delivered
             Push->>SW: push event { title, body, reminderId, url }
             SW->>SW: showNotification(...)
         end
     end
-    Loop->>DB: sent_at = now() for reminders that reached ≥1 subscription
-    Loop->>DB: DELETE pruned subscriptions
-    Loop->>DB: COMMIT
+    Disp->>DB: sent_at = now() for reminders that reached >=1 subscription
+    Disp->>DB: DELETE pruned subscriptions
+    Disp->>DB: COMMIT
 ```
 
 Key rules in `dispatch_once()`:
@@ -218,15 +218,15 @@ milliseconds. The loop recomputes and re-arms for +1 minute.
 sequenceDiagram
     participant API as POST /reminders (+1 min)
     participant Ev as _wakeup (asyncio.Event)
-    participant Loop as Dispatch loop (asleep until tomorrow)
+    participant Disp as Dispatch loop (asleep until tomorrow)
 
-    Note over Loop: sleeping on wait(stop OR _wakeup, timeout=~24h)
+    Note over Disp: sleeping on wait(stop OR _wakeup, timeout=~24h)
     API->>API: INSERT + COMMIT
-    API->>Ev: signal_reminder_change() → set()
-    Ev-->>Loop: wakes immediately
-    Loop->>Loop: dispatch_once (nothing due yet)
-    Loop->>Loop: seconds_until_next_due → ~60s
-    Note over Loop: re-sleeps ~60s, then delivers
+    API->>Ev: signal_reminder_change() -> set()
+    Ev-->>Disp: wakes immediately
+    Disp->>Disp: dispatch_once (nothing due yet)
+    Disp->>Disp: seconds_until_next_due -> ~60s
+    Note over Disp: re-sleeps ~60s, then delivers
 ```
 
 ### The race that the "clear before read" ordering closes

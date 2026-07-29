@@ -5,6 +5,7 @@ import { useState } from "react";
 
 import { AuthProvider } from "@/lib/auth-context";
 import { LiveSync } from "@/lib/live-sync";
+import { LoadingOverlay } from "@/components/ui/loading-overlay";
 
 /**
  * App-wide client providers. React Query sits outermost so any consumer
@@ -27,6 +28,7 @@ export function Providers({ children }: { children: React.ReactNode }) {
       <AuthProvider>
         <LiveSync />
         {children}
+        <LoadingOverlay />
       </AuthProvider>
     </QueryClientProvider>
   );

@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { loginSchema, type LoginInput } from "@/lib/validations/auth";
 import { useAuth } from "@/lib/auth-context";
 import { ApiError } from "@/lib/api";
+import { readNextPath } from "@/lib/next-path";
 import { AuthCard, AuthScreen } from "@/components/auth/auth-layout";
 import { Button } from "@/components/ui/atoms/button";
 import { FormError } from "@/components/ui/atoms/form-error";
@@ -29,7 +30,7 @@ export default function LoginPage() {
   async function onSubmit(values: LoginInput) {
     try {
       await login(values);
-      router.push("/dashboard");
+      router.replace(readNextPath() ?? "/dashboard");
     } catch (err) {
       const message =
         err instanceof ApiError
