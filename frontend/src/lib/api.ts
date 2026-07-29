@@ -4,6 +4,11 @@ import type { AuthResponse, User } from "@/types/auth";
 const API_BASE = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:8000";
 const API_PREFIX = "/api/v1";
 
+/** API origin + prefix, shared by the REST client and the WebSocket client
+ * (see use-live-sync). Exported so the two can't drift apart. */
+export const API_ORIGIN = API_BASE;
+export const API_V1_PREFIX = API_PREFIX;
+
 const TOKEN_KEY = "lt.token";
 
 /** The auth token, persisted in localStorage and shared by every API client. */

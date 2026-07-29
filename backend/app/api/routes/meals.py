@@ -8,6 +8,7 @@ from app.api.responses import not_found_response
 from app.models.dish import Dish
 from app.models.meal_log import MealLog
 from app.schemas.meal_log import MealLogCreate, MealLogRead, MealLogUpdate
+from app.services.ws_manager import manager
 
 router = APIRouter(prefix="/meals", tags=["meals"])
 
@@ -89,6 +90,11 @@ async def create_meal(
     db.add(meal)
     await db.commit()
     await db.refresh(meal)
+    # Live-sync: tell the user's other open tabs/devices a meal changed.
+    await manager.broadcast(
+        current_user.id,
+        {"type": "meal.created", "id": meal.id, "logDate": meal.log_date.isoformat()},
+    )
     return meal
 
 
@@ -110,6 +116,10 @@ async def update_meal(
 
     await db.commit()
     await db.refresh(meal)
+    await manager.broadcast(
+        current_user.id,
+        {"type": "meal.updated", "id": meal.id, "logDate": meal.log_date.isoformat()},
+    )
     return meal
 
 
@@ -122,5 +132,10 @@ async def update_meal(
 async def delete_meal(meal_id: int, current_user: CurrentUser, db: DbSession) -> None:
     """Remove a meal from a day."""
     meal = await _get_owned_meal(meal_id, current_user, db)
+    log_date = meal.log_date  # capture before the row is gone
     await db.delete(meal)
     await db.commit()
+    await manager.broadcast(
+        current_user.id,
+        {"type": "meal.deleted", "id": meal_id, "logDate": log_date.isoformat()},
+    )
