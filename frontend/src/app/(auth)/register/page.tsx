@@ -8,6 +8,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { registerSchema, type RegisterInput } from "@/lib/validations/auth";
 import { useAuth } from "@/lib/auth-context";
 import { ApiError } from "@/lib/api";
+import { readNextPath } from "@/lib/next-path";
 import { AuthCard, AuthScreen } from "@/components/auth/auth-layout";
 import { Button } from "@/components/ui/atoms/button";
 import { FormError } from "@/components/ui/atoms/form-error";
@@ -29,7 +30,7 @@ export default function RegisterPage() {
   async function onSubmit(values: RegisterInput) {
     try {
       await registerUser(values);
-      router.push("/dashboard");
+      router.replace(readNextPath() ?? "/dashboard");
     } catch (err) {
       const message =
         err instanceof ApiError

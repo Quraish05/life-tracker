@@ -27,7 +27,7 @@ export default function Sidebar() {
   return (
     <>
       {/* Mobile/tablet top bar — hidden once the persistent sidebar appears. */}
-      <header className="flex items-center justify-between border-b border-border/60 bg-gradient-to-r from-lilac/70 via-blush/40 to-peach/50 px-4 py-3 dark:from-[#26152b] dark:via-[#211327] dark:to-[#1c1122] laptop:hidden">
+      <header className="flex items-center justify-between border-b border-border/60 bg-gradient-to-r from-lilac/70 via-blush/40 to-peach/50 px-4 py-3 laptop:hidden dark:from-grape/15 dark:via-grape/8 dark:to-transparent">
         <Brand />
         <button
           type="button"
@@ -94,7 +94,7 @@ function SidebarPanel({ onNavigate }: { onNavigate?: () => void }) {
   const initial = user?.username?.charAt(0).toUpperCase() ?? "U";
 
   return (
-    <aside className="flex h-full w-72 shrink-0 flex-col border-r border-border/60 bg-gradient-to-b from-lilac/70 via-blush/40 to-peach/50 dark:from-[#26152b] dark:via-[#1e1223] dark:to-[#190f1d] laptop:w-64">
+    <aside className="flex h-full w-72 shrink-0 flex-col border-r border-border/60 bg-gradient-to-b from-lilac/70 via-blush/40 to-peach/50 laptop:w-64 dark:from-grape/15 dark:via-grape/8 dark:to-transparent">
       {/* Brand — links back to the app home */}
       <Link
         href="/dashboard"

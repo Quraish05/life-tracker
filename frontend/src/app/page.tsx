@@ -14,7 +14,7 @@ import { ThemeToggle } from "@/components/ui/atoms/theme-toggle";
 
 export default function LandingPage() {
   return (
-    <div className="relative bg-gradient-to-br from-background via-background to-lilac/40 text-foreground">
+    <div className="relative bg-gradient-to-br from-background via-background to-lilac/40 dark:to-grape/8 text-foreground">
       <ThemeToggle className="absolute right-4 top-4 z-20 tablet:right-6" />
       {/* Hero screen — header + hero fill the viewport on landing, but cap the
           height so tall monitors don't leave a huge gap before the features. */}
