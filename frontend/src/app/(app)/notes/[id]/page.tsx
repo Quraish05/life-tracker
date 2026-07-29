@@ -40,7 +40,7 @@ export default function NoteDetailPage({
   if (isLoading && !note) {
     return (
       <div className="mx-auto max-w-3xl px-6 py-10">
-        <p className="text-sm text-ink-soft">Loading…</p>
+        <p className="text-sm text-muted">Loading…</p>
       </div>
     );
   }

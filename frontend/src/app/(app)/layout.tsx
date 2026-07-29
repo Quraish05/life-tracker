@@ -22,8 +22,8 @@ export default function AppLayout({
 
   if (isLoading || !user) {
     return (
-      <div className="flex h-dvh items-center justify-center bg-gradient-to-br from-cream via-cream to-lilac/40">
-        <p className="text-sm font-medium text-ink-soft">Loading…</p>
+      <div className="flex h-dvh items-center justify-center bg-gradient-to-br from-background via-background to-lilac/40">
+        <p className="text-sm font-medium text-muted">Loading…</p>
       </div>
     );
   }
@@ -34,7 +34,7 @@ export default function AppLayout({
         <Sidebar />
         {/* Sidebar stays flush left; only the main content region is capped
             at max-w-content and centered on ultra-wide screens. */}
-        <main className="flex-1 overflow-y-auto bg-gradient-to-br from-cream via-cream to-lilac/40">
+        <main className="flex-1 overflow-y-auto bg-gradient-to-br from-background via-background to-lilac/40">
           <div className="mx-auto max-w-content">{children}</div>
         </main>
       </div>

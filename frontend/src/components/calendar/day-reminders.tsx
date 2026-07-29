@@ -24,10 +24,10 @@ export function DayReminders({ reminders }: Props) {
   if (reminders.length === 0) return null;
 
   return (
-    <section className="rounded-3xl border border-white/60 bg-white/50 p-4">
+    <section className="rounded-3xl border border-border/60 bg-surface/50 p-4">
       <div className="mb-2 flex items-center gap-2">
         <span className="text-lg">🔔</span>
-        <h3 className="font-bold text-ink">Reminders</h3>
+        <h3 className="font-bold text-foreground">Reminders</h3>
         <span className="rounded-full bg-lilac/40 px-2 py-0.5 text-xs font-semibold text-grape-deep">
           {reminders.length}
         </span>
@@ -40,12 +40,12 @@ export function DayReminders({ reminders }: Props) {
             <li key={reminder.id}>
               <Link
                 href="/reminders"
-                className="group flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2 transition hover:bg-white"
+                className="group flex items-center gap-2 rounded-xl bg-surface/70 px-3 py-2 transition hover:bg-surface"
               >
-                <span className="shrink-0 text-sm font-semibold text-ink-soft">
+                <span className="shrink-0 text-sm font-semibold text-muted">
                   {timeOfDay(reminder.remind_at)}
                 </span>
-                <span className="min-w-0 flex-1 truncate font-semibold text-ink group-hover:text-grape">
+                <span className="min-w-0 flex-1 truncate font-semibold text-foreground group-hover:text-grape">
                   {reminder.title}
                 </span>
                 <Chip tone={meta.tone} size="sm">

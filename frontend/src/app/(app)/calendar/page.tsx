@@ -81,13 +81,13 @@ export default function CalendarPage() {
 
       <div className="mb-4 flex items-center justify-between">
         <div className="flex items-center gap-2">
-          <h2 className="text-lg font-bold text-ink">
+          <h2 className="text-lg font-bold text-foreground">
             {formatMonthTitle(year, month)}
           </h2>
           <button
             type="button"
             onClick={goToday}
-            className="rounded-full bg-white/70 px-3 py-1 text-xs font-semibold text-ink/70 transition hover:bg-white hover:text-grape"
+            className="rounded-full bg-surface/70 px-3 py-1 text-xs font-semibold text-foreground/70 transition hover:bg-surface hover:text-grape"
           >
             Today
           </button>
@@ -119,7 +119,7 @@ export default function CalendarPage() {
         todayIso={todayIso}
       />
 
-      <p className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-ink-soft/70">
+      <p className="mt-4 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted/70">
         <span>🍽️ meals</span>
         <span>💪 workout</span>
         <span>📓 journal</span>

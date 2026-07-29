@@ -3,7 +3,7 @@ import { type Feature } from "@/components/landing/_lib";
 /** A single feature tile on the landing page, with a live / coming-soon badge. */
 export function FeatureCard({ feature }: { feature: Feature }) {
   return (
-    <article className="flex flex-col rounded-3xl border border-white/70 bg-white/70 p-6 shadow-sm shadow-grape/5 backdrop-blur-sm transition hover:-translate-y-1 hover:shadow-lg hover:shadow-grape/10">
+    <article className="flex flex-col rounded-3xl border border-border/70 bg-surface/70 p-6 shadow-sm shadow-grape/5 backdrop-blur-sm transition hover:-translate-y-1 hover:shadow-lg hover:shadow-grape/10">
       <div className="flex items-center justify-between">
         <span className="flex h-11 w-11 items-center justify-center rounded-2xl bg-lilac/40 text-xl">
           {feature.icon}
@@ -19,7 +19,7 @@ export function FeatureCard({ feature }: { feature: Feature }) {
         )}
       </div>
       <h3 className="mt-4 text-lg font-bold">{feature.title}</h3>
-      <p className="mt-1.5 text-sm text-ink-soft">{feature.description}</p>
+      <p className="mt-1.5 text-sm text-muted">{feature.description}</p>
     </article>
   );
 }

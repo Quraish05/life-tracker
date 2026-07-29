@@ -110,12 +110,12 @@ export default function RemindersPage() {
       )}
 
       {isLoading ? (
-        <p className="text-sm text-ink-soft">Loading…</p>
+        <p className="text-sm text-muted">Loading…</p>
       ) : reminders.length === 0 ? (
         <RemindersEmptyState onCreate={() => setEditing("new")} />
       ) : (
         <div className="space-y-5">
-          <div className="flex w-fit max-w-full overflow-x-auto rounded-full bg-white/60 p-1 shadow-sm">
+          <div className="flex w-fit max-w-full overflow-x-auto rounded-full bg-surface/60 p-1 shadow-sm">
             {STATUS_FILTERS.map((f) => (
               <Chip
                 key={f.value}
@@ -132,7 +132,7 @@ export default function RemindersPage() {
           </div>
 
           {visible.length === 0 ? (
-            <p className="text-sm text-ink-soft">
+            <p className="text-sm text-muted">
               No reminders match this filter.
             </p>
           ) : (
@@ -200,7 +200,7 @@ function NotificationBanner({
     >
       <div className="flex items-center gap-3">
         <span className="text-2xl">🔔</span>
-        <p className="max-w-xl text-sm text-ink-soft">
+        <p className="max-w-xl text-sm text-muted">
           {copy[permission as Exclude<PermissionState, "granted">]}
         </p>
       </div>

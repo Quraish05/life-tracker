@@ -15,14 +15,14 @@ const chipVariants = cva(
         muted: "bg-lilac/50 text-grape-deep",
         /** Filled grape — the selected/active state. */
         solid: "bg-grape text-white shadow-sm",
-        /** Sky blue — a secondary category. */
+        /** Sky blue — a secondary category. Fixed-dark text: the tint stays light in both themes. */
         sky: "bg-sky/60 text-ink",
-        /** Mint — a positive/complete status. */
+        /** Mint — a positive/complete status. Fixed-dark text on a light tint. */
         success: "bg-mint/50 text-ink",
         /** Coral — a warning/overdue status. */
         danger: "bg-coral/15 text-coral",
         /** No fill — inactive segmented-control option. */
-        ghost: "text-ink/60",
+        ghost: "text-foreground/60",
       },
       size: {
         sm: "px-2 py-0.5 text-xs",
@@ -38,7 +38,7 @@ const chipVariants = cva(
     compoundVariants: [
       { tone: "soft", interactive: true, className: "hover:bg-lilac/70" },
       { tone: "muted", interactive: true, className: "hover:bg-lilac/70" },
-      { tone: "ghost", interactive: true, className: "hover:text-ink" },
+      { tone: "ghost", interactive: true, className: "hover:text-foreground" },
     ],
     defaultVariants: {
       tone: "soft",

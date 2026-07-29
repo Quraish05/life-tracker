@@ -34,8 +34,8 @@ function EmptyState({
     >
       <section {...props}>
         <IconTile>{icon}</IconTile>
-        <h2 className="mt-5 text-xl font-bold text-ink">{title}</h2>
-        <p className="mx-auto mt-2 max-w-sm text-sm text-ink-soft">
+        <h2 className="mt-5 text-xl font-bold text-foreground">{title}</h2>
+        <p className="mx-auto mt-2 max-w-sm text-sm text-muted">
           {description}
         </p>
         {action && <div className="mt-5">{action}</div>}

@@ -102,7 +102,7 @@ export default function DashboardPage() {
       <JourneyMap />
 
       {/* This week */}
-      <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-ink-soft/70">
+      <p className="mb-3 text-sm font-semibold uppercase tracking-wide text-muted/70">
         This week
       </p>
       <section className="grid grid-cols-2 gap-4 tablet:grid-cols-3 laptop:grid-cols-5">
@@ -123,7 +123,7 @@ export default function DashboardPage() {
         ))}
       </section>
 
-      <p className="mt-6 text-sm text-ink-soft">
+      <p className="mt-6 text-sm text-muted">
         Jump into the{" "}
         <Link
           href="/calendar"

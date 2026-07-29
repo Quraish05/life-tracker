@@ -13,7 +13,7 @@ const iconTileVariants = cva(
       },
       tone: {
         butter: "bg-butter shadow-sm",
-        white: "bg-white/70",
+        white: "bg-surface/70",
       },
     },
     defaultVariants: {

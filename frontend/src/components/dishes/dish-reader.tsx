@@ -29,7 +29,7 @@ export function DishReader({ dish, onEdit, onDelete }: Props) {
         className="flex min-h-64 flex-col items-center justify-center text-center"
       >
         <span className="text-3xl">🍽️</span>
-        <p className="mt-3 text-sm text-ink-soft">
+        <p className="mt-3 text-sm text-muted">
           Pick a dish from the list to read it.
         </p>
       </Card>
@@ -55,7 +55,7 @@ export function DishReader({ dish, onEdit, onDelete }: Props) {
           <p className="text-xs font-semibold uppercase tracking-wide text-grape">
             🍽️ Dish
           </p>
-          <h2 className="mt-1 text-2xl font-bold tracking-tight text-ink">
+          <h2 className="mt-1 text-2xl font-bold tracking-tight text-foreground">
             {dish.name}
           </h2>
         </div>
@@ -77,7 +77,7 @@ export function DishReader({ dish, onEdit, onDelete }: Props) {
       <div className="space-y-6 px-6 py-5">
         {/* Ingredients — a tickable checklist */}
         <section>
-          <h3 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink-soft/80">
+          <h3 className="flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted/80">
             Ingredients
             {count > 0 && (
               <span className="rounded-full bg-lilac/40 px-2 py-0.5 text-xs text-grape-deep">
@@ -86,7 +86,7 @@ export function DishReader({ dish, onEdit, onDelete }: Props) {
             )}
           </h3>
           {count === 0 ? (
-            <p className="mt-2 text-sm text-ink-soft/70 italic">
+            <p className="mt-2 text-sm text-muted/70 italic">
               No ingredients listed.
             </p>
           ) : (
@@ -105,20 +105,20 @@ export function DishReader({ dish, onEdit, onDelete }: Props) {
                         className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border text-[11px] font-bold transition ${
                           done
                             ? "border-grape bg-grape text-white"
-                            : "border-lilac text-transparent"
+                            : "border-border text-transparent"
                         }`}
                       >
                         ✓
                       </span>
                       <span
                         className={`text-sm transition ${
-                          done ? "text-ink-soft/60 line-through" : "text-ink"
+                          done ? "text-muted/60 line-through" : "text-foreground"
                         }`}
                       >
                         {ing.name}
                       </span>
                       {ing.amount && (
-                        <span className="ml-auto shrink-0 text-sm font-semibold text-ink-soft">
+                        <span className="ml-auto shrink-0 text-sm font-semibold text-muted">
                           {ing.amount}
                         </span>
                       )}
@@ -132,21 +132,21 @@ export function DishReader({ dish, onEdit, onDelete }: Props) {
 
         {/* Recipe — rendered markdown */}
         <section>
-          <h3 className="text-sm font-semibold uppercase tracking-wide text-ink-soft/80">
+          <h3 className="text-sm font-semibold uppercase tracking-wide text-muted/80">
             Recipe
           </h3>
           <div className="mt-2 text-sm">
             {dish.recipe_md ? (
               <MarkdownPreview>{dish.recipe_md}</MarkdownPreview>
             ) : (
-              <p className="text-sm text-ink-soft/70 italic">
+              <p className="text-sm text-muted/70 italic">
                 No recipe yet — add one with Edit.
               </p>
             )}
           </div>
         </section>
 
-        <p className="text-xs font-semibold text-ink-soft/70">
+        <p className="text-xs font-semibold text-muted/70">
           Updated {formatDate(dish.updated_at)}
         </p>
       </div>

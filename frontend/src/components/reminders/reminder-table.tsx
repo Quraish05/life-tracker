@@ -41,7 +41,7 @@ export function ReminderTable({
   attachedLabel,
 }: Props) {
   return (
-    <div className="overflow-hidden rounded-3xl border border-white/60 bg-white/70 shadow-sm backdrop-blur-sm">
+    <div className="overflow-hidden rounded-3xl border border-border/60 bg-surface/70 shadow-sm backdrop-blur-sm">
       <Table>
         <TableHeader>
           <TableRow className="hover:bg-transparent">
@@ -75,17 +75,17 @@ export function ReminderTable({
                   <button
                     type="button"
                     onClick={() => onEdit(reminder)}
-                    className="text-left font-semibold text-ink transition hover:text-grape"
+                    className="text-left font-semibold text-foreground transition hover:text-grape"
                   >
                     {reminder.title}
                   </button>
                   {reminder.body && (
-                    <p className="mt-0.5 line-clamp-1 text-xs text-ink-soft">
+                    <p className="mt-0.5 line-clamp-1 text-xs text-muted">
                       {reminder.body}
                     </p>
                   )}
                 </TableCell>
-                <TableCell className="whitespace-nowrap text-sm text-ink-soft">
+                <TableCell className="whitespace-nowrap text-sm text-muted">
                   {formatWhen(reminder.remind_at)}
                 </TableCell>
                 <TableCell>
@@ -94,7 +94,7 @@ export function ReminderTable({
                       📓 {attached}
                     </Chip>
                   ) : (
-                    <span className="text-sm text-ink-soft/50">—</span>
+                    <span className="text-sm text-muted/50">—</span>
                   )}
                 </TableCell>
                 <TableCell className="text-right">
@@ -143,7 +143,7 @@ function SortHead({
         className="inline-flex items-center gap-1 uppercase tracking-wide transition hover:text-grape"
       >
         {label}
-        <span className={active ? "text-grape" : "text-ink-soft/30"}>
+        <span className={active ? "text-grape" : "text-muted/30"}>
           {active ? (dir === "asc" ? "▲" : "▼") : "↕"}
         </span>
       </button>

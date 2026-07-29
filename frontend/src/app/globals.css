@@ -1,5 +1,10 @@
 @import "tailwindcss";
 
+/* Dark theme is driven by `data-theme="dark"` on <html> (set by the no-flash
+   script in layout.tsx + the theme toggle). This variant lets us write
+   `dark:` utilities where a value can't be expressed purely through a token. */
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *));
+
 @theme {
   /* Responsive breakpoints — mobile-first (min-width).
      `mobile` is the unprefixed base (≤767px); the names below are the
@@ -16,26 +21,73 @@
   --container-content: 1920px;
 }
 
+/* ─── Theme values ────────────────────────────────────────────────────────
+   Two layers. Layer A (brand accents + the tint ramp) is the "dusk" palette
+   from the reference image. Most of it is fixed across themes; `grape` /
+   `grape-deep` flip so accent *text* stays legible on dark surfaces. Layer B
+   (surfaces / text / borders) flips entirely per theme — the app uses these
+   semantic tokens (`bg-surface`, `text-foreground`, …) instead of literal
+   `bg-white` / `text-ink` so both themes work from one set of classes. */
+:root {
+  /* Layer A — accents that flip for contrast */
+  --grape: #662249; /* wine — primary */
+  --grape-deep: #44174e; /* aubergine — hover/pressed + accent text */
+
+  /* Layer B — surfaces / text / borders (light) */
+  --background: #faf4f3; /* warm near-white — page base */
+  --surface: #ffffff; /* cards, inputs, popovers */
+  --foreground: #241026; /* primary text */
+  --muted: #7c6472; /* secondary text */
+  --border: #ecdcdd; /* hairlines, dividers, input borders */
+  --ring: #e9d4e0; /* focus ring */
+  --on-accent: #ffffff; /* text/icons on a `grape` fill */
+}
+
+[data-theme="dark"] {
+  --grape: #c98aa6; /* lightened wine — legible on dark */
+  --grape-deep: #dca9c0;
+
+  --background: #180d1b; /* aubergine-black */
+  --surface: #271531; /* aubergine card */
+  --foreground: #f4e7ea; /* soft blush-white */
+  --muted: #b39aa8;
+  --border: #3d2542;
+  --ring: #7e5570;
+  --on-accent: #241026; /* dark text on the lightened `grape` fill */
+}
+
 @theme inline {
   /* Fonts */
   --font-sans: var(--font-montserrat);
   --font-display: var(--font-dm-serif-display);
 
-  /* Joyful pastel palette */
-  --color-cream: #fdf7f1;
-  --color-blush: #ffd7e6;
-  --color-peach: #ffdcc2;
-  --color-butter: #fdeeb0;
-  --color-mint: #c4ecd4;
-  --color-sky: #c9e6ff;
-  --color-lilac: #e2d5ff;
+  /* Layer A — brand accents (dusk palette) */
+  --color-grape: var(--grape); /* wine (light) / rose (dark) — primary */
+  --color-grape-deep: var(--grape-deep); /* aubergine — hover + accent text */
+  --color-coral: #a34054; /* brick rose — danger/error + secondary (fixed) */
 
-  /* Accents */
-  --color-grape: #6d4aff;
-  --color-grape-deep: #5334e0;
-  --color-coral: #ff6f91;
-  --color-ink: #2f2a3d;
-  --color-ink-soft: #6f6980;
+  /* Tint ramp — fixed both themes; also the dashboard stat categories. */
+  --color-blush: #e8bcb9; /* dishes */
+  --color-peach: #f2c9a8; /* meals */
+  --color-butter: #ed9e59; /* reminders — the palette's amber pop */
+  --color-mint: #cfe0cf; /* workout — success (kept green) */
+  --color-sky: #d6d2ee; /* journal */
+  --color-lilac: #e9d4e0; /* soft wine tint — chips */
+
+  /* Layer B — semantic surfaces / text / borders (flip per theme) */
+  --color-background: var(--background);
+  --color-surface: var(--surface);
+  --color-foreground: var(--foreground);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-ring: var(--ring);
+  --color-on-accent: var(--on-accent);
+
+  /* Legacy aliases kept as a safety net during the token migration. `ink`
+     stays a FIXED dark tone — it's used for scrims/overlays, not text. */
+  --color-cream: var(--background);
+  --color-ink: #1a0f1e;
+  --color-ink-soft: var(--muted);
 }
 
 /* Fancy display font helper for highlighted keywords */
@@ -46,5 +98,6 @@
 
 body {
   font-family: var(--font-sans), system-ui, sans-serif;
-  background-color: var(--color-cream);
+  background-color: var(--background);
+  color: var(--foreground);
 }

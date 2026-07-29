@@ -95,7 +95,7 @@ export default function NotesPage() {
 
       {/* Controls */}
       <div className="mb-6 flex flex-wrap items-center justify-between gap-3">
-        <div className="flex rounded-full bg-white/60 p-1 shadow-sm">
+        <div className="flex rounded-full bg-surface/60 p-1 shadow-sm">
           {FILTERS.map((f) => (
             <Chip
               key={f.value}
@@ -115,14 +115,14 @@ export default function NotesPage() {
           value={query}
           onChange={(e) => setQuery(e.target.value)}
           placeholder="Search…"
-          className="w-full max-w-xs rounded-full border border-transparent bg-white/70 px-4 py-2 text-sm text-ink placeholder:text-ink-soft/60 transition focus:border-grape focus:bg-white focus:outline-none focus:ring-4 focus:ring-lilac"
+          className="w-full max-w-xs rounded-full border border-transparent bg-surface/70 px-4 py-2 text-sm text-foreground placeholder:text-muted/60 transition focus:border-grape focus:bg-surface focus:outline-none focus:ring-4 focus:ring-ring"
         />
       </div>
 
       {/* Tag filter bar */}
       {allTags.length > 0 && (
         <div className="mb-6 flex flex-wrap items-center gap-1.5">
-          <span className="mr-1 text-xs font-semibold uppercase tracking-wide text-ink-soft/70">
+          <span className="mr-1 text-xs font-semibold uppercase tracking-wide text-muted/70">
             Tags
           </span>
           {allTags.map((tag) => {
@@ -147,7 +147,7 @@ export default function NotesPage() {
             <button
               type="button"
               onClick={() => setTagFilter(null)}
-              className="rounded-full px-2.5 py-1 text-xs font-semibold text-ink-soft transition hover:text-coral"
+              className="rounded-full px-2.5 py-1 text-xs font-semibold text-muted transition hover:text-coral"
             >
               Clear ✕
             </button>
@@ -157,7 +157,7 @@ export default function NotesPage() {
 
       {/* Content */}
       {isLoading ? (
-        <p className="text-sm text-ink-soft">Loading…</p>
+        <p className="text-sm text-muted">Loading…</p>
       ) : visible.length === 0 ? (
         <NotesEmptyState
           hasNotes={notes.length > 0}

@@ -34,8 +34,8 @@ export function NoteCard({
 
   const preview = (
     <>
-      <h3 className="line-clamp-2 text-lg font-bold text-ink">{note.title}</h3>
-      <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-ink-soft">
+      <h3 className="line-clamp-2 text-lg font-bold text-foreground">{note.title}</h3>
+      <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted">
         {toSnippet(note.body_md) || "No content yet."}
       </p>
     </>
@@ -123,7 +123,7 @@ export function NoteCard({
           </div>
         )}
 
-        <p className="mt-4 text-xs font-semibold text-ink-soft/70">
+        <p className="mt-4 text-xs font-semibold text-muted/70">
           {dateLabel}
         </p>
       </article>

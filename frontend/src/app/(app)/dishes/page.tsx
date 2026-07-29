@@ -63,7 +63,7 @@ export default function DishesPage() {
       />
 
       {isLoading ? (
-        <p className="text-sm text-ink-soft">Loading…</p>
+        <p className="text-sm text-muted">Loading…</p>
       ) : dishes.length === 0 ? (
         <EmptyState
           icon="🍽️"

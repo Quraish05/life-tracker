@@ -8,6 +8,7 @@ import { usePathname, useRouter } from "next/navigation";
 
 import { useAuth } from "@/lib/auth-context";
 import { AiQuotaBadge } from "@/components/ai/ai-quota";
+import { ThemeToggle } from "@/components/ui/atoms/theme-toggle";
 import { NAV_ITEMS } from "@/constants/navigation";
 
 export default function Sidebar() {
@@ -26,14 +27,14 @@ export default function Sidebar() {
   return (
     <>
       {/* Mobile/tablet top bar — hidden once the persistent sidebar appears. */}
-      <header className="flex items-center justify-between border-b border-white/60 bg-gradient-to-r from-lilac/70 via-blush/40 to-peach/50 px-4 py-3 laptop:hidden">
+      <header className="flex items-center justify-between border-b border-border/60 bg-gradient-to-r from-lilac/70 via-blush/40 to-peach/50 px-4 py-3 laptop:hidden">
         <Brand />
         <button
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Open menu"
           aria-expanded={open}
-          className="flex h-10 w-10 items-center justify-center rounded-xl bg-white/60 text-xl text-ink transition hover:bg-white"
+          className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface/60 text-xl text-foreground transition hover:bg-surface"
         >
           ☰
         </button>
@@ -72,7 +73,7 @@ function Brand() {
       <div className="flex h-9 w-9 rotate-3 items-center justify-center rounded-xl bg-gradient-to-br from-grape to-coral text-sm font-bold text-white shadow-md shadow-grape/30">
         LT
       </div>
-      <span className="text-lg font-bold tracking-tight text-ink">
+      <span className="text-lg font-bold tracking-tight text-foreground">
         Life <span className="font-display italic text-grape">Tracker</span>
       </span>
     </div>
@@ -93,11 +94,16 @@ function SidebarPanel({ onNavigate }: { onNavigate?: () => void }) {
   const initial = user?.username?.charAt(0).toUpperCase() ?? "U";
 
   return (
-    <aside className="flex h-full w-72 shrink-0 flex-col border-r border-white/60 bg-gradient-to-b from-lilac/70 via-blush/40 to-peach/50 laptop:w-64">
-      {/* Brand */}
-      <div className="flex items-center gap-2.5 px-5 py-6">
+    <aside className="flex h-full w-72 shrink-0 flex-col border-r border-border/60 bg-gradient-to-b from-lilac/70 via-blush/40 to-peach/50 laptop:w-64">
+      {/* Brand — links back to the app home */}
+      <Link
+        href="/dashboard"
+        onClick={onNavigate}
+        aria-label="Go to dashboard"
+        className="flex items-center gap-2.5 px-5 py-6 transition hover:opacity-80"
+      >
         <Brand />
-      </div>
+      </Link>
 
       {/* Navigation */}
       <nav className="flex-1 space-y-1.5 px-3 py-2">
@@ -111,8 +117,8 @@ function SidebarPanel({ onNavigate }: { onNavigate?: () => void }) {
               onClick={onNavigate}
               className={`flex items-center gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-semibold transition ${
                 isActive
-                  ? "bg-white text-grape shadow-sm shadow-grape/10"
-                  : "text-ink/70 hover:bg-white/60 hover:text-ink"
+                  ? "bg-surface text-grape shadow-sm shadow-grape/10"
+                  : "text-foreground/70 hover:bg-surface/60 hover:text-foreground"
               }`}
             >
               <span className="text-base">{item.icon}</span>
@@ -123,25 +129,26 @@ function SidebarPanel({ onNavigate }: { onNavigate?: () => void }) {
       </nav>
 
       {/* User / logout */}
-      <div className="m-3 rounded-2xl bg-white/60 p-3 backdrop-blur-sm">
+      <div className="m-3 rounded-2xl bg-surface/60 p-3 backdrop-blur-sm">
         <div className="flex items-center gap-3 px-1 py-1">
           <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-sky to-mint text-xs font-bold text-ink">
             {initial}
           </div>
           <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-ink">
+            <p className="truncate text-sm font-semibold text-foreground">
               {user?.username ?? "User"}
             </p>
-            <p className="truncate text-xs text-ink-soft">
+            <p className="truncate text-xs text-muted">
               {user?.email ?? "Signed in"}
             </p>
           </div>
+          <ThemeToggle />
         </div>
         <AiQuotaBadge className="mt-2 w-full justify-center" />
         <button
           type="button"
           onClick={handleLogout}
-          className="mt-2 w-full rounded-xl px-3 py-2 text-left text-sm font-semibold text-ink/70 transition hover:bg-coral/15 hover:text-coral"
+          className="mt-2 w-full rounded-xl px-3 py-2 text-left text-sm font-semibold text-foreground/70 transition hover:bg-coral/15 hover:text-coral"
         >
           Sign out
         </button>

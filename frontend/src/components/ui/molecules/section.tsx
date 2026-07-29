@@ -14,7 +14,7 @@ interface SectionProps
 function Section({ title, count, children, ...props }: SectionProps) {
   return (
     <section {...props}>
-      <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-ink-soft/70">
+      <h2 className="mb-4 flex items-center gap-2 text-sm font-semibold uppercase tracking-wide text-muted/70">
         {title}
         {count !== undefined && (
           <Chip tone="muted" size="sm">

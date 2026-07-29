@@ -31,10 +31,10 @@ export function MealSlotSection({
   atMax = false,
 }: Props) {
   return (
-    <section className="rounded-3xl border border-white/60 bg-white/50 p-4">
+    <section className="rounded-3xl border border-border/60 bg-surface/50 p-4">
       <div className="mb-2 flex items-center gap-2">
         <span className="text-lg">{emoji}</span>
-        <h3 className="font-bold text-ink">{label}</h3>
+        <h3 className="font-bold text-foreground">{label}</h3>
         {badge && (
           <span className="rounded-full bg-lilac/40 px-2 py-0.5 text-xs font-semibold text-grape-deep">
             {badge}
@@ -43,18 +43,18 @@ export function MealSlotSection({
       </div>
 
       {meals.length === 0 ? (
-        <p className="mb-2 text-sm text-ink-soft/70 italic">Nothing logged.</p>
+        <p className="mb-2 text-sm text-muted/70 italic">Nothing logged.</p>
       ) : (
         <ul className="mb-2 space-y-1.5">
           {meals.map((meal) => (
             <li
               key={meal.id}
-              className="group flex items-center gap-2 rounded-xl bg-white/70 px-3 py-2"
+              className="group flex items-center gap-2 rounded-xl bg-surface/70 px-3 py-2"
             >
               <div className="min-w-0 flex-1">
-                <span className="font-semibold text-ink">{meal.dish_name}</span>
+                <span className="font-semibold text-foreground">{meal.dish_name}</span>
                 {meal.note && (
-                  <span className="ml-2 text-sm text-ink-soft">· {meal.note}</span>
+                  <span className="ml-2 text-sm text-muted">· {meal.note}</span>
                 )}
               </div>
               <IconButton

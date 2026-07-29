@@ -76,15 +76,15 @@ export default function DayPage({
     <div className="mx-auto max-w-3xl px-4 py-8 tablet:px-6 tablet:py-10">
       <Link
         href="/calendar"
-        className="text-sm font-semibold text-ink-soft transition hover:text-grape"
+        className="text-sm font-semibold text-muted transition hover:text-grape"
       >
         ← Calendar
       </Link>
 
-      <h1 className="mt-3 text-2xl font-bold tracking-tight text-ink tablet:text-3xl">
+      <h1 className="mt-3 text-2xl font-bold tracking-tight text-foreground tablet:text-3xl">
         {formatDayLong(date)}
       </h1>
-      <p className="mt-1 text-base text-ink-soft">
+      <p className="mt-1 text-base text-muted">
         What you <AccentText>ate</AccentText> and how you moved.
       </p>
 
@@ -93,7 +93,7 @@ export default function DayPage({
       </div>
 
       {isLoading ? (
-        <p className="mt-6 text-sm text-ink-soft">Loading…</p>
+        <p className="mt-6 text-sm text-muted">Loading…</p>
       ) : (
         <div className="mt-6 space-y-4">
           {MAIN_SLOTS.map((slot) => (
@@ -134,8 +134,8 @@ export default function DayPage({
           />
 
           {(journalEntries.length > 0 || dayReminders.length > 0) && (
-            <div className="space-y-4 border-t border-lilac/40 pt-4">
-              <p className="text-xs font-semibold uppercase tracking-wide text-ink-soft/70">
+            <div className="space-y-4 border-t border-border/40 pt-4">
+              <p className="text-xs font-semibold uppercase tracking-wide text-muted/70">
                 Also on this day
               </p>
               <DayJournal entries={journalEntries} />

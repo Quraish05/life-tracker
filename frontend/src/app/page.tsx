@@ -7,13 +7,15 @@ import {
   HeaderActions,
   HeroActions,
 } from "@/components/landing/auth-cta";
+import { ThemeToggle } from "@/components/ui/atoms/theme-toggle";
 
 // Marketing landing page. Intentionally a WIP showcase — feature cards below
 // grow as new sections ship. Server component: no client state, renders fast.
 
 export default function LandingPage() {
   return (
-    <div className="bg-gradient-to-br from-cream via-cream to-lilac/40 text-ink">
+    <div className="relative bg-gradient-to-br from-background via-background to-lilac/40 text-foreground">
+      <ThemeToggle className="absolute right-4 top-4 z-20 tablet:right-6" />
       {/* Hero screen — header + hero fill the viewport on landing, but cap the
           height so tall monitors don't leave a huge gap before the features. */}
       <div className="flex min-h-[min(100dvh,900px)] flex-col">
@@ -32,7 +34,7 @@ export default function LandingPage() {
 
         {/* Hero — grows to fill the remaining height, centered */}
         <section className="mx-auto flex w-full max-w-4xl flex-1 flex-col items-center justify-center px-6 py-12 text-center">
-          <span className="inline-flex items-center gap-2 rounded-full border border-grape/20 bg-white/70 px-3.5 py-1.5 text-xs font-semibold text-grape shadow-sm backdrop-blur-sm">
+          <span className="inline-flex items-center gap-2 rounded-full border border-grape/20 bg-surface/70 px-3.5 py-1.5 text-xs font-semibold text-grape shadow-sm backdrop-blur-sm">
             <span className="h-1.5 w-1.5 rounded-full bg-coral" />
             Work in progress — new features landing often
           </span>
@@ -42,7 +44,7 @@ export default function LandingPage() {
               one day at a time.
             </span>
           </h1>
-          <p className="mx-auto mt-5 max-w-xl text-base text-ink-soft tablet:text-lg">
+          <p className="mx-auto mt-5 max-w-xl text-base text-muted tablet:text-lg">
             Habits, moods, and milestones — all in one joyful little place that
             grows with you. Start with journaling today, and watch Life Tracker
             bloom into your whole life dashboard. ✨
@@ -53,7 +55,7 @@ export default function LandingPage() {
 
       {/* AI highlight */}
       <section className="mx-auto max-w-6xl px-6 pt-16 tablet:pt-14">
-        <div className="relative overflow-hidden rounded-[2rem] border border-white/60 bg-gradient-to-br from-grape/15 via-lilac/40 to-blush/40 p-8 shadow-xl shadow-grape/10 tablet:p-12">
+        <div className="relative overflow-hidden rounded-[2rem] border border-border/60 bg-gradient-to-br from-grape/15 via-lilac/40 to-blush/40 p-8 shadow-xl shadow-grape/10 tablet:p-12">
           {/* soft decorative glows for depth */}
           <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-coral/20 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-24 -left-12 h-56 w-56 rounded-full bg-sky/30 blur-3xl" />
@@ -61,7 +63,7 @@ export default function LandingPage() {
           <div className="relative grid items-center gap-10 laptop:grid-cols-2">
             {/* copy */}
             <div>
-              <span className="inline-flex items-center gap-2 rounded-full bg-white/80 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wide text-grape shadow-sm">
+              <span className="inline-flex items-center gap-2 rounded-full bg-surface/80 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wide text-grape shadow-sm">
                 ✨ Powered by AI
               </span>
               <h2 className="mt-5 text-3xl font-bold leading-tight tablet:text-4xl">
@@ -70,7 +72,7 @@ export default function LandingPage() {
                   actually understood
                 </span>
               </h2>
-              <p className="mt-4 max-w-md text-base text-ink-soft">
+              <p className="mt-4 max-w-md text-base text-muted">
                 Just log what you ate and how you moved — the AI does the rest.
                 No calorie counting, no spreadsheets.
               </p>
@@ -90,10 +92,10 @@ export default function LandingPage() {
                   },
                 ].map((row) => (
                   <li key={row.text} className="flex items-start gap-3">
-                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-white/80 text-base shadow-sm">
+                    <span className="flex h-8 w-8 shrink-0 items-center justify-center rounded-xl bg-surface/80 text-base shadow-sm">
                       {row.icon}
                     </span>
-                    <span className="pt-1.5 text-sm font-medium text-ink">
+                    <span className="pt-1.5 text-sm font-medium text-foreground">
                       {row.text}
                     </span>
                   </li>
@@ -103,36 +105,36 @@ export default function LandingPage() {
 
             {/* product preview: a mock of the real AI summary card */}
             <div className="relative mx-auto w-full max-w-sm">
-              <div className="rotate-1 rounded-3xl border border-white/70 bg-white/90 p-5 shadow-2xl shadow-grape/20 backdrop-blur-sm">
+              <div className="rotate-1 rounded-3xl border border-border/70 bg-surface/90 p-5 shadow-2xl shadow-grape/20 backdrop-blur-sm">
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="text-lg">✨</span>
-                    <span className="font-bold text-ink">AI day summary</span>
+                    <span className="font-bold text-foreground">AI day summary</span>
                   </div>
                   <span className="rounded-full bg-mint/60 px-2.5 py-1 text-xs font-bold text-ink">
                     ✓ On track
                   </span>
                 </div>
-                <p className="mt-4 text-sm text-ink-soft">
-                  🔥 <span className="font-semibold text-ink">~1,650</span> kcal
-                  in · <span className="font-semibold text-ink">~420</span> out
+                <p className="mt-4 text-sm text-muted">
+                  🔥 <span className="font-semibold text-foreground">~1,650</span> kcal
+                  in · <span className="font-semibold text-foreground">~420</span> out
                   · target ~1,900
                 </p>
-                <p className="mt-3 font-display text-xl text-ink">
+                <p className="mt-3 font-display text-xl text-foreground">
                   Solid deficit day — nice work.
                 </p>
-                <p className="mt-2 text-sm text-ink-soft">
+                <p className="mt-2 text-sm text-muted">
                   💡 Add a protein source at dinner to hit your target.
                 </p>
-                <p className="mt-4 border-t border-lilac/40 pt-3 text-xs text-ink-soft/70">
+                <p className="mt-4 border-t border-border/40 pt-3 text-xs text-muted/70">
                   Saved to progress ✓
                 </p>
               </div>
               {/* floating log chips for a touch of life */}
-              <div className="absolute -left-3 -top-4 hidden -rotate-6 rounded-2xl bg-white/90 px-3 py-1.5 text-xs font-semibold text-ink shadow-lg tablet:block">
+              <div className="absolute -left-3 -top-4 hidden -rotate-6 rounded-2xl bg-surface/90 px-3 py-1.5 text-xs font-semibold text-foreground shadow-lg tablet:block">
                 🥗 Big green salad
               </div>
-              <div className="absolute -bottom-4 -right-2 hidden rotate-6 rounded-2xl bg-white/90 px-3 py-1.5 text-xs font-semibold text-ink shadow-lg tablet:block">
+              <div className="absolute -bottom-4 -right-2 hidden rotate-6 rounded-2xl bg-surface/90 px-3 py-1.5 text-xs font-semibold text-foreground shadow-lg tablet:block">
                 💪 Running · 30 min
               </div>
             </div>
@@ -150,7 +152,7 @@ export default function LandingPage() {
             What&rsquo;s{" "}
             <span className="font-display italic text-grape">inside</span>
           </h2>
-          <p className="mt-2 text-sm text-ink-soft">
+          <p className="mt-2 text-sm text-muted">
             A growing toolkit for a more intentional life.
           </p>
         </div>
@@ -163,7 +165,7 @@ export default function LandingPage() {
 
       {/* Closing CTA */}
       <section className="mx-auto max-w-4xl px-6 pb-24 pt-16 tablet:pt-40">
-        <div className="rounded-3xl bg-gradient-to-br from-grape to-coral px-6 py-10 text-center shadow-xl shadow-grape/30 tablet:px-8 tablet:py-12">
+        <div className="rounded-3xl bg-grape px-6 py-10 text-center shadow-xl shadow-grape/30 tablet:px-8 tablet:py-12">
           <h2 className="text-2xl font-bold text-white tablet:text-3xl">
             Ready to start your story?
           </h2>
@@ -177,10 +179,10 @@ export default function LandingPage() {
       </section>
 
       {/* Footer */}
-      <footer className="border-t border-white/60">
-        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-6 py-6 text-sm text-ink-soft tablet:flex-row">
+      <footer className="border-t border-border/60">
+        <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-3 px-6 py-6 text-sm text-muted tablet:flex-row">
           <span className="flex items-center gap-2">
-            <span className="font-bold text-ink">
+            <span className="font-bold text-foreground">
               Life{" "}
               <span className="font-display italic text-grape">Tracker</span>
             </span>

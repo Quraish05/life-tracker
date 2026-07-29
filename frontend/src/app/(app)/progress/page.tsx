@@ -61,7 +61,7 @@ export default function ProgressPage() {
         subtitle="Saved daily summaries — how your logging has tracked against your goal."
       />
 
-      <div className="mb-6 flex rounded-full bg-white/60 p-1 shadow-sm w-fit">
+      <div className="mb-6 flex rounded-full bg-surface/60 p-1 shadow-sm w-fit">
         {(["week", "month"] as const).map((p) => (
           <Chip
             key={p}
@@ -78,7 +78,7 @@ export default function ProgressPage() {
       </div>
 
       {isLoading ? (
-        <p className="text-sm text-ink-soft">Loading…</p>
+        <p className="text-sm text-muted">Loading…</p>
       ) : summaries.length === 0 ? (
         <EmptyState
           icon="📈"
@@ -95,21 +95,21 @@ export default function ProgressPage() {
           <Card tone="soft" padding="md" className="mb-6">
             <div className="flex flex-wrap items-center gap-x-6 gap-y-2">
               <div>
-                <p className="text-2xl font-bold text-ink">
+                <p className="text-2xl font-bold text-foreground">
                   {rollup.onTrack}
-                  <span className="text-sm font-medium text-ink-soft">
+                  <span className="text-sm font-medium text-muted">
                     {" "}
                     on track
                   </span>
                 </p>
               </div>
               <div>
-                <p className="text-2xl font-bold text-ink">
+                <p className="text-2xl font-bold text-foreground">
                   {rollup.offTrack}
-                  <span className="text-sm font-medium text-ink-soft"> off track</span>
+                  <span className="text-sm font-medium text-muted"> off track</span>
                 </p>
               </div>
-              <div className="text-sm text-ink-soft">
+              <div className="text-sm text-muted">
                 avg 🔥 ~{rollup.avgIn} in · ~{rollup.avgOut} out
               </div>
             </div>
@@ -121,21 +121,21 @@ export default function ProgressPage() {
               <li key={s.id}>
                 <Link
                   href={`/calendar/${s.summary_date}`}
-                  className="group flex flex-col gap-1.5 rounded-2xl border border-white/60 bg-white/70 p-4 transition hover:-translate-y-0.5 hover:shadow-md"
+                  className="group flex flex-col gap-1.5 rounded-2xl border border-border/60 bg-surface/70 p-4 transition hover:-translate-y-0.5 hover:shadow-md"
                 >
                   <div className="flex flex-wrap items-center gap-2">
-                    <span className="font-semibold text-ink group-hover:text-grape">
+                    <span className="font-semibold text-foreground group-hover:text-grape">
                       {shortDate(s.summary_date)}
                     </span>
                     <Chip tone={ASSESSMENT_META[s.assessment].tone} size="sm">
                       {ASSESSMENT_META[s.assessment].label}
                     </Chip>
-                    <span className="text-sm text-ink-soft">
+                    <span className="text-sm text-muted">
                       🔥 ~{s.calories_in} in · ~{s.calories_out} out
                       {s.target_calories != null && <> · target ~{s.target_calories}</>}
                     </span>
                   </div>
-                  <p className="text-sm text-ink-soft">{s.headline}</p>
+                  <p className="text-sm text-muted">{s.headline}</p>
                 </Link>
               </li>
             ))}

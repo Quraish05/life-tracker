@@ -50,7 +50,7 @@ export default function GoalPage() {
         subtitle="Set your goal so the daily summary can tell you if you're on track."
       />
       {isLoading ? (
-        <p className="text-sm text-ink-soft">Loading…</p>
+        <p className="text-sm text-muted">Loading…</p>
       ) : (
         <GoalForm initial={goal ?? null} />
       )}
@@ -178,7 +178,7 @@ function GoalForm({ initial }: { initial: HealthGoal | null }) {
           <select
             id="activity_level"
             {...register("activity_level")}
-            className="w-full rounded-xl border border-lilac/60 bg-cream/80 px-4 py-2.5 text-sm text-ink transition focus:border-grape focus:bg-white focus:outline-none focus:ring-4 focus:ring-lilac"
+            className="w-full rounded-xl border border-border/60 bg-background/80 px-4 py-2.5 text-sm text-foreground transition focus:border-grape focus:bg-surface focus:outline-none focus:ring-4 focus:ring-ring"
           >
             <option value="">Not sure</option>
             {activityLevels.map((a) => (

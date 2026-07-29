@@ -6,13 +6,13 @@ export function HowItWorks() {
   return (
     <section className="mx-auto max-w-6xl px-6 pt-16 tablet:pt-40">
       <div className="mb-12 text-center">
-        <span className="inline-flex items-center gap-2 rounded-full border border-grape/20 bg-white/70 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wide text-grape shadow-sm">
+        <span className="inline-flex items-center gap-2 rounded-full border border-grape/20 bg-surface/70 px-3.5 py-1.5 text-xs font-bold uppercase tracking-wide text-grape shadow-sm">
           The loop
         </span>
         <h2 className="mt-4 text-3xl font-bold tablet:text-4xl">
           How it <span className="font-display italic text-grape">works</span>
         </h2>
-        <p className="mt-2 text-sm text-ink-soft">
+        <p className="mt-2 text-sm text-muted">
           Five steps, from goal to progress.
         </p>
       </div>
@@ -37,7 +37,7 @@ export function HowItWorks() {
                 {i + 1}
               </span>
               <h3 className="mt-3 font-bold">{step.title}</h3>
-              <p className="mt-1 max-w-[15rem] text-sm text-ink-soft">
+              <p className="mt-1 max-w-[15rem] text-sm text-muted">
                 {step.blurb}
               </p>
             </li>

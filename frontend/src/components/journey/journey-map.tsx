@@ -45,7 +45,7 @@ export function JourneyMap() {
       <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
         <div>
           <p className="text-sm font-semibold text-grape">Your journey</p>
-          <p className="text-sm text-ink-soft">
+          <p className="text-sm text-muted">
             A few steps to get the most out of{" "}
             <AccentText>Life Tracker</AccentText>.
           </p>
@@ -65,7 +65,7 @@ export function JourneyMap() {
                 className={`flex h-full flex-col rounded-2xl border p-3 transition hover:-translate-y-0.5 hover:shadow-md ${
                   isDone
                     ? "border-mint/60 bg-mint/20"
-                    : "border-white/60 bg-white/60"
+                    : "border-border/60 bg-surface/60"
                 }`}
               >
                 <div className="flex items-center gap-2">
@@ -80,8 +80,8 @@ export function JourneyMap() {
                   </span>
                   <span className="text-lg">{step.icon}</span>
                 </div>
-                <p className="mt-2 text-sm font-bold text-ink">{step.title}</p>
-                <p className="mt-0.5 text-xs text-ink-soft">{step.blurb}</p>
+                <p className="mt-2 text-sm font-bold text-foreground">{step.title}</p>
+                <p className="mt-0.5 text-xs text-muted">{step.blurb}</p>
               </Link>
             </li>
           );

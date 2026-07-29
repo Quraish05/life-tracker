@@ -16,7 +16,7 @@ export function AiQuotaHint({ className }: { className?: string }) {
     <span
       className={cn(
         "text-xs",
-        remaining <= 0 ? "font-semibold text-coral" : "text-ink-soft",
+        remaining <= 0 ? "font-semibold text-coral" : "text-muted",
         className,
       )}
     >
@@ -38,7 +38,7 @@ export function AiQuotaBadge({ className }: { className?: string }) {
     <div
       className={cn(
         "inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold",
-        exhausted ? "bg-coral/15 text-coral" : "bg-white/60 text-grape-deep",
+        exhausted ? "bg-coral/15 text-coral" : "bg-surface/60 text-grape-deep",
         className,
       )}
     >
@@ -71,7 +71,7 @@ export function AiLimitNotice({ className }: { className?: string }) {
       <p className="text-sm font-semibold text-grape-deep">
         ✨ You&rsquo;ve used all {limit} free AI actions
       </p>
-      <p className="mt-0.5 text-xs text-ink-soft">
+      <p className="mt-0.5 text-xs text-muted">
         Paid plans with more AI are coming soon — thanks for trying it out!
       </p>
     </div>

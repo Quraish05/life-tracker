@@ -31,7 +31,7 @@ export function MonthGrid({
         {WEEKDAYS.map((d) => (
           <div
             key={d}
-            className="text-center text-xs font-semibold uppercase tracking-wide text-ink-soft/70"
+            className="text-center text-xs font-semibold uppercase tracking-wide text-muted/70"
           >
             {d}
           </div>
@@ -52,8 +52,8 @@ export function MonthGrid({
               href={`/calendar/${cell.iso}`}
               className={`group flex min-h-[4.5rem] flex-col rounded-2xl border p-2 transition tablet:min-h-20 ${
                 cell.inMonth
-                  ? "border-white/60 bg-white/70 hover:-translate-y-0.5 hover:shadow-md"
-                  : "border-transparent bg-white/30"
+                  ? "border-border/60 bg-surface/70 hover:-translate-y-0.5 hover:shadow-md"
+                  : "border-transparent bg-surface/30"
               } ${isToday ? "ring-2 ring-grape" : ""}`}
             >
               <span
@@ -61,8 +61,8 @@ export function MonthGrid({
                   isToday
                     ? "text-grape"
                     : cell.inMonth
-                      ? "text-ink"
-                      : "text-ink-soft/40"
+                      ? "text-foreground"
+                      : "text-muted/40"
                 }`}
               >
                 {cell.date.getDate()}
