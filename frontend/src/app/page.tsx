@@ -55,7 +55,7 @@ export default function LandingPage() {
 
       {/* AI highlight */}
       <section className="mx-auto max-w-6xl px-6 pt-16 tablet:pt-14">
-        <div className="relative overflow-hidden rounded-[2rem] border border-border/60 bg-gradient-to-br from-grape/15 via-lilac/40 to-blush/40 p-8 shadow-xl shadow-grape/10 tablet:p-12">
+        <div className="relative overflow-hidden rounded-[2rem] border border-border/60 bg-gradient-to-br from-grape/15 via-lilac/40 to-blush/40 p-8 shadow-xl shadow-grape/10 dark:from-[#241528] dark:via-[#1f1324] dark:to-[#1c1222] tablet:p-12">
           {/* soft decorative glows for depth */}
           <div className="pointer-events-none absolute -right-16 -top-20 h-56 w-56 rounded-full bg-coral/20 blur-3xl" />
           <div className="pointer-events-none absolute -bottom-24 -left-12 h-56 w-56 rounded-full bg-sky/30 blur-3xl" />

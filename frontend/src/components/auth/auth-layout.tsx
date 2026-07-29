@@ -12,10 +12,10 @@ function BrandPanel({
   description: React.ReactNode;
 }) {
   return (
-    <div className="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-lilac via-blush to-peach p-10 laptop:flex laptop:p-14">
-      {/* Decorative pastel blobs */}
-      <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-sky/60 blur-3xl" />
-      <div className="pointer-events-none absolute -bottom-28 right-0 h-80 w-80 rounded-full bg-mint/60 blur-3xl" />
+    <div className="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-lilac via-blush to-peach p-10 dark:from-[#2a1530] dark:via-[#221428] dark:to-[#1a0f1e] laptop:flex laptop:p-14">
+      {/* Decorative pastel blobs — barely-there in dark so they don't glow white. */}
+      <div className="pointer-events-none absolute -left-24 -top-24 h-72 w-72 rounded-full bg-sky/60 blur-3xl dark:bg-grape/[0.07]" />
+      <div className="pointer-events-none absolute -bottom-28 right-0 h-80 w-80 rounded-full bg-mint/60 blur-3xl dark:bg-grape/[0.07]" />
 
       <div className="relative flex items-center gap-2.5">
         <div className="flex h-10 w-10 rotate-3 items-center justify-center rounded-xl bg-gradient-to-br from-grape to-coral text-sm font-bold text-white shadow-lg shadow-grape/30">
