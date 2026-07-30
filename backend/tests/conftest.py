@@ -41,9 +41,13 @@ def _test_database_url() -> str:
 TEST_DATABASE_URL = _test_database_url()
 
 
-@pytest.fixture(scope="session", autouse=True)
+@pytest.fixture(scope="session")
 def _create_schema():
     """Build the schema once for the whole test session, drop it at the end.
+
+    NOT autouse: only tests that request the ``db`` fixture (which depends on
+    this) touch Postgres, so DB-free tests stay DB-free and the suite doesn't
+    require a test database unless a DB test actually runs.
 
     Run via ``asyncio.run`` in a plain (sync) fixture so it owns its own event
     loop and doesn't tangle with pytest-asyncio's per-test loop — the two only
@@ -64,11 +68,13 @@ def _create_schema():
 
 
 @pytest_asyncio.fixture
-async def db() -> AsyncSession:
+async def db(_create_schema) -> AsyncSession:
     """A DB session bound to a transaction that is rolled back after the test.
 
-    A fresh engine per test keeps everything inside pytest-asyncio's event loop
-    (an async engine can't cross loops); cheap enough for DB-backed tests.
+    Depends on ``_create_schema`` so requesting ``db`` is what pulls in the
+    schema — DB-free tests never trigger it. A fresh engine per test keeps
+    everything inside pytest-asyncio's event loop (an async engine can't cross
+    loops); cheap enough for DB-backed tests.
     """
     engine = create_async_engine(TEST_DATABASE_URL)
     connection = await engine.connect()
