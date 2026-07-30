@@ -42,7 +42,11 @@ export default function AppLayout({
         {/* Sidebar stays flush left; only the main content region is capped
             at max-w-content and centered on ultra-wide screens. */}
         <main className="flex-1 overflow-y-auto bg-gradient-to-br from-background via-background to-lilac/40 dark:to-grape/8">
-          <div className="mx-auto max-w-content">{children}</div>
+          {/* Bottom padding clears the fixed mobile tab bar; the desktop rail
+              is a flex sibling, so no offset is needed there. */}
+          <div className="mx-auto max-w-content pb-24 laptop:pb-0">
+            {children}
+          </div>
         </main>
       </div>
     </ReminderNotificationsProvider>
