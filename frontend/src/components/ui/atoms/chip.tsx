@@ -14,7 +14,7 @@ const chipVariants = cva(
         /** Slightly denser lilac — count badges, category labels. */
         muted: "bg-lilac/50 text-grape-deep",
         /** Filled grape — the selected/active state. */
-        solid: "bg-grape text-white shadow-sm",
+        solid: "bg-grape text-on-accent",
         /** Sky blue — a secondary category. Fixed-dark text: the tint stays light in both themes. */
         sky: "bg-sky/60 text-ink",
         /** Mint — a positive/complete status. Fixed-dark text on a light tint. */

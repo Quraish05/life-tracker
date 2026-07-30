@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 
-import { useDishes } from "@/lib/use-dishes";
+import { useFoods } from "@/lib/use-food";
 import { useExercises } from "@/lib/use-exercises";
 import { useHealthGoal } from "@/lib/use-health-goal";
 import { useSummaries } from "@/lib/use-insights";
@@ -23,14 +23,14 @@ export function JourneyMap() {
   const month = monthRange(now.getFullYear(), now.getMonth());
 
   const { data: goal } = useHealthGoal();
-  const { data: dishes = [] } = useDishes();
+  const { data: foods = [] } = useFoods();
   const { data: meals = [] } = useMeals(week.start, week.end);
   const { data: exercises = [] } = useExercises(week.start, week.end);
   const { data: summaries = [] } = useSummaries(month.start, month.end);
 
   const done: Record<string, boolean> = {
     goal: goal != null,
-    dishes: dishes.length > 0,
+    foods: foods.length > 0,
     log: meals.length > 0 || exercises.length > 0,
     summarize: summaries.length > 0,
     progress: summaries.length > 0,

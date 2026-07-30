@@ -4,16 +4,15 @@ import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
 
-const cardVariants = cva("rounded-3xl", {
+const cardVariants = cva("rounded-2xl", {
   variants: {
     tone: {
-      /** Frosted white — the default content surface (e.g. note cards). */
-      glass: "border border-border/60 bg-surface/70 backdrop-blur-sm",
-      /** Softer frosted panel — banners and callouts. */
-      soft: "border border-grape/20 bg-surface/60 backdrop-blur-sm",
+      /** The default content surface (e.g. note cards) — flat, hairline border. */
+      glass: "border border-border bg-surface",
+      /** Softer tinted panel — banners and callouts. */
+      soft: "border border-grape/20 bg-surface",
       /** Dashed outline — empty states and drop zones. */
-      dashed:
-        "border-2 border-dashed border-grape/25 bg-surface/60 backdrop-blur-sm",
+      dashed: "border-2 border-dashed border-grape/25 bg-surface",
       /** No border or fill — supply your own background via className. */
       plain: "",
     },
@@ -23,9 +22,9 @@ const cardVariants = cva("rounded-3xl", {
       md: "p-6",
       lg: "p-12",
     },
-    /** Adds shadow + hover lift for clickable cards. */
+    /** Tint-on-hover affordance for clickable cards (flat — no shadow/lift). */
     interactive: {
-      true: "shadow-sm transition hover:-translate-y-1 hover:shadow-lg",
+      true: "transition-colors hover:border-grape/30 hover:bg-grape/5",
       false: "",
     },
   },

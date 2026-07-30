@@ -1,47 +1,47 @@
 "use client";
 
-import type { Dish } from "@/types/dish";
+import type { FoodItem } from "@/types/food";
 import { cn } from "@/lib/utils";
 
 type Props = {
-  /** The dishes to list (already filtered and sorted by the page). */
-  dishes: Dish[];
+  /** The foods to list (already filtered and sorted by the page). */
+  foods: FoodItem[];
   activeId: number | null;
   onSelect: (id: number) => void;
 };
 
-/** A short preview of what's in a dish — its first few ingredients, else a hint. */
-function summarize(dish: Dish): string {
-  const names = dish.ingredients.map((i) => i.name.trim()).filter(Boolean);
+/** A short preview of what's in a food — its first few ingredients, else a hint. */
+function summarize(food: FoodItem): string {
+  const names = food.ingredients.map((i) => i.name.trim()).filter(Boolean);
   if (names.length) return names.slice(0, 3).join(", ");
-  return dish.recipe_md ? "Has a recipe" : "No ingredients yet";
+  return food.recipe_md ? "Has a recipe" : "No ingredients yet";
 }
 
-/** Main pane of the recipe binder: a scannable, selectable list of dishes. */
-export function DishListPanel({ dishes, activeId, onSelect }: Props) {
+/** Main pane of the recipe binder: a scannable, selectable list of foods. */
+export function FoodListPanel({ foods, activeId, onSelect }: Props) {
   return (
     <div>
       {/* Column header */}
       <div className="grid grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-3 border-b border-border px-3.5 pb-2 text-[10px] font-bold uppercase tracking-[0.09em] text-muted">
         <span aria-hidden />
-        <span>Dish</span>
+        <span>Food</span>
         <span className="text-right">Ingredients</span>
       </div>
 
       <ul className="mt-2 space-y-1.5">
-        {dishes.length === 0 ? (
+        {foods.length === 0 ? (
           <li className="px-3.5 py-6 text-center text-sm text-muted">
-            No dishes match.
+            No foods match.
           </li>
         ) : (
-          dishes.map((dish) => {
-            const active = dish.id === activeId;
-            const count = dish.ingredients.length;
+          foods.map((food) => {
+            const active = food.id === activeId;
+            const count = food.ingredients.length;
             return (
-              <li key={dish.id}>
+              <li key={food.id}>
                 <button
                   type="button"
-                  onClick={() => onSelect(dish.id)}
+                  onClick={() => onSelect(food.id)}
                   aria-current={active ? "true" : undefined}
                   className={cn(
                     "grid w-full grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-3 rounded-lg border px-3.5 py-3 text-left transition",
@@ -55,10 +55,10 @@ export function DishListPanel({ dishes, activeId, onSelect }: Props) {
                   </span>
                   <span className="min-w-0">
                     <span className="block truncate text-[13px] font-bold text-foreground">
-                      {dish.name}
+                      {food.name}
                     </span>
                     <span className="block truncate text-[11px] text-muted">
-                      {summarize(dish)}
+                      {summarize(food)}
                     </span>
                   </span>
                   <span className="text-right">

@@ -12,7 +12,7 @@ export const MEAL_NOTE_MAX = 200;
 export const mealSchema = z.object({
   log_date: z.string().regex(/^\d{4}-\d{2}-\d{2}$/, "Pick a valid date"),
   slot: z.enum(mealSlots),
-  dish_id: z.number().int().positive(),
+  food_id: z.number().int().positive(),
   note: z.string().trim().max(MEAL_NOTE_MAX).optional(),
 });
 

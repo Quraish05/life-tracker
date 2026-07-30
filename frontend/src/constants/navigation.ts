@@ -3,8 +3,8 @@ export type NavItem = {
   label: string;
   href: string;
   icon: string;
-  /** Optional live count badge, resolved by the sidebar (e.g. dishes total). */
-  badge?: "dishes";
+  /** Optional live count badge, resolved by the sidebar (e.g. food total). */
+  badge?: "food";
 };
 
 /** A labelled section of the sidebar. */
@@ -25,7 +25,7 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { label: "Today", href: "/dashboard", icon: "🏠" },
       { label: "Calendar", href: "/calendar", icon: "🗓️" },
-      { label: "Dishes", href: "/dishes", icon: "🍽️", badge: "dishes" },
+      { label: "Food", href: "/food", icon: "🍽️", badge: "food" },
       { label: "Reminders", href: "/reminders", icon: "⏰" },
     ],
   },
@@ -50,6 +50,6 @@ export const NAV_ITEMS: NavItem[] = NAV_GROUPS.flatMap((g) => g.items);
 export const MOBILE_TABS: NavItem[] = [
   { label: "Today", href: "/dashboard", icon: "🏠" },
   { label: "Calendar", href: "/calendar", icon: "🗓️" },
-  { label: "Dishes", href: "/dishes", icon: "🍽️" },
+  { label: "Food", href: "/food", icon: "🍽️" },
   { label: "Notes", href: "/notes", icon: "📓" },
 ];

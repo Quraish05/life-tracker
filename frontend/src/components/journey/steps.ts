@@ -18,11 +18,11 @@ export const JOURNEY_STEPS: JourneyStep[] = [
     href: "/goal",
   },
   {
-    key: "dishes",
+    key: "foods",
     icon: "🍽️",
-    title: "Build your dishes",
+    title: "Build your food",
     blurb: "Save the meals you eat, with recipes and ingredients.",
-    href: "/dishes",
+    href: "/food",
   },
   {
     key: "log",

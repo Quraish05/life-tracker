@@ -4,9 +4,9 @@ import { useEffect } from "react";
 import { Controller, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 
-import { dishSchema, type DishInput } from "@/lib/validations/dish";
-import type { Dish } from "@/types/dish";
-import { useCreateDish, useUpdateDish } from "@/lib/use-dishes";
+import { foodItemSchema, type FoodItemInput } from "@/lib/validations/food";
+import type { FoodItem } from "@/types/food";
+import { useCreateFood, useUpdateFood } from "@/lib/use-food";
 import { Button } from "@/components/ui/atoms/button";
 import { FieldError, FormError } from "@/components/ui/atoms/form-error";
 import { FormField } from "@/components/ui/molecules/form-field";
@@ -17,19 +17,19 @@ import {
   ModalOverlay,
 } from "@/components/ui/molecules/modal";
 import { MarkdownEditor } from "@/components/notes/markdown-editor";
-import { IngredientList } from "@/components/dishes/ingredient-list";
+import { IngredientList } from "@/components/food/ingredient-list";
 
 type Props = {
-  /** The dish being edited, or null when creating a new one. */
-  dish: Dish | null;
+  /** The food being edited, or null when creating a new one. */
+  food: FoodItem | null;
   onClose: () => void;
-  /** Called with the created/updated dish (callers may ignore the argument). */
-  onSaved: (dish: Dish) => void;
+  /** Called with the created/updated food (callers may ignore the argument). */
+  onSaved: (food: FoodItem) => void;
 };
 
-export function DishEditor({ dish, onClose, onSaved }: Props) {
-  const createDish = useCreateDish();
-  const updateDish = useUpdateDish();
+export function FoodEditor({ food, onClose, onSaved }: Props) {
+  const createFood = useCreateFood();
+  const updateFood = useUpdateFood();
 
   const {
     register,
@@ -37,12 +37,12 @@ export function DishEditor({ dish, onClose, onSaved }: Props) {
     control,
     setError,
     formState: { errors, isSubmitting },
-  } = useForm<DishInput>({
-    resolver: zodResolver(dishSchema),
+  } = useForm<FoodItemInput>({
+    resolver: zodResolver(foodItemSchema),
     defaultValues: {
-      name: dish?.name ?? "",
-      recipe_md: dish?.recipe_md ?? "",
-      ingredients: dish?.ingredients ?? [],
+      name: food?.name ?? "",
+      recipe_md: food?.recipe_md ?? "",
+      ingredients: food?.ingredients ?? [],
     },
   });
 
@@ -55,16 +55,16 @@ export function DishEditor({ dish, onClose, onSaved }: Props) {
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose]);
 
-  async function onSubmit(values: DishInput) {
+  async function onSubmit(values: FoodItemInput) {
     // Drop half-typed rows with no name; the backend applies the same floor.
     const input = {
       ...values,
       ingredients: values.ingredients.filter((i) => i.name.trim().length > 0),
     };
     try {
-      const saved = dish
-        ? await updateDish.mutateAsync({ id: dish.id, input })
-        : await createDish.mutateAsync(input);
+      const saved = food
+        ? await updateFood.mutateAsync({ id: food.id, input })
+        : await createFood.mutateAsync(input);
       onSaved(saved);
     } catch {
       setError("root", { message: "Couldn't save. Please try again." });
@@ -75,8 +75,8 @@ export function DishEditor({ dish, onClose, onSaved }: Props) {
     <ModalOverlay className="z-50 items-start overflow-y-auto tablet:p-8">
       <ModalDialog size="lg" className="my-auto">
         <ModalHeader onClose={onClose}>
-          {dish ? "Edit" : "New"}{" "}
-          <span className="font-display italic text-grape">dish</span>
+          {food ? "Edit" : "New"}{" "}
+          <span className="font-display italic text-grape">food</span>
         </ModalHeader>
 
         <form onSubmit={handleSubmit(onSubmit)} noValidate className="space-y-5 px-6 py-5">
@@ -125,7 +125,7 @@ export function DishEditor({ dish, onClose, onSaved }: Props) {
               Cancel
             </Button>
             <Button type="submit" disabled={isSubmitting}>
-              {isSubmitting ? "Saving…" : dish ? "Save changes" : "Create"}
+              {isSubmitting ? "Saving…" : food ? "Save changes" : "Create"}
             </Button>
           </div>
         </form>

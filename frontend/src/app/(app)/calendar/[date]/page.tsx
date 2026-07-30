@@ -3,7 +3,7 @@
 import { use, useState } from "react";
 import Link from "next/link";
 
-import { useDishes } from "@/lib/use-dishes";
+import { useFoods } from "@/lib/use-food";
 import { useCreateMeal, useDeleteMeal, useMeals } from "@/lib/use-meals";
 import {
   useCreateExercise,
@@ -25,7 +25,7 @@ import { DayExercises } from "@/components/calendar/day-exercises";
 import { DayJournal } from "@/components/calendar/day-journal";
 import { DayReminders } from "@/components/calendar/day-reminders";
 import { DaySummary } from "@/components/calendar/day-summary";
-import { DishEditor } from "@/components/dishes/dish-editor";
+import { FoodEditor } from "@/components/food/food-editor";
 import { AccentText } from "@/components/ui/atoms/accent-text";
 
 export default function DayPage({
@@ -36,7 +36,7 @@ export default function DayPage({
   const { date } = use(params);
 
   const { data: meals = [], isLoading } = useMeals(date, date);
-  const { data: dishes = [] } = useDishes();
+  const { data: foods = [] } = useFoods();
   const { data: exercises = [] } = useExercises(date, date);
   const { data: notes = [] } = useNotes();
   const { data: reminders = [] } = useReminders();
@@ -53,19 +53,19 @@ export default function DayPage({
     .filter((r) => toISODate(new Date(r.remind_at)) === date)
     .sort((a, b) => a.remind_at.localeCompare(b.remind_at));
 
-  // When set, the dish editor is open to create a dish for this slot; on save
-  // the new dish is logged straight into that slot.
-  const [newDishForSlot, setNewDishForSlot] = useState<MealSlot | null>(null);
+  // When set, the food editor is open to create a food for this slot; on save
+  // the new food is logged straight into that slot.
+  const [newFoodForSlot, setNewFoodForSlot] = useState<MealSlot | null>(null);
 
   function slotMeals(slot: MealSlot) {
     return meals.filter((m) => m.slot === slot);
   }
 
-  function addMeal(slot: MealSlot, dishId: number, note: string) {
+  function addMeal(slot: MealSlot, foodId: number, note: string) {
     createMeal.mutate({
       log_date: date,
       slot,
-      dish_id: dishId,
+      food_id: foodId,
       note: note || undefined,
     });
   }
@@ -102,9 +102,9 @@ export default function DayPage({
               label={slot.label}
               emoji={slot.emoji}
               meals={slotMeals(slot.key)}
-              dishes={dishes}
-              onAdd={(dishId, note) => addMeal(slot.key, dishId, note)}
-              onCreateNew={() => setNewDishForSlot(slot.key)}
+              foods={foods}
+              onAdd={(foodId, note) => addMeal(slot.key, foodId, note)}
+              onCreateNew={() => setNewFoodForSlot(slot.key)}
               onDelete={(m) => deleteMeal.mutate(m.id)}
             />
           ))}
@@ -113,9 +113,9 @@ export default function DayPage({
             label="Snacks"
             emoji={SNACK_SLOT.emoji}
             meals={snackMeals}
-            dishes={dishes}
-            onAdd={(dishId, note) => addMeal("snack", dishId, note)}
-            onCreateNew={() => setNewDishForSlot("snack")}
+            foods={foods}
+            onAdd={(foodId, note) => addMeal("snack", foodId, note)}
+            onCreateNew={() => setNewFoodForSlot("snack")}
             onDelete={(m) => deleteMeal.mutate(m.id)}
             badge={`${snackMeals.length}/${MAX_SNACKS}`}
             atMax={snackMeals.length >= MAX_SNACKS}
@@ -145,13 +145,13 @@ export default function DayPage({
         </div>
       )}
 
-      {newDishForSlot && (
-        <DishEditor
-          dish={null}
-          onClose={() => setNewDishForSlot(null)}
-          onSaved={(dish) => {
-            addMeal(newDishForSlot, dish.id, "");
-            setNewDishForSlot(null);
+      {newFoodForSlot && (
+        <FoodEditor
+          food={null}
+          onClose={() => setNewFoodForSlot(null)}
+          onSaved={(food) => {
+            addMeal(newFoodForSlot, food.id, "");
+            setNewFoodForSlot(null);
           }}
         />
       )}

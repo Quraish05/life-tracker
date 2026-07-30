@@ -1,17 +1,17 @@
 import type { MealSlot } from "@/lib/validations/meal";
 
 /**
- * A meal log: one dish eaten in a slot on a day. `dish_name` is snapshotted
- * server-side, so a log stays readable even after its dish is deleted (then
- * `dish_id` is null).
+ * A meal log: one food eaten in a slot on a day. `food_name` is snapshotted
+ * server-side, so a log stays readable even after its food is deleted (then
+ * `food_id` is null).
  */
 export type MealLog = {
   id: number;
   log_date: string;
   slot: MealSlot;
-  /** Null once the source dish is deleted. */
-  dish_id: number | null;
-  dish_name: string;
+  /** Null once the source food is deleted. */
+  food_id: number | null;
+  food_name: string;
   note: string | null;
   created_at: string;
 };

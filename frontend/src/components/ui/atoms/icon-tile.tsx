@@ -12,8 +12,8 @@ const iconTileVariants = cva(
         lg: "h-16 w-16 text-3xl",
       },
       tone: {
-        butter: "bg-butter shadow-sm",
-        white: "bg-surface/70",
+        butter: "bg-butter",
+        white: "bg-surface",
       },
     },
     defaultVariants: {

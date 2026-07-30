@@ -73,7 +73,7 @@ logged meals and workouts plus the user's goal, produce a SHORT structured \
 summary of how the day went relative to that goal.
 
 Estimate calories:
-- calories_in: sum a reasonable kcal estimate for each meal from its dish name, \
+- calories_in: sum a reasonable kcal estimate for each meal from its food name, \
 amount/portion note, and typical serving sizes. Be pragmatic, not precise.
 - calories_out: estimate kcal burned from the exercises (name + note like \
 duration or sets), scaled by the user's body weight when known. 0 if none.
@@ -125,7 +125,7 @@ def _build_user_message(
     if meals:
         for m in meals:
             portion = f" ({m.note})" if m.note else ""
-            lines.append(f"- {m.slot}: {m.dish_name}{portion}")
+            lines.append(f"- {m.slot}: {m.food_name}{portion}")
     else:
         lines.append("- (none logged)")
     lines.append("")

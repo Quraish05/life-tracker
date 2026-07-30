@@ -5,7 +5,7 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
 import { useAuth } from "@/lib/auth-context";
-import { useDishes } from "@/lib/use-dishes";
+import { useFoods } from "@/lib/use-food";
 import { cn } from "@/lib/utils";
 import { AiQuotaBadge } from "@/components/ai/ai-quota";
 import { ThemeToggle } from "@/components/ui/atoms/theme-toggle";
@@ -70,10 +70,10 @@ function useActiveMatcher() {
   return (href: string) => pathname === href || pathname.startsWith(`${href}/`);
 }
 
-/** Resolves a nav item's live badge (e.g. the dishes count) to a label. */
+/** Resolves a nav item's live badge (e.g. the food count) to a label. */
 function useBadges(): Record<NonNullable<NavItem["badge"]>, string> {
-  const { data: dishes = [] } = useDishes();
-  return { dishes: dishes.length ? String(dishes.length) : "" };
+  const { data: foods = [] } = useFoods();
+  return { food: foods.length ? String(foods.length) : "" };
 }
 
 export default function Sidebar() {

@@ -1,6 +1,6 @@
 import { z } from "zod";
 
-/** Max ingredients per dish — one place for the schema and the editor. */
+/** Max ingredients per food — one place for the schema and the editor. */
 export const MAX_INGREDIENTS = 40;
 
 /**
@@ -15,7 +15,7 @@ export const ingredientSchema = z.object({
 
 export type Ingredient = z.infer<typeof ingredientSchema>;
 
-export const dishSchema = z.object({
+export const foodItemSchema = z.object({
   name: z
     .string()
     .trim()
@@ -31,4 +31,4 @@ export const dishSchema = z.object({
     .max(MAX_INGREDIENTS, `Up to ${MAX_INGREDIENTS} ingredients`),
 });
 
-export type DishInput = z.infer<typeof dishSchema>;
+export type FoodItemInput = z.infer<typeof foodItemSchema>;

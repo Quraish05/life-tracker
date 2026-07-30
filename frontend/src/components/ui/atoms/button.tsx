@@ -10,10 +10,10 @@ const buttonVariants = cva(
     variants: {
       variant: {
         primary:
-          "rounded-full bg-grape text-on-accent shadow-lg shadow-grape/30 hover:-translate-y-0.5 hover:bg-grape-deep hover:shadow-xl hover:shadow-grape/40 active:translate-y-0 disabled:hover:translate-y-0",
+          "rounded-full bg-grape text-on-accent hover:bg-grape-deep",
         secondary:
-          "rounded-full border border-grape/25 bg-surface/80 text-grape shadow-sm backdrop-blur-xl hover:-translate-y-0.5 hover:border-grape/40 hover:bg-surface active:translate-y-0 disabled:hover:translate-y-0",
-        ghost: "rounded-full text-foreground hover:bg-lilac/40",
+          "rounded-full border border-grape/30 bg-transparent text-grape-deep hover:bg-grape/10",
+        ghost: "rounded-full text-foreground hover:bg-grape/10",
         link: "font-semibold text-grape underline-offset-4 hover:text-grape-deep hover:underline",
       },
       size: {

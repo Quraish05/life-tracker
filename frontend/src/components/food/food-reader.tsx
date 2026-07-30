@@ -2,40 +2,40 @@
 
 import { useState } from "react";
 
-import type { Dish } from "@/types/dish";
+import type { FoodItem } from "@/types/food";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/atoms/button";
 import { MarkdownPreview } from "@/components/notes/markdown-preview";
 import { formatDate } from "@/components/notes/_lib";
 
 type Props = {
-  /** The dish to read, or null when the library has no selection. */
-  dish: Dish | null;
-  onEdit: (dish: Dish) => void;
-  onDelete: (dish: Dish) => void;
+  /** The food to read, or null when the library has no selection. */
+  food: FoodItem | null;
+  onEdit: (food: FoodItem) => void;
+  onDelete: (food: FoodItem) => void;
 };
 
 const SECTION_LABEL =
   "text-[11px] font-bold uppercase tracking-[0.08em] text-muted";
 
-/** Detail aside of the recipe binder: the selected dish, read in full. */
-export function DishReader({ dish, onEdit, onDelete }: Props) {
+/** Detail aside of the recipe binder: the selected food, read in full. */
+export function FoodReader({ food, onEdit, onDelete }: Props) {
   // Ephemeral "tick as you cook/shop" state. The page keys this component by
-  // dish id, so switching dishes remounts it and clears the checks — no effect.
+  // food id, so switching foods remounts it and clears the checks — no effect.
   const [checked, setChecked] = useState<Set<number>>(new Set());
 
-  if (!dish) {
+  if (!food) {
     return (
       <div className="flex min-h-64 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-surface/50 p-6 text-center">
         <span className="text-3xl">🍽️</span>
         <p className="mt-3 text-sm text-muted">
-          Pick a dish from the list to read it.
+          Pick a food from the list to read it.
         </p>
       </div>
     );
   }
 
-  const count = dish.ingredients.length;
+  const count = food.ingredients.length;
 
   function toggle(index: number) {
     setChecked((prev) => {
@@ -55,11 +55,11 @@ export function DishReader({ dish, onEdit, onDelete }: Props) {
         </span>
         <div className="min-w-0">
           <p className="truncate text-[15px] font-bold text-foreground">
-            {dish.name}
+            {food.name}
           </p>
           <p className="mt-0.5 text-[11px] text-muted">
             {count} ingredient{count === 1 ? "" : "s"} · updated{" "}
-            {formatDate(dish.updated_at)}
+            {formatDate(food.updated_at)}
           </p>
         </div>
       </div>
@@ -72,7 +72,7 @@ export function DishReader({ dish, onEdit, onDelete }: Props) {
         </p>
       ) : (
         <ul className="mt-2 divide-y divide-border">
-          {dish.ingredients.map((ing, i) => {
+          {food.ingredients.map((ing, i) => {
             const done = checked.has(i);
             return (
               <li key={i}>
@@ -115,8 +115,8 @@ export function DishReader({ dish, onEdit, onDelete }: Props) {
       {/* Recipe — rendered markdown */}
       <p className={cn(SECTION_LABEL, "mt-5")}>Recipe</p>
       <div className="mt-2 text-sm">
-        {dish.recipe_md ? (
-          <MarkdownPreview>{dish.recipe_md}</MarkdownPreview>
+        {food.recipe_md ? (
+          <MarkdownPreview>{food.recipe_md}</MarkdownPreview>
         ) : (
           <p className="text-sm italic text-muted/70">
             No recipe yet — add one with Edit.
@@ -129,14 +129,14 @@ export function DishReader({ dish, onEdit, onDelete }: Props) {
         <Button
           size="sm"
           className="flex-1"
-          onClick={() => onEdit(dish)}
+          onClick={() => onEdit(food)}
         >
           Edit
         </Button>
         <Button
           variant="secondary"
           size="sm"
-          onClick={() => onDelete(dish)}
+          onClick={() => onDelete(food)}
           className="border-coral/30 text-coral hover:border-coral/50 hover:bg-coral/10 hover:text-coral"
         >
           Delete
