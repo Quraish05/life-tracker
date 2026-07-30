@@ -1,16 +1,16 @@
 "use client";
 
-import type { Dish } from "@/types/dish";
+import type { FoodItem } from "@/types/food";
 import type { MealLog } from "@/types/meal";
 import { IconButton } from "@/components/ui/atoms/icon-button";
-import { DishPicker } from "@/components/calendar/dish-picker";
+import { FoodPicker } from "@/components/calendar/food-picker";
 
 type Props = {
   label: string;
   emoji: string;
   meals: MealLog[];
-  dishes: Dish[];
-  onAdd: (dishId: number, note: string) => void;
+  foods: FoodItem[];
+  onAdd: (foodId: number, note: string) => void;
   onCreateNew: () => void;
   onDelete: (meal: MealLog) => void;
   /** Optional badge (e.g. snacks "1/2"). */
@@ -23,7 +23,7 @@ export function MealSlotSection({
   label,
   emoji,
   meals,
-  dishes,
+  foods,
   onAdd,
   onCreateNew,
   onDelete,
@@ -52,14 +52,14 @@ export function MealSlotSection({
               className="group flex items-center gap-2 rounded-xl bg-surface/70 px-3 py-2"
             >
               <div className="min-w-0 flex-1">
-                <span className="font-semibold text-foreground">{meal.dish_name}</span>
+                <span className="font-semibold text-foreground">{meal.food_name}</span>
                 {meal.note && (
                   <span className="ml-2 text-sm text-muted">· {meal.note}</span>
                 )}
               </div>
               <IconButton
                 onClick={() => onDelete(meal)}
-                aria-label={`Remove ${meal.dish_name}`}
+                aria-label={`Remove ${meal.food_name}`}
                 tone="danger"
               >
                 ✕
@@ -70,7 +70,7 @@ export function MealSlotSection({
       )}
 
       {!atMax && (
-        <DishPicker dishes={dishes} onAdd={onAdd} onCreateNew={onCreateNew} />
+        <FoodPicker foods={foods} onAdd={onAdd} onCreateNew={onCreateNew} />
       )}
     </section>
   );

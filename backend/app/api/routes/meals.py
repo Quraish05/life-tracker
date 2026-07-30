@@ -5,7 +5,7 @@ from sqlalchemy import case, select
 
 from app.api.deps import UNAUTHORIZED_RESPONSE, CurrentUser, DbSession
 from app.api.responses import not_found_response
-from app.models.dish import Dish
+from app.models.food import FoodItem
 from app.models.meal_log import MealLog
 from app.schemas.meal_log import MealLogCreate, MealLogRead, MealLogUpdate
 from app.services.ws_manager import manager
@@ -13,10 +13,10 @@ from app.services.ws_manager import manager
 router = APIRouter(prefix="/meals", tags=["meals"])
 
 MEAL_NOT_FOUND = "Meal not found."
-DISH_NOT_FOUND = "Dish not found."
+FOOD_NOT_FOUND = "Food not found."
 
 _MEAL_NOT_FOUND = not_found_response("No such meal for this user", MEAL_NOT_FOUND)
-_DISH_NOT_FOUND = not_found_response("No such dish for this user", DISH_NOT_FOUND)
+_FOOD_NOT_FOUND = not_found_response("No such food for this user", FOOD_NOT_FOUND)
 
 # Chronological-within-a-day ordering for the slots.
 _SLOT_ORDER = case(
@@ -64,27 +64,27 @@ async def list_meals(
     "",
     response_model=MealLogRead,
     status_code=status.HTTP_201_CREATED,
-    summary="Log a meal (a dish eaten in a slot on a day)",
-    responses={**UNAUTHORIZED_RESPONSE, **_DISH_NOT_FOUND},
+    summary="Log a meal (a food eaten in a slot on a day)",
+    responses={**UNAUTHORIZED_RESPONSE, **_FOOD_NOT_FOUND},
 )
 async def create_meal(
     payload: MealLogCreate, current_user: CurrentUser, db: DbSession
 ) -> MealLog:
-    """Log a dish from the user's library into a day/slot.
+    """Log a food from the user's library into a day/slot.
 
-    The dish must belong to the caller; its name is snapshotted onto the meal so
-    the log survives the dish later being deleted.
+    The food must belong to the caller; its name is snapshotted onto the meal so
+    the log survives the food later being deleted.
     """
-    dish = await db.get(Dish, payload.dish_id)
-    if dish is None or dish.user_id != current_user.id:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=DISH_NOT_FOUND)
+    food = await db.get(FoodItem, payload.food_id)
+    if food is None or food.user_id != current_user.id:
+        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail=FOOD_NOT_FOUND)
 
     meal = MealLog(
         user_id=current_user.id,
         log_date=payload.log_date,
         slot=payload.slot,
-        dish_id=dish.id,
-        dish_name=dish.name,
+        food_id=food.id,
+        food_name=food.name,
         note=payload.note,
     )
     db.add(meal)
@@ -107,7 +107,7 @@ async def create_meal(
 async def update_meal(
     meal_id: int, payload: MealLogUpdate, current_user: CurrentUser, db: DbSession
 ) -> MealLog:
-    """Move a meal to another slot or edit its note. The dish isn't reassigned."""
+    """Move a meal to another slot or edit its note. The food isn't reassigned."""
     meal = await _get_owned_meal(meal_id, current_user, db)
 
     updates = payload.model_dump(exclude_unset=True)

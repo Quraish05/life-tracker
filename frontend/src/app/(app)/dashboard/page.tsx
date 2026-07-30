@@ -3,7 +3,7 @@
 import { useMemo } from "react";
 import Link from "next/link";
 
-import { useDishes } from "@/lib/use-dishes";
+import { useFoods } from "@/lib/use-food";
 import { useMeals } from "@/lib/use-meals";
 import { useExercises } from "@/lib/use-exercises";
 import { useNotes } from "@/lib/use-notes";
@@ -22,7 +22,7 @@ export default function DashboardPage() {
   const today = todayISO();
   const week = useMemo(() => weekRange(today), [today]);
 
-  const { data: dishes = [] } = useDishes();
+  const { data: foods = [] } = useFoods();
   const { data: meals = [] } = useMeals(week.start, week.end);
   const { data: exercises = [] } = useExercises(week.start, week.end);
   const { data: notes = [] } = useNotes();
@@ -53,7 +53,7 @@ export default function DashboardPage() {
     { label: "Workout days", value: workoutDaysThisWeek, emoji: "💪", bg: "bg-mint" },
     { label: "Journal entries", value: journalThisWeek, emoji: "📓", bg: "bg-sky" },
     { label: "Reminders due", value: remindersPending, emoji: "🔔", bg: "bg-butter" },
-    { label: "Dishes in library", value: dishes.length, emoji: "🍲", bg: "bg-blush" },
+    { label: "Food in library", value: foods.length, emoji: "🍲", bg: "bg-blush" },
   ];
 
   const todayLabel = new Date().toLocaleDateString(undefined, {
@@ -133,10 +133,10 @@ export default function DashboardPage() {
         </Link>{" "}
         to log a day, or browse your{" "}
         <Link
-          href="/dishes"
+          href="/food"
           className="font-semibold text-grape underline underline-offset-2 hover:text-grape-deep"
         >
-          dishes
+          foods
         </Link>
         .
       </p>

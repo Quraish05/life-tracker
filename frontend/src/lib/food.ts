@@ -1,0 +1,29 @@
+import { ApiError, request, tokenStore } from "@/lib/api";
+import type { FoodItemInput } from "@/lib/validations/food";
+import type { FoodItem } from "@/types/food";
+
+/**
+ * Food data layer — a thin client over the backend `food` API.
+ * Consumed through the React Query hooks in `lib/use-food.ts`.
+ */
+
+/** Grab the current token, or fail loudly rather than hit the API unauthenticated. */
+function authToken(): string {
+  const token = tokenStore.get();
+  if (!token) throw new ApiError(401, "Your session has expired. Please sign in again.");
+  return token;
+}
+
+export const foodApi = {
+  list: (): Promise<FoodItem[]> => request<FoodItem[]>("/food", { token: authToken() }),
+
+  create: (input: FoodItemInput): Promise<FoodItem> =>
+    request<FoodItem>("/food", { method: "POST", body: input, token: authToken() }),
+
+  /** Partially update a food — only the fields in `patch` change. */
+  update: (id: number, patch: Partial<FoodItemInput>): Promise<FoodItem> =>
+    request<FoodItem>(`/food/${id}`, { method: "PATCH", body: patch, token: authToken() }),
+
+  remove: (id: number): Promise<void> =>
+    request<void>(`/food/${id}`, { method: "DELETE", token: authToken() }),
+};

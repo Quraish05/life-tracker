@@ -7,17 +7,19 @@ from sqlalchemy.orm import Mapped, mapped_column
 from app.db.base import Base
 
 
-class Dish(Base):
-    """A reusable food entity owned by a user — the meal library.
+class FoodItem(Base):
+    """A reusable food entity owned by a user — the food library.
 
-    A dish is defined once (name + optional markdown recipe + a list of
+    A food item is defined once (name + optional markdown recipe + a list of
     ingredients) and later referenced by meal logs, macro estimation, and
-    cross-links. Ingredients are stored as JSONB: a list of ``{name, amount}``
-    objects where ``amount`` is free text (``"200g"``, ``"2 cups"``). Their
-    shape is enforced at the API boundary by the Pydantic ``Ingredient`` schema.
+    cross-links. It covers both composite recipes ("Margherita Pizza") and
+    standalone items ("Apple"). Ingredients are stored as JSONB: a list of
+    ``{name, amount}`` objects where ``amount`` is free text (``"200g"``,
+    ``"2 cups"``). Their shape is enforced at the API boundary by the Pydantic
+    ``Ingredient`` schema.
     """
 
-    __tablename__ = "dishes"
+    __tablename__ = "food_items"
 
     id: Mapped[int] = mapped_column(primary_key=True)
     user_id: Mapped[int] = mapped_column(

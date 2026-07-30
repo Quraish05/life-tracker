@@ -21,7 +21,7 @@ export const mealsApi = {
   create: (input: MealInput): Promise<MealLog> =>
     request<MealLog>("/meals", { method: "POST", body: input, token: authToken() }),
 
-  /** Move a meal to another slot or edit its note (dish isn't reassigned). */
+  /** Move a meal to another slot or edit its note (food isn't reassigned). */
   update: (
     id: number,
     patch: { slot?: MealSlot; note?: string | null },

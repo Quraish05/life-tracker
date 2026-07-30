@@ -1,6 +1,6 @@
 "use client";
 
-import { MAX_INGREDIENTS, type Ingredient } from "@/lib/validations/dish";
+import { MAX_INGREDIENTS, type Ingredient } from "@/lib/validations/food";
 import { IconButton } from "@/components/ui/atoms/icon-button";
 
 type Props = {
@@ -14,7 +14,7 @@ const rowInputClass =
 
 /**
  * Editable list of `{name, amount}` ingredient rows. Blank rows are kept while
- * editing (add a fresh one, fill it in later) — the dish editor and the backend
+ * editing (add a fresh one, fill it in later) — the food editor and the backend
  * both drop rows with an empty name before saving.
  */
 export function IngredientList({ value, onChange, max = MAX_INGREDIENTS }: Props) {

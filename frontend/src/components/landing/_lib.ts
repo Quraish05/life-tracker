@@ -17,9 +17,9 @@ export const FEATURES: Feature[] = [
   },
   {
     icon: "🍽️",
-    title: "Meals & dishes",
+    title: "Meals & food",
     description:
-      "Build a library of the dishes you eat — recipes and ingredients — and log them against each day.",
+      "Build a library of the food you eat — recipes and ingredients — and log them against each day.",
     status: "live",
   },
   {
