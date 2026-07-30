@@ -18,7 +18,7 @@ function ModalOverlay({
   return (
     <div
       className={cn(
-        "fixed inset-0 flex justify-center bg-ink/30 p-4 backdrop-blur-sm",
+        "fixed inset-0 flex justify-center bg-ink/40 p-4",
         className,
       )}
     >
@@ -28,7 +28,7 @@ function ModalOverlay({
 }
 
 const modalDialogVariants = cva(
-  "w-full rounded-3xl border border-border/70 bg-background shadow-2xl shadow-grape/20",
+  "w-full rounded-2xl border border-border bg-surface",
   {
     variants: {
       size: {
@@ -78,7 +78,7 @@ function ModalHeader({ className, children, onClose, ...props }: ModalHeaderProp
     <div
       data-slot="modal-header"
       className={cn(
-        "flex items-center justify-between border-b border-border/40 px-6 py-4",
+        "flex items-center justify-between border-b border-border px-6 py-4",
         className,
       )}
       {...props}

@@ -25,9 +25,9 @@ export function LoadingOverlay() {
       role="status"
       aria-live="polite"
       aria-label="Working"
-      className="fixed inset-0 z-[80] flex animate-fade-in items-center justify-center bg-ink/25 backdrop-blur-sm"
+      className="fixed inset-0 z-[80] flex animate-fade-in items-center justify-center bg-ink/40"
     >
-      <div className="flex items-center gap-3 rounded-2xl border border-border/60 bg-surface/90 px-5 py-4 shadow-2xl shadow-grape/20 backdrop-blur-xl">
+      <div className="flex items-center gap-3 rounded-2xl border border-border bg-surface px-5 py-4">
         <Spinner className="size-6" aria-hidden />
         <span className="text-sm font-semibold text-foreground">Working…</span>
       </div>
