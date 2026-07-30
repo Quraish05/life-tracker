@@ -1,20 +1,290 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState, useSyncExternalStore } from "react";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
-// Nav links close the drawer via `onNavigate`; logout unmounts the layout —
-// so no route-change effect is needed here.
 
 import { useAuth } from "@/lib/auth-context";
+import { useDishes } from "@/lib/use-dishes";
+import { cn } from "@/lib/utils";
 import { AiQuotaBadge } from "@/components/ai/ai-quota";
 import { ThemeToggle } from "@/components/ui/atoms/theme-toggle";
-import { NAV_ITEMS } from "@/constants/navigation";
+import {
+  MOBILE_TABS,
+  NAV_GROUPS,
+  NAV_ITEMS,
+  type NavItem,
+} from "@/constants/navigation";
+
+/**
+ * Rail collapsed/expanded state, persisted in localStorage. Modelled on the
+ * theme store: the value is an external source of truth read through
+ * `useSyncExternalStore`, so there's no setState-in-effect. The server (and the
+ * first hydrating render) assumes expanded; the stored value is read on the
+ * first client snapshot, so a collapsed rail resolves right after hydration.
+ */
+const RAIL_KEY = "sidebar-rail";
+const railListeners = new Set<() => void>();
+let railCollapsed = false;
+let railHydrated = false;
+
+function railSubscribe(callback: () => void) {
+  railListeners.add(callback);
+  return () => railListeners.delete(callback);
+}
+
+function railGetSnapshot() {
+  if (!railHydrated && typeof window !== "undefined") {
+    railCollapsed = localStorage.getItem(RAIL_KEY) === "collapsed";
+    railHydrated = true;
+  }
+  return railCollapsed;
+}
+
+function railGetServerSnapshot() {
+  return false;
+}
+
+function setRailCollapsed(next: boolean) {
+  railCollapsed = next;
+  railHydrated = true;
+  if (typeof window !== "undefined") {
+    localStorage.setItem(RAIL_KEY, next ? "collapsed" : "expanded");
+  }
+  for (const l of railListeners) l();
+}
+
+function useRail() {
+  const collapsed = useSyncExternalStore(
+    railSubscribe,
+    railGetSnapshot,
+    railGetServerSnapshot,
+  );
+  const toggle = useCallback(() => setRailCollapsed(!railGetSnapshot()), []);
+  return { collapsed, toggle };
+}
+
+/** True when the current path is at, or under, this destination. */
+function useActiveMatcher() {
+  const pathname = usePathname();
+  return (href: string) => pathname === href || pathname.startsWith(`${href}/`);
+}
+
+/** Resolves a nav item's live badge (e.g. the dishes count) to a label. */
+function useBadges(): Record<NonNullable<NavItem["badge"]>, string> {
+  const { data: dishes = [] } = useDishes();
+  return { dishes: dishes.length ? String(dishes.length) : "" };
+}
 
 export default function Sidebar() {
-  const [open, setOpen] = useState(false);
+  return (
+    <>
+      <DesktopRail />
+      <MobileNav />
+    </>
+  );
+}
 
-  // Close on Escape while the drawer is open.
+/** Square brand chip — the accent-filled "LT" mark from the redesign. */
+function BrandMark({ size = 30 }: { size?: number }) {
+  return (
+    <div
+      className="flex flex-none items-center justify-center rounded-md bg-grape font-bold text-on-accent"
+      style={{ height: size, width: size, fontSize: size <= 30 ? 11 : 12 }}
+    >
+      LT
+    </div>
+  );
+}
+
+/** Round gradient avatar with the user's initial. */
+function Avatar({ initial, size = 30 }: { initial: string; size?: number }) {
+  return (
+    <div
+      className="flex flex-none items-center justify-center rounded-full bg-gradient-to-br from-sky to-mint font-bold text-ink"
+      style={{ height: size, width: size, fontSize: size <= 32 ? 11 : 13 }}
+    >
+      {initial}
+    </div>
+  );
+}
+
+/* ── Desktop: persistent, collapsible rail (laptop and up) ─────────────── */
+
+function DesktopRail() {
+  const { collapsed, toggle: toggleRail } = useRail();
+  const isActive = useActiveMatcher();
+  const badges = useBadges();
+
+  if (collapsed) {
+    return (
+      <aside className="hidden h-full w-[76px] shrink-0 flex-col items-center gap-1.5 border-r border-border/60 bg-surface px-0 pt-4 pb-4 laptop:flex">
+        <BrandMark size={32} />
+        <button
+          type="button"
+          onClick={toggleRail}
+          title="Expand sidebar"
+          aria-label="Expand sidebar"
+          className="my-1.5 flex h-6 w-6 items-center justify-center rounded-md border border-border text-xs text-muted transition hover:bg-grape/10 hover:text-grape-deep"
+        >
+          »
+        </button>
+        {NAV_ITEMS.map((item) => {
+          const active = isActive(item.href);
+          return (
+            <Link
+              key={item.href}
+              href={item.href}
+              title={item.label}
+              aria-label={item.label}
+              className={cn(
+                "flex h-11 w-11 items-center justify-center rounded-lg text-[17px] transition",
+                active
+                  ? "bg-grape/10 text-foreground"
+                  : "text-foreground/70 hover:bg-grape/8",
+              )}
+            >
+              {item.icon}
+            </Link>
+          );
+        })}
+        <div className="flex-1" />
+        <ThemeToggle />
+      </aside>
+    );
+  }
+
+  return (
+    <aside className="hidden h-full w-64 shrink-0 flex-col border-r border-border/60 bg-surface laptop:flex">
+      {/* Brand + collapse toggle */}
+      <div className="flex items-center gap-2.5 px-4 pt-5 pb-3">
+        <BrandMark />
+        <Link
+          href="/dashboard"
+          className="min-w-0 flex-1 truncate text-[15px] font-bold text-foreground transition hover:opacity-80"
+        >
+          Life <span className="font-display italic text-grape">Tracker</span>
+        </Link>
+        <button
+          type="button"
+          onClick={toggleRail}
+          title="Collapse sidebar"
+          aria-label="Collapse sidebar"
+          className="flex h-6 w-6 flex-none items-center justify-center rounded-md border border-border text-xs text-muted transition hover:bg-grape/10 hover:text-grape-deep"
+        >
+          «
+        </button>
+      </div>
+
+      {/* Grouped navigation */}
+      <nav className="flex-1 overflow-y-auto px-2.5 py-1">
+        {NAV_GROUPS.map((group) => (
+          <div key={group.title}>
+            <p className="mt-4 mb-2 px-2.5 text-[10px] font-bold uppercase tracking-[0.12em] text-muted">
+              {group.title}
+            </p>
+            <div className="flex flex-col gap-0.5">
+              {group.items.map((item) => (
+                <RailLink
+                  key={item.href}
+                  item={item}
+                  active={isActive(item.href)}
+                  badge={item.badge ? badges[item.badge] : ""}
+                />
+              ))}
+            </div>
+          </div>
+        ))}
+      </nav>
+
+      <UserCard />
+    </aside>
+  );
+}
+
+/** A single expanded-rail nav row: left accent mark, icon, label, badge. */
+function RailLink({
+  item,
+  active,
+  badge,
+  onNavigate,
+}: {
+  item: NavItem;
+  active: boolean;
+  badge?: string;
+  onNavigate?: () => void;
+}) {
+  return (
+    <Link
+      href={item.href}
+      onClick={onNavigate}
+      className={cn(
+        "relative flex items-center gap-3 rounded-lg px-3 py-2.5 text-[13px] transition",
+        active
+          ? "bg-grape/10 font-bold text-foreground"
+          : "font-semibold text-foreground/70 hover:bg-grape/8 hover:text-foreground",
+      )}
+    >
+      <span
+        aria-hidden
+        className={cn(
+          "absolute inset-y-2.5 left-0 w-0.5 rounded-full",
+          active ? "bg-grape" : "bg-transparent",
+        )}
+      />
+      <span className="text-[15px]">{item.icon}</span>
+      <span className="flex-1">{item.label}</span>
+      {badge ? (
+        <span className="text-xs font-semibold text-muted">{badge}</span>
+      ) : null}
+    </Link>
+  );
+}
+
+/** Bottom-of-rail user card: identity, AI quota, theme, sign out. */
+function UserCard() {
+  const router = useRouter();
+  const { user, logout } = useAuth();
+  const initial = user?.username?.charAt(0).toUpperCase() ?? "U";
+
+  function handleLogout() {
+    logout();
+    router.replace("/login");
+  }
+
+  return (
+    <div className="mt-auto border-t border-border/60 px-3 py-3">
+      <div className="flex items-center gap-2.5 px-1">
+        <Avatar initial={initial} />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-xs font-bold text-foreground">
+            {user?.username ?? "User"}
+          </p>
+          <p className="truncate text-[11px] text-muted">
+            {user?.email ?? "Signed in"}
+          </p>
+        </div>
+        <ThemeToggle />
+      </div>
+      <AiQuotaBadge className="mt-2 w-full justify-center" />
+      <button
+        type="button"
+        onClick={handleLogout}
+        className="mt-1.5 w-full rounded-lg px-3 py-2 text-left text-[13px] font-semibold text-foreground/70 transition hover:bg-coral/15 hover:text-coral"
+      >
+        Sign out
+      </button>
+    </div>
+  );
+}
+
+/* ── Mobile / tablet: bottom-tab bar + full-screen slide-up menu ───────── */
+
+function MobileNav() {
+  const [open, setOpen] = useState(false);
+  const isActive = useActiveMatcher();
+
+  // Close the menu on Escape while it's open.
   useEffect(() => {
     if (!open) return;
     function onKey(e: KeyboardEvent) {
@@ -26,133 +296,136 @@ export default function Sidebar() {
 
   return (
     <>
-      {/* Mobile/tablet top bar — hidden once the persistent sidebar appears. */}
-      <header className="flex items-center justify-between border-b border-border/60 bg-gradient-to-r from-lilac/70 via-blush/40 to-peach/50 px-4 py-3 laptop:hidden dark:from-grape/15 dark:via-grape/8 dark:to-transparent">
-        <Brand />
+      {/* Fixed bottom-tab bar */}
+      <nav className="fixed inset-x-0 bottom-0 z-40 flex items-center justify-around border-t border-border/60 bg-background px-3 pt-2.5 pb-[max(env(safe-area-inset-bottom),1.25rem)] laptop:hidden">
+        {MOBILE_TABS.map((tab) => {
+          const active = isActive(tab.href);
+          return (
+            <Link
+              key={tab.href}
+              href={tab.href}
+              className={cn(
+                "flex min-h-11 min-w-14 flex-col items-center gap-0.5 text-[10px] font-bold transition",
+                active ? "text-grape" : "text-muted hover:text-foreground",
+              )}
+            >
+              <span className="text-[17px]">{tab.icon}</span>
+              {tab.label}
+            </Link>
+          );
+        })}
         <button
           type="button"
           onClick={() => setOpen(true)}
           aria-label="Open menu"
           aria-expanded={open}
-          className="flex h-10 w-10 items-center justify-center rounded-xl bg-surface/60 text-xl text-foreground transition hover:bg-surface"
+          className={cn(
+            "flex min-h-11 min-w-14 flex-col items-center gap-0.5 text-[10px] font-bold transition",
+            open ? "text-grape" : "text-muted hover:text-foreground",
+          )}
         >
-          ☰
+          <span className="text-[17px]">⋯</span>
+          More
         </button>
-      </header>
+      </nav>
 
-      {/* Drawer backdrop */}
-      {open && (
-        <div
-          className="fixed inset-0 z-40 bg-ink/30 backdrop-blur-sm laptop:hidden"
-          onClick={() => setOpen(false)}
-          aria-hidden
-        />
-      )}
-
-      {/* Mobile drawer — slides in from the left. */}
-      <div
-        className={`fixed inset-y-0 left-0 z-50 w-72 max-w-[85vw] transform transition-transform duration-200 laptop:hidden ${
-          open ? "translate-x-0" : "-translate-x-full"
-        }`}
-      >
-        <SidebarPanel onNavigate={() => setOpen(false)} />
-      </div>
-
-      {/* Persistent sidebar — laptop & desktop only. */}
-      <div className="hidden laptop:flex">
-        <SidebarPanel />
-      </div>
+      {open && <SlideUpMenu onClose={() => setOpen(false)} />}
     </>
   );
 }
 
-/** Brand lockup, reused in the top bar and the sidebar panel. */
-function Brand() {
-  return (
-    <div className="flex items-center gap-2.5">
-      <div className="flex h-9 w-9 rotate-3 items-center justify-center rounded-xl bg-gradient-to-br from-grape to-coral text-sm font-bold text-white shadow-md shadow-grape/30">
-        LT
-      </div>
-      <span className="text-lg font-bold tracking-tight text-foreground">
-        Life <span className="font-display italic text-grape">Tracker</span>
-      </span>
-    </div>
-  );
-}
-
-/** The sidebar's inner content: brand, nav, and the user/logout card. */
-function SidebarPanel({ onNavigate }: { onNavigate?: () => void }) {
-  const pathname = usePathname();
+/** Full-screen grouped nav + user controls, opened from the "More" tab. */
+function SlideUpMenu({ onClose }: { onClose: () => void }) {
   const router = useRouter();
+  const isActive = useActiveMatcher();
+  const badges = useBadges();
   const { user, logout } = useAuth();
+  const initial = user?.username?.charAt(0).toUpperCase() ?? "U";
 
   function handleLogout() {
+    onClose();
     logout();
     router.replace("/login");
   }
 
-  const initial = user?.username?.charAt(0).toUpperCase() ?? "U";
-
   return (
-    <aside className="flex h-full w-72 shrink-0 flex-col border-r border-border/60 bg-gradient-to-b from-lilac/70 via-blush/40 to-peach/50 laptop:w-64 dark:from-grape/15 dark:via-grape/8 dark:to-transparent">
-      {/* Brand — links back to the app home */}
-      <Link
-        href="/dashboard"
-        onClick={onNavigate}
-        aria-label="Go to dashboard"
-        className="flex items-center gap-2.5 px-5 py-6 transition hover:opacity-80"
-      >
-        <Brand />
-      </Link>
-
-      {/* Navigation */}
-      <nav className="flex-1 space-y-1.5 px-3 py-2">
-        {NAV_ITEMS.map((item) => {
-          const isActive =
-            pathname === item.href || pathname.startsWith(`${item.href}/`);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              onClick={onNavigate}
-              className={`flex items-center gap-3 rounded-2xl px-3.5 py-2.5 text-sm font-semibold transition ${
-                isActive
-                  ? "bg-surface text-grape shadow-sm shadow-grape/10"
-                  : "text-foreground/70 hover:bg-surface/60 hover:text-foreground"
-              }`}
-            >
-              <span className="text-base">{item.icon}</span>
-              {item.label}
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* User / logout */}
-      <div className="m-3 rounded-2xl bg-surface/60 p-3 backdrop-blur-sm">
-        <div className="flex items-center gap-3 px-1 py-1">
-          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-gradient-to-br from-sky to-mint text-xs font-bold text-ink">
-            {initial}
-          </div>
-          <div className="min-w-0 flex-1">
-            <p className="truncate text-sm font-semibold text-foreground">
-              {user?.username ?? "User"}
-            </p>
-            <p className="truncate text-xs text-muted">
-              {user?.email ?? "Signed in"}
-            </p>
-          </div>
-          <ThemeToggle />
+    <div className="fixed inset-0 z-50 flex animate-rise-in flex-col bg-background px-5 pt-5 pb-6 laptop:hidden">
+      {/* Header */}
+      <div className="flex items-center justify-between pb-4">
+        <div className="flex items-center gap-2.5">
+          <BrandMark size={34} />
+          <span className="text-base font-bold text-foreground">
+            Life <span className="font-display italic text-grape">Tracker</span>
+          </span>
         </div>
-        <AiQuotaBadge className="mt-2 w-full justify-center" />
+        <button
+          type="button"
+          onClick={onClose}
+          aria-label="Close menu"
+          className="flex h-10 w-10 items-center justify-center rounded-lg border border-border bg-surface text-[15px] text-foreground transition hover:bg-grape/10"
+        >
+          ✕
+        </button>
+      </div>
+
+      {/* Grouped destinations */}
+      <div className="flex-1 overflow-y-auto">
+        {NAV_GROUPS.map((group) => (
+          <div key={group.title}>
+            <p className="mt-5 mb-2.5 px-0.5 text-[10px] font-bold uppercase tracking-[0.12em] text-muted">
+              {group.title}
+            </p>
+            <div className="flex flex-col gap-1.5">
+              {group.items.map((item) => {
+                const active = isActive(item.href);
+                const badge = item.badge ? badges[item.badge] : "";
+                return (
+                  <Link
+                    key={item.href}
+                    href={item.href}
+                    onClick={onClose}
+                    className={cn(
+                      "flex min-h-14 items-center gap-3.5 rounded-xl border px-4 py-3.5 text-base transition",
+                      active
+                        ? "border-grape/30 bg-grape/10 font-bold text-foreground"
+                        : "border-border font-semibold text-foreground/80 hover:bg-grape/8",
+                    )}
+                  >
+                    <span className="text-[19px]">{item.icon}</span>
+                    <span className="flex-1">{item.label}</span>
+                    {badge ? (
+                      <span className="text-xs font-semibold text-muted">
+                        {badge}
+                      </span>
+                    ) : null}
+                  </Link>
+                );
+              })}
+            </div>
+          </div>
+        ))}
+      </div>
+
+      {/* Footer: identity + theme + sign out */}
+      <div className="mt-4 flex items-center gap-3 border-t border-border/60 pt-4">
+        <Avatar initial={initial} size={40} />
+        <div className="min-w-0 flex-1">
+          <p className="truncate text-sm font-bold text-foreground">
+            {user?.username ?? "User"}
+          </p>
+          <p className="truncate text-xs text-muted">
+            {user?.email ?? "Signed in"}
+          </p>
+        </div>
+        <ThemeToggle />
         <button
           type="button"
           onClick={handleLogout}
-          className="mt-2 w-full rounded-xl px-3 py-2 text-left text-sm font-semibold text-foreground/70 transition hover:bg-coral/15 hover:text-coral"
+          className="rounded-full border border-border px-4 py-2.5 text-[13px] font-semibold text-foreground/80 transition hover:bg-coral/15 hover:text-coral"
         >
           Sign out
         </button>
       </div>
-    </aside>
+    </div>
   );
 }
