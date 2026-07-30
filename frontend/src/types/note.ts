@@ -17,6 +17,16 @@ export type Note = {
   updated_at: string;
 };
 
+/**
+ * A note returned by full-text search: the note plus why it matched — a
+ * relevance `rank` (higher = better) and a `snippet` excerpt of the body with
+ * matched terms wrapped in `<mark>…</mark>`.
+ */
+export type NoteSearchHit = Note & {
+  rank: number;
+  snippet: string;
+};
+
 /** A reminder the AI proposes from a note's text — a *suggestion*, not yet created. */
 export type FollowUpKind = "task" | "event" | "unclear";
 export type Confidence = "high" | "medium" | "low";

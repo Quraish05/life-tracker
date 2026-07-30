@@ -26,6 +26,7 @@ data model → the flow both directions → the tricky part in depth → how to 
 ### Part II — Features
 - ✅ **[Ch 3. Reminders](01-reminders.md)** — time-based nudges, and two independent delivery systems (foreground poll + background Web Push), including the adaptive dispatch loop
 - 🚧 **Ch 4. Notes & journal** — one table, two faces _(planned)_
+- ✅ **[Ch 9. Full-text search](04-full-text-search.md)** — Postgres FTS over notes: a generated `tsvector` column, GIN index, ranked results, and the first real-Postgres test harness
 
 ### Part III — Cross-cutting concerns
 - 🚧 **Ch 5. Background work** — the in-process asyncio loop pattern, lifespan wiring, and when you'd outgrow it _(planned)_

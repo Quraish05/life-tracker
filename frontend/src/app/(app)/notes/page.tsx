@@ -3,7 +3,12 @@
 import { useMemo, useState } from "react";
 
 import type { Note } from "@/types/note";
-import { useDeleteNote, useNotes, useTogglePin } from "@/lib/use-notes";
+import {
+  useDeleteNote,
+  useNoteSearch,
+  useNotes,
+  useTogglePin,
+} from "@/lib/use-notes";
 import { useReminders } from "@/lib/use-reminders";
 import { FILTERS, type Filter } from "@/constants/notes";
 import { Button } from "@/components/ui/atoms/button";
@@ -57,18 +62,21 @@ export default function NotesPage() {
   }, [notes]);
 
   const visible = useMemo(() => {
-    const q = query.trim().toLowerCase();
     return notes.filter((n) => {
       if (filter !== "all" && n.kind !== filter) return false;
       if (tagFilter && !n.tags.includes(tagFilter)) return false;
-      if (!q) return true;
-      return (
-        n.title.toLowerCase().includes(q) ||
-        n.body_md.toLowerCase().includes(q) ||
-        n.tags.some((t) => t.includes(q))
-      );
+      return true;
     });
-  }, [notes, filter, tagFilter, query]);
+  }, [notes, filter, tagFilter]);
+
+  // Search hands off to the backend (Postgres full-text search) — real ranking
+  // + snippets, and it finds notes not currently in memory. Fired explicitly on
+  // Enter / the search button (not per keystroke), so `submitted` is the term
+  // actually searched, distinct from the live input `query`.
+  const [submitted, setSubmitted] = useState("");
+  const isSearching = submitted.trim().length > 0;
+  const search = useNoteSearch(submitted);
+  const hits = search.data ?? [];
 
   async function confirmDelete() {
     if (!deleting) return;
@@ -110,13 +118,36 @@ export default function NotesPage() {
             </Chip>
           ))}
         </div>
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => setQuery(e.target.value)}
-          placeholder="Search…"
-          className="w-full max-w-xs rounded-full border border-transparent bg-surface/70 px-4 py-2 text-sm text-foreground placeholder:text-muted/60 transition focus:border-grape focus:bg-surface focus:outline-none focus:ring-4 focus:ring-ring"
-        />
+        <form
+          onSubmit={(e) => {
+            e.preventDefault();
+            setSubmitted(query.trim());
+          }}
+          className="relative w-full max-w-xs"
+          role="search"
+        >
+          <input
+            type="search"
+            value={query}
+            onChange={(e) => {
+              const value = e.target.value;
+              setQuery(value);
+              // Emptying the box returns to browse without a submit.
+              if (value.trim() === "") setSubmitted("");
+            }}
+            placeholder="Search notes…"
+            aria-label="Search notes"
+            className="w-full rounded-full border border-transparent bg-surface/70 py-2 pl-4 pr-11 text-sm text-foreground placeholder:text-muted/60 transition focus:border-grape focus:bg-surface focus:outline-none focus:ring-4 focus:ring-ring"
+          />
+          <button
+            type="submit"
+            aria-label="Search"
+            disabled={query.trim() === ""}
+            className="absolute right-1 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-grape text-white transition hover:bg-grape/90 focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-40 disabled:hover:bg-grape"
+          >
+            →
+          </button>
+        </form>
       </div>
 
       {/* Tag filter bar */}
@@ -155,8 +186,47 @@ export default function NotesPage() {
         </div>
       )}
 
-      {/* Content */}
-      {isLoading ? (
+      {/* Content — backend full-text search when there's a query, else browse */}
+      {isSearching ? (
+        search.isLoading ? (
+          <p className="text-sm text-muted">Searching…</p>
+        ) : search.isError ? (
+          <p className="text-sm text-coral">
+            {search.error instanceof Error ? search.error.message : "Search failed."}
+          </p>
+        ) : hits.length === 0 ? (
+          <EmptyState
+            icon="🔍"
+            title={
+              <>
+                Nothing <AccentText tone="grape">matches</AccentText>
+              </>
+            }
+            description={`No notes match “${submitted.trim()}”.`}
+          />
+        ) : (
+          <>
+            <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-muted/70">
+              {hits.length} result{hits.length > 1 ? "s" : ""} · ranked by relevance
+              {search.isFetching && " · updating…"}
+            </p>
+            <CardGrid>
+              {hits.map((hit) => (
+                <NoteCard
+                  key={hit.id}
+                  note={hit}
+                  snippet={hit.snippet}
+                  onEdit={setEditing}
+                  onDelete={setDeleting}
+                  onTogglePin={togglePin}
+                  onTagClick={setTagFilter}
+                  reminderCount={reminderCountByNote.get(hit.id) ?? 0}
+                />
+              ))}
+            </CardGrid>
+          </>
+        )
+      ) : isLoading ? (
         <p className="text-sm text-muted">Loading…</p>
       ) : visible.length === 0 ? (
         <NotesEmptyState
