@@ -1,66 +1,73 @@
 "use client";
 
 import type { Dish } from "@/types/dish";
+import { cn } from "@/lib/utils";
 
 type Props = {
-  /** The dishes to list (already filtered by the current search). */
+  /** The dishes to list (already filtered and sorted by the page). */
   dishes: Dish[];
-  /** Total dishes before filtering — decides whether the search box shows. */
-  total: number;
   activeId: number | null;
   onSelect: (id: number) => void;
-  query: string;
-  onQueryChange: (query: string) => void;
-  onNew: () => void;
 };
 
-/** Left pane of the recipe binder: search + a selectable list of dish names. */
-export function DishListPanel({
-  dishes,
-  total,
-  activeId,
-  onSelect,
-  query,
-  onQueryChange,
-  onNew,
-}: Props) {
-  return (
-    <div className="flex flex-col gap-3">
-      {total > 3 && (
-        <input
-          type="search"
-          value={query}
-          onChange={(e) => onQueryChange(e.target.value)}
-          placeholder="Search dishes…"
-          className="rounded-xl border border-border/60 bg-surface/70 px-3.5 py-2 text-sm text-foreground placeholder:text-muted/60 transition focus:border-grape focus:bg-surface focus:outline-none focus:ring-4 focus:ring-ring"
-        />
-      )}
+/** A short preview of what's in a dish — its first few ingredients, else a hint. */
+function summarize(dish: Dish): string {
+  const names = dish.ingredients.map((i) => i.name.trim()).filter(Boolean);
+  if (names.length) return names.slice(0, 3).join(", ");
+  return dish.recipe_md ? "Has a recipe" : "No ingredients yet";
+}
 
-      <ul className="max-h-[22rem] space-y-1 overflow-y-auto pr-0.5 laptop:max-h-[calc(100vh-15rem)]">
+/** Main pane of the recipe binder: a scannable, selectable list of dishes. */
+export function DishListPanel({ dishes, activeId, onSelect }: Props) {
+  return (
+    <div>
+      {/* Column header */}
+      <div className="grid grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-3 border-b border-border px-3.5 pb-2 text-[10px] font-bold uppercase tracking-[0.09em] text-muted">
+        <span aria-hidden />
+        <span>Dish</span>
+        <span className="text-right">Ingredients</span>
+      </div>
+
+      <ul className="mt-2 space-y-1.5">
         {dishes.length === 0 ? (
-          <li className="px-3.5 py-2.5 text-sm text-muted">No dishes match.</li>
+          <li className="px-3.5 py-6 text-center text-sm text-muted">
+            No dishes match.
+          </li>
         ) : (
           dishes.map((dish) => {
             const active = dish.id === activeId;
+            const count = dish.ingredients.length;
             return (
               <li key={dish.id}>
                 <button
                   type="button"
                   onClick={() => onSelect(dish.id)}
                   aria-current={active ? "true" : undefined}
-                  className={`flex w-full items-center justify-between gap-2 rounded-2xl px-3.5 py-2.5 text-left text-sm font-semibold transition ${
+                  className={cn(
+                    "grid w-full grid-cols-[2rem_minmax(0,1fr)_auto] items-center gap-3 rounded-lg border px-3.5 py-3 text-left transition",
                     active
-                      ? "bg-surface text-grape shadow-sm shadow-grape/10"
-                      : "text-foreground/70 hover:bg-surface/60 hover:text-foreground"
-                  }`}
+                      ? "border-grape/30 bg-grape/10"
+                      : "border-border bg-surface hover:bg-grape/8",
+                  )}
                 >
-                  <span className="min-w-0 truncate">{dish.name}</span>
-                  <span
-                    className={`shrink-0 text-xs font-semibold ${
-                      active ? "text-grape/70" : "text-muted/70"
-                    }`}
-                  >
-                    {dish.ingredients.length}
+                  <span className="flex h-8 w-8 items-center justify-center rounded-lg bg-foreground/5 text-[15px]">
+                    🍽️
+                  </span>
+                  <span className="min-w-0">
+                    <span className="block truncate text-[13px] font-bold text-foreground">
+                      {dish.name}
+                    </span>
+                    <span className="block truncate text-[11px] text-muted">
+                      {summarize(dish)}
+                    </span>
+                  </span>
+                  <span className="text-right">
+                    <span className="block text-[13px] font-bold text-foreground">
+                      {count}
+                    </span>
+                    <span className="block text-[9px] font-semibold uppercase tracking-wide text-muted/70">
+                      {count === 1 ? "item" : "items"}
+                    </span>
                   </span>
                 </button>
               </li>
@@ -68,14 +75,6 @@ export function DishListPanel({
           })
         )}
       </ul>
-
-      <button
-        type="button"
-        onClick={onNew}
-        className="rounded-2xl border-2 border-dashed border-grape/25 px-3.5 py-2.5 text-sm font-semibold text-foreground/60 transition hover:border-grape/40 hover:bg-surface/50 hover:text-grape"
-      >
-        + New dish
-      </button>
     </div>
   );
 }
