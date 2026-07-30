@@ -15,6 +15,13 @@ class Settings(BaseSettings):
     api_v1_prefix: str = "/api/v1"
     debug: bool = False
 
+    # "development" | "production". Controls how logs render: pretty, coloured
+    # console lines in development; one JSON object per line in production, ready
+    # for a log aggregator to parse. See app/core/logging.py.
+    environment: str = "development"
+    # Root log level for the app and its dependencies (uvicorn, SQLAlchemy).
+    log_level: str = "INFO"
+
     # Comma-separated list of allowed CORS origins.
     cors_origins: list[str] = ["http://localhost:3000"]
 

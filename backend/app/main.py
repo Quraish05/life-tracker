@@ -5,9 +5,11 @@ from contextlib import asynccontextmanager
 from fastapi import FastAPI
 from fastapi.middleware.cors import CORSMiddleware
 
+from app.api.middleware import RequestContextMiddleware
 from app.api.router import api_router
 from app.core.bootstrap import sync_superadmin
 from app.core.config import settings
+from app.core.logging import configure_logging
 from app.db.session import engine
 from app.services.reminder_dispatch import run_dispatch_loop
 
@@ -50,6 +52,9 @@ async def lifespan(app: FastAPI):
 
 
 def create_app() -> FastAPI:
+    # Configure logging first, before anything in the app has a chance to log.
+    configure_logging()
+
     app = FastAPI(
         title=settings.project_name,
         version=settings.version,
@@ -64,6 +69,9 @@ def create_app() -> FastAPI:
         allow_methods=["*"],
         allow_headers=["*"],
     )
+    # Added last so it wraps the stack as the outermost layer: a request_id is
+    # assigned (and log context bound) before any other middleware runs.
+    app.add_middleware(RequestContextMiddleware)
 
     app.include_router(api_router, prefix=settings.api_v1_prefix)
 

@@ -81,6 +81,27 @@ Definition of done: you personally log meals + workout + journal in the **deploy
 
 Slice 13: the Coach agent (LangGraph): reads last 2 weeks of meals/workouts/tasks → proposes next week's plan → you approve → tasks/reminders created. Human-in-the-loop, traced, eval'd. Then Phase-5 polish: demo account, README, video, Cloud Run migration.
 
+### R5 — "It's production" · backend / infra / DevOps hardening (backlog, no fixed date)
+
+Not product features — this is the platform-skills track. Each item is anchored to a real seam already in the codebase, so none of it is greenfield busywork. Pick from it once R1–R4 momentum allows; sequence recommendation at the bottom.
+
+**Slice 0 — Reminder dispatch reliability (do first; it's a real bug).** Render's free web tier sleeps after inactivity, so the in-process `run_dispatch_loop` in `reminder_dispatch.py` stops and reminders silently miss. Extract the already-idempotent `dispatch_once` behind a standalone run-and-exit entrypoint; a scheduler (Render Cron Job, or external cron → secured endpoint) invokes it. Same refactor later runs as a K8s CronJob in the parked track — one piece of work, two payoffs.
+
+| # | Item | Anchor in codebase | Teaches |
+|---|---|---|---|
+| A1 | **Observability stack** — structured JSON logs + request/correlation IDs, OpenTelemetry tracing (FastAPI + SQLAlchemy + Gemini calls), Sentry, liveness-vs-readiness split | plain `logging`, single `/health` | the hobby→prod line; see where AI latency actually goes |
+| A2 | **Redis — one dependency, four lessons** | `ws_manager.py` flags the fan-out gap; `ai_quota.py` is per-process | WS pub/sub fan-out across replicas · AI-summary response caching · distributed rate limiting · job-queue broker |
+| A3 | **CI/CD + supply-chain hardening** — pip-audit, bandit, trivy image scan, Dependabot, coverage gate, `mypy --strict`; multi-stage/distroless image | `Dockerfile`, existing CI | DevSecOps basics; high polish-per-hour |
+| B4 | **Task queue / async workers (arq)** — enqueue→return→poll for inline AI | `follow_up_extraction.py`, `tag_suggestion.py` | off-request-path AI; the honest bridge to the K8s track |
+| B5 | **Zero-downtime migrations + backups** — expand/contract pattern; Neon branching / PITR | Alembic | the migration skill that actually bites teams |
+| B6 | **Performance & load testing** — k6/Locust, EXPLAIN ANALYZE, N+1 hunt, indexes, pool tuning | list endpoints | perf methodology, measured not vibes |
+| B7 | **Infrastructure as Code (Terraform)** — codify Neon + Render + Vercel | `render.yaml` | reproducible stack; front-loads Cloud Run/GKE migration |
+| C8 | **Auth hardening** — Google SSO (also R1 slice 6) + refresh-token rotation, login rate-limit/lockout, security headers, CSRF story for cookie auth | `auth.py`, `security.py` | real-world auth beyond happy path |
+| C9 | **Secrets management** — move off raw env to Doppler / SOPS / cloud secret manager | `core/config.py` | secret handling |
+| D10 | **LLMOps — Langfuse + eval harness** (also R3 slice 12) — trace cost/latency/quality of every Gemini call; prompt-regression golden sets in CI | `ai_client.py` | highest-demand 2026 AI skill; app is AI-heavy |
+
+**Recommended order:** Slice 0 (reminder fix) → A1 (observability — makes everything after legible) → A2 (Redis — keystone that unlocks B4, better A2-quota, the WS gap) → B4 (async worker, now trivial on Redis + the K8s bridge) → then D10 (AI story) or B7 (DevOps story) depending on which résumé angle you're optimizing.
+
 ## Parked: Kubernetes learning track (infra skill, not product need)
 
 **Status:** exploring K8s as a résumé skill, not because the app needs it. This app is one FastAPI container + managed Postgres + Vercel — Render/Vercel already give self-healing, rolling deploys, and scale. K8s is only justified by *many services on your own infra*, which we don't have. So to learn it honestly we adopt a **realistic requirement that actually produces that topology**, rather than K8s-ing a single container.

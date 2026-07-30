@@ -31,6 +31,7 @@ data model → the flow both directions → the tricky part in depth → how to 
 - 🚧 **Ch 5. Background work** — the in-process asyncio loop pattern, lifespan wiring, and when you'd outgrow it _(planned)_
 - 🚧 **Ch 6. Real-time & push** — service workers, VAPID, and the browser push protocol _(planned)_
 - ✅ **[Ch 7. Real-time live-sync (WebSockets)](02-live-sync-websockets.md)** — one socket per tab, a per-user broadcast registry, and pushing cache-invalidations so a change on one device updates another
+- ✅ **[Ch 8. Observability](03-observability.md)** — structured logging (structlog + stdlib unified), per-request correlation ids, and the liveness/readiness health split
 
 ### Appendices
 - 🚧 **A. Local dev & environment** — running backend + frontend, the shared dev Postgres gotcha _(planned)_
