@@ -1,6 +1,11 @@
 import { ApiError, request, tokenStore } from "@/lib/api";
 import type { NoteInput } from "@/lib/validations/note";
-import type { FollowUpSuggestions, Note, TagSuggestions } from "@/types/note";
+import type {
+  FollowUpSuggestions,
+  Note,
+  NoteSearchHit,
+  TagSuggestions,
+} from "@/types/note";
 
 /**
  * Journal / Notes data layer — a thin client over the backend `notes` API.
@@ -46,6 +51,17 @@ function authToken(): string {
 
 export const notesApi = {
   list: (): Promise<Note[]> => request<Note[]>("/notes", { token: authToken() }),
+
+  /**
+   * Ranked full-text search over the user's notes (Postgres FTS). Returns
+   * matches best-first, each with a `<mark>`-highlighted snippet. `q` supports
+   * quoted phrases, `or`, and `-exclude`.
+   */
+  search: (q: string, limit = 20): Promise<NoteSearchHit[]> =>
+    request<NoteSearchHit[]>(
+      `/notes/search?q=${encodeURIComponent(q)}&limit=${limit}`,
+      { token: authToken() },
+    ),
 
   /** Ask the AI to propose reminders implied by a note. Creates nothing. */
   suggestFollowUps: (id: number): Promise<FollowUpSuggestions> =>

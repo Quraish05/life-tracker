@@ -7,6 +7,7 @@ import { MOOD_BY_KEY } from "@/lib/validations/note";
 import { Card } from "@/components/ui/atoms/card";
 import { Chip } from "@/components/ui/atoms/chip";
 import { IconButton } from "@/components/ui/atoms/icon-button";
+import { HighlightedSnippet } from "@/components/notes/highlighted-snippet";
 import { formatDate, toSnippet } from "@/components/notes/_lib";
 
 type Props = {
@@ -17,6 +18,11 @@ type Props = {
   onTagClick?: (tag: string) => void;
   /** How many reminders point at this note; shows a 🔔 badge when > 0. */
   reminderCount?: number;
+  /**
+   * A search snippet (with `<mark>` highlights) to show in place of the plain
+   * body preview — set when this card is a full-text search result.
+   */
+  snippet?: string;
 };
 
 export function NoteCard({
@@ -26,6 +32,7 @@ export function NoteCard({
   onTogglePin,
   onTagClick,
   reminderCount = 0,
+  snippet,
 }: Props) {
   const isJournal = note.kind === "journal";
   const dateLabel = isJournal && note.entry_date
@@ -35,9 +42,13 @@ export function NoteCard({
   const preview = (
     <>
       <h3 className="line-clamp-2 text-lg font-bold text-foreground">{note.title}</h3>
-      <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted">
-        {toSnippet(note.body_md) || "No content yet."}
-      </p>
+      {snippet !== undefined ? (
+        <HighlightedSnippet text={snippet} />
+      ) : (
+        <p className="mt-2 line-clamp-3 text-sm leading-relaxed text-muted">
+          {toSnippet(note.body_md) || "No content yet."}
+        </p>
+      )}
     </>
   );
 

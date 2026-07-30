@@ -1,4 +1,5 @@
 import {
+  keepPreviousData,
   useMutation,
   useQuery,
   useQueryClient,
@@ -15,6 +16,23 @@ export const notesKey = ["notes"] as const;
 /** The current user's notes, cached and kept fresh across the app. */
 export function useNotes() {
   return useQuery({ queryKey: notesKey, queryFn: notesApi.list });
+}
+
+/**
+ * Ranked full-text search over the user's notes. Only runs when there's a
+ * (trimmed) query — the caller passes the *submitted* term (search fires on
+ * Enter / the search button, not per keystroke) — and keeps the previous
+ * results on screen while a new query loads.
+ */
+export function useNoteSearch(query: string) {
+  const q = query.trim();
+  return useQuery({
+    queryKey: ["notes", "search", q],
+    queryFn: () => notesApi.search(q),
+    enabled: q.length > 0,
+    placeholderData: keepPreviousData,
+    staleTime: 30_000,
+  });
 }
 
 /** Shared success handler: pull the freshly-changed list back from the server. */
