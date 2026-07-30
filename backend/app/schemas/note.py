@@ -100,3 +100,15 @@ class NoteRead(NoteBase):
     id: int
     created_at: datetime
     updated_at: datetime
+
+
+class NoteSearchHit(NoteRead):
+    """A note matched by full-text search, plus why it matched.
+
+    ``rank`` is Postgres' relevance score (higher = better) and ``snippet`` is a
+    ``ts_headline`` excerpt of the body with the matched terms wrapped in
+    ``<mark>`` for the client to highlight.
+    """
+
+    rank: float
+    snippet: str

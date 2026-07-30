@@ -1,4 +1,4 @@
-from fastapi import APIRouter, HTTPException, status
+from fastapi import APIRouter, HTTPException, Query, status
 from pydantic import ValidationError
 from sqlalchemy import select
 
@@ -11,13 +11,14 @@ from app.api.ai_quota import (
 from app.api.deps import UNAUTHORIZED_RESPONSE, CurrentUser, DbSession
 from app.api.responses import not_found_response
 from app.models.note import Note
-from app.schemas.note import NoteBase, NoteCreate, NoteRead, NoteUpdate
+from app.schemas.note import NoteBase, NoteCreate, NoteRead, NoteSearchHit, NoteUpdate
 from app.schemas.note_ai import (
     FollowUpSuggestionsResponse,
     TagSuggestionRequest,
     TagSuggestionsResponse,
 )
 from app.services.follow_up_extraction import suggest_follow_ups
+from app.services.note_search import search_notes
 from app.services.tag_suggestion import suggest_tags
 
 # Fields that make up a note's editable body (used to merge partial updates).
@@ -68,6 +69,33 @@ async def create_note(payload: NoteCreate, current_user: CurrentUser, db: DbSess
     await db.commit()
     await db.refresh(note)
     return note
+
+
+@router.get(
+    "/search",
+    response_model=list[NoteSearchHit],
+    summary="Full-text search the current user's notes",
+    responses={**UNAUTHORIZED_RESPONSE},
+)
+async def search_notes_route(
+    current_user: CurrentUser,
+    db: DbSession,
+    q: str = Query(..., min_length=1, description="Search query (supports quotes, or, -exclude)"),
+    limit: int = Query(20, ge=1, le=100),
+) -> list[NoteSearchHit]:
+    """Ranked full-text search over the user's notes.
+
+    Declared *before* ``/{note_id}`` so "search" isn't parsed as an id.
+    """
+    rows = await search_notes(db, current_user.id, q, limit)
+    return [
+        NoteSearchHit(
+            **NoteRead.model_validate(note).model_dump(),
+            rank=float(rank),
+            snippet=snippet,
+        )
+        for note, rank, snippet in rows
+    ]
 
 
 @router.get(
