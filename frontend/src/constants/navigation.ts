@@ -4,7 +4,7 @@ export type NavItem = {
   href: string;
   icon: string;
   /** Optional live count badge, resolved by the sidebar (e.g. food total). */
-  badge?: "food";
+  badge?: "food" | "ingredients";
 };
 
 /** A labelled section of the sidebar. */
@@ -26,6 +26,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: "Today", href: "/dashboard", icon: "🏠" },
       { label: "Calendar", href: "/calendar", icon: "🗓️" },
       { label: "Food", href: "/food", icon: "🍽️", badge: "food" },
+      { label: "Ingredients", href: "/ingredients", icon: "🥕", badge: "ingredients" },
       { label: "Reminders", href: "/reminders", icon: "⏰" },
     ],
   },

@@ -89,7 +89,7 @@ export default function NotesPage() {
   }
 
   return (
-    <div className="mx-auto max-w-5xl px-4 py-8 tablet:px-6 tablet:py-10">
+    <div className="mx-auto max-w-6xl px-4 py-8 tablet:px-6 tablet:py-10">
       <PageHeader
         eyebrow="Journal & Notes"
         title={
