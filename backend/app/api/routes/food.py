@@ -18,6 +18,7 @@ from app.schemas.food import (
     FoodItemCreate,
     FoodItemRead,
     FoodItemUpdate,
+    FrequentFood,
 )
 from app.schemas.food_ai import NutritionEstimateRequest, NutritionEstimateResponse
 from app.services.nutrition_estimation import estimate_nutrition
@@ -35,6 +36,9 @@ _FOOD_FIELDS = (
 
 # How many recent logs the activity panel shows.
 _RECENT_LOG_LIMIT = 5
+
+# How many "log again" shortcuts the log page's rail shows.
+_FREQUENT_LIMIT = 8
 
 router = APIRouter(prefix="/food", tags=["food"])
 
@@ -109,6 +113,65 @@ async def estimate_food_nutrition(
     await record_ai_usage(current_user, db)
 
     return NutritionEstimateResponse(model=model, **estimate.model_dump())
+
+
+@router.get(
+    "/frequent",
+    response_model=list[FrequentFood],
+    summary="The user's most-logged foods with their usual slot (log-again rail)",
+    responses={**UNAUTHORIZED_RESPONSE},
+)
+async def list_frequent_food(
+    current_user: CurrentUser, db: DbSession
+) -> list[FrequentFood]:
+    """Return the user's most-logged foods for the log page's "one tap again" rail.
+
+    Each entry carries the food's live name, how many times it's been logged, and
+    the slot it's most often eaten in (used as the default when the user taps it).
+    Joining ``FoodItem`` drops logs whose food was deleted (the FK is nulled), so
+    every shortcut still points at a real, re-loggable food. Ordered by log count
+    (busiest first) and capped at ``_FREQUENT_LIMIT``.
+    """
+    # Count per (food, slot) in one pass; fold into per-food totals + top slot.
+    per_food_slot = (
+        await db.execute(
+            select(
+                MealLog.food_id,
+                FoodItem.name,
+                MealLog.slot,
+                func.count().label("n"),
+            )
+            .join(FoodItem, FoodItem.id == MealLog.food_id)
+            .where(FoodItem.user_id == current_user.id)
+            .group_by(MealLog.food_id, FoodItem.name, MealLog.slot)
+        )
+    ).all()
+
+    # food_id -> {"name", "count", "top_slot", "_top_n"}; the busiest slot wins.
+    by_food: dict[int, dict] = {}
+    for row in per_food_slot:
+        agg = by_food.setdefault(
+            row.food_id,
+            {"name": row.name, "count": 0, "top_slot": row.slot, "_top_n": 0},
+        )
+        agg["count"] += row.n
+        if row.n > agg["_top_n"]:
+            agg["_top_n"] = row.n
+            agg["top_slot"] = row.slot
+
+    ranked = sorted(
+        by_food.items(),
+        key=lambda item: (-item[1]["count"], item[1]["name"].lower()),
+    )
+    return [
+        FrequentFood(
+            food_id=food_id,
+            name=agg["name"],
+            count=agg["count"],
+            top_slot=agg["top_slot"],
+        )
+        for food_id, agg in ranked[:_FREQUENT_LIMIT]
+    ]
 
 
 @router.get(
