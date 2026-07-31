@@ -6,6 +6,7 @@ import { usePathname, useRouter } from "next/navigation";
 
 import { useAuth } from "@/lib/auth-context";
 import { useFoods } from "@/lib/use-food";
+import { useIngredients } from "@/lib/use-ingredients";
 import { cn } from "@/lib/utils";
 import { AiQuotaBadge } from "@/components/ai/ai-quota";
 import { ThemeToggle } from "@/components/ui/atoms/theme-toggle";
@@ -73,7 +74,11 @@ function useActiveMatcher() {
 /** Resolves a nav item's live badge (e.g. the food count) to a label. */
 function useBadges(): Record<NonNullable<NavItem["badge"]>, string> {
   const { data: foods = [] } = useFoods();
-  return { food: foods.length ? String(foods.length) : "" };
+  const { data: ingredients = [] } = useIngredients();
+  return {
+    food: foods.length ? String(foods.length) : "",
+    ingredients: ingredients.length ? String(ingredients.length) : "",
+  };
 }
 
 export default function Sidebar() {
