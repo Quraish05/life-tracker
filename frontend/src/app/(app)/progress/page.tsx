@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 
-import { useSummaries } from "@/lib/use-insights";
+import { useSummaries } from "@/lib/queries/use-insights";
 import { monthRange, parseISODate, weekRange } from "@/components/calendar/_lib";
 import { ASSESSMENT_META } from "@/components/calendar/day-summary";
 import { AccentText } from "@/components/ui/atoms/accent-text";

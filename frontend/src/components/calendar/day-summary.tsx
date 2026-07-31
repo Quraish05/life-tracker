@@ -7,7 +7,7 @@ import {
   useDailySummary,
   useDaySummaryRecord,
   useSaveSummary,
-} from "@/lib/use-insights";
+} from "@/lib/queries/use-insights";
 import { AiLimitNotice, AiQuotaHint } from "@/components/ai/ai-quota";
 import { Button } from "@/components/ui/atoms/button";
 import { Card } from "@/components/ui/atoms/card";

@@ -6,7 +6,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { foodItemSchema, type FoodItemInput } from "@/lib/validations/food";
 import type { FoodItem } from "@/types/food";
-import { useCreateFood, useUpdateFood } from "@/lib/use-food";
+import { useCreateFood, useUpdateFood } from "@/lib/queries/use-food";
 import { Button } from "@/components/ui/atoms/button";
 import { FieldError, FormError } from "@/components/ui/atoms/form-error";
 import { FormField } from "@/components/ui/molecules/form-field";
@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/molecules/modal";
 import { MarkdownEditor } from "@/components/notes/markdown-editor";
 import { IngredientList } from "@/components/food/ingredient-list";
+import { NutritionFields } from "@/components/food/nutrition-fields";
 
 type Props = {
   /** The food being edited, or null when creating a new one. */
@@ -36,6 +37,7 @@ export function FoodEditor({ food, onClose, onSaved }: Props) {
     handleSubmit,
     control,
     setError,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<FoodItemInput>({
     resolver: zodResolver(foodItemSchema),
@@ -43,6 +45,10 @@ export function FoodEditor({ food, onClose, onSaved }: Props) {
       name: food?.name ?? "",
       recipe_md: food?.recipe_md ?? "",
       ingredients: food?.ingredients ?? [],
+      calories: food?.calories ?? null,
+      protein_g: food?.protein_g ?? null,
+      carbs_g: food?.carbs_g ?? null,
+      fat_g: food?.fat_g ?? null,
     },
   });
 
@@ -101,6 +107,13 @@ export function FoodEditor({ food, onClose, onSaved }: Props) {
             />
             <FieldError message={errors.ingredients?.message} />
           </div>
+
+          <NutritionFields
+            control={control}
+            register={register}
+            errors={errors}
+            setValue={setValue}
+          />
 
           <div className="space-y-1.5">
             <Label htmlFor="recipe_md">Recipe (optional)</Label>

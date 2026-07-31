@@ -10,7 +10,14 @@ from datetime import datetime
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
 
+from app.schemas.meal_log import MealLogRead, MealSlot
+
 MAX_INGREDIENTS = 40
+
+# Generous per-serving sanity bounds — high enough never to reject a real food,
+# low enough to catch a runaway AI estimate or a fat-fingered entry.
+MAX_CALORIES = 20_000
+MAX_MACRO_G = 5_000
 
 
 class Ingredient(BaseModel):
@@ -29,6 +36,11 @@ class FoodItemBase(BaseModel):
     name: str = Field(min_length=1, max_length=120)
     recipe_md: str | None = Field(default=None, max_length=20_000)
     ingredients: list[Ingredient] = Field(default_factory=list)
+    # Per-serving nutrition — all optional; None means "not estimated yet".
+    calories: int | None = Field(default=None, ge=0, le=MAX_CALORIES)
+    protein_g: int | None = Field(default=None, ge=0, le=MAX_MACRO_G)
+    carbs_g: int | None = Field(default=None, ge=0, le=MAX_MACRO_G)
+    fat_g: int | None = Field(default=None, ge=0, le=MAX_MACRO_G)
 
     @field_validator("name", mode="before")
     @classmethod
@@ -86,6 +98,10 @@ class FoodItemUpdate(BaseModel):
     name: str | None = Field(default=None, min_length=1, max_length=120)
     recipe_md: str | None = Field(default=None, max_length=20_000)
     ingredients: list[Ingredient] | None = None
+    calories: int | None = Field(default=None, ge=0, le=MAX_CALORIES)
+    protein_g: int | None = Field(default=None, ge=0, le=MAX_MACRO_G)
+    carbs_g: int | None = Field(default=None, ge=0, le=MAX_MACRO_G)
+    fat_g: int | None = Field(default=None, ge=0, le=MAX_MACRO_G)
 
 
 class FoodItemRead(FoodItemBase):
@@ -94,3 +110,16 @@ class FoodItemRead(FoodItemBase):
     id: int
     created_at: datetime
     updated_at: datetime
+
+
+class FoodActivity(BaseModel):
+    """How a food item has been logged — powers the reader's activity panel.
+
+    ``top_slot`` is the food's most-used meal slot (``None`` if never logged),
+    used for the "Lunch · logged 18×" summary and as the default slot when the
+    user taps "Log this now". ``recent`` is the newest handful of logs.
+    """
+
+    count: int
+    top_slot: MealSlot | None = None
+    recent: list[MealLogRead] = Field(default_factory=list)

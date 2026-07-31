@@ -15,6 +15,24 @@ export const ingredientSchema = z.object({
 
 export type Ingredient = z.infer<typeof ingredientSchema>;
 
+/** Sanity bounds for per-serving nutrition — mirror the backend. */
+export const MAX_CALORIES = 20_000;
+export const MAX_MACRO_G = 5_000;
+
+/**
+ * An optional whole-number macro field: a non-negative integer, or `null` when
+ * unset. The editor's number inputs convert an empty field to `null` via
+ * `setValueAs`, so the schema stays a clean `number | null` (no `unknown` input
+ * type to fight react-hook-form's resolver typing).
+ */
+const macro = (max: number) =>
+  z
+    .number()
+    .int("Whole numbers only")
+    .min(0, "Can't be negative")
+    .max(max, `That seems too high`)
+    .nullable();
+
 export const foodItemSchema = z.object({
   name: z
     .string()
@@ -29,6 +47,11 @@ export const foodItemSchema = z.object({
   ingredients: z
     .array(ingredientSchema)
     .max(MAX_INGREDIENTS, `Up to ${MAX_INGREDIENTS} ingredients`),
+  // Per-serving nutrition — optional, filled by the AI estimator or by hand.
+  calories: macro(MAX_CALORIES),
+  protein_g: macro(MAX_MACRO_G),
+  carbs_g: macro(MAX_MACRO_G),
+  fat_g: macro(MAX_MACRO_G),
 });
 
 export type FoodItemInput = z.infer<typeof foodItemSchema>;

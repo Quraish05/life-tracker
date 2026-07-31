@@ -30,6 +30,13 @@ class FoodItem(Base):
     recipe_md: Mapped[str | None] = mapped_column(Text, default=None)
     # List of {name, amount} objects; see the Ingredient schema.
     ingredients: Mapped[list[dict]] = mapped_column(JSONB, default=list)
+    # Per-serving nutrition. All nullable: unknown until estimated (by AI from the
+    # name + ingredients) or filled in by hand. Whole numbers — calories in kcal,
+    # macros in grams.
+    calories: Mapped[int | None] = mapped_column(default=None)
+    protein_g: Mapped[int | None] = mapped_column(default=None)
+    carbs_g: Mapped[int | None] = mapped_column(default=None)
+    fat_g: Mapped[int | None] = mapped_column(default=None)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )

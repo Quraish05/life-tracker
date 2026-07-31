@@ -1,6 +1,12 @@
 import { ApiError, request, tokenStore } from "@/lib/api";
-import type { FoodItemInput } from "@/lib/validations/food";
-import type { FoodItem } from "@/types/food";
+import type { FoodItemInput, Ingredient } from "@/lib/validations/food";
+import type { FoodActivity, FoodItem, NutritionEstimate } from "@/types/food";
+
+/** The draft a food's nutrition is estimated from (works before it's saved). */
+export type NutritionEstimateInput = {
+  name: string;
+  ingredients: Ingredient[];
+};
 
 /**
  * Food data layer — a thin client over the backend `food` API.
@@ -26,4 +32,16 @@ export const foodApi = {
 
   remove: (id: number): Promise<void> =>
     request<void>(`/food/${id}`, { method: "DELETE", token: authToken() }),
+
+  /** Ask the AI to estimate per-serving nutrition from a food's draft text. */
+  estimateNutrition: (input: NutritionEstimateInput): Promise<NutritionEstimate> =>
+    request<NutritionEstimate>("/food/estimate-nutrition", {
+      method: "POST",
+      body: input,
+      token: authToken(),
+    }),
+
+  /** How a food has been logged: count, top slot, and recent logs. */
+  activity: (id: number): Promise<FoodActivity> =>
+    request<FoodActivity>(`/food/${id}/activity`, { token: authToken() }),
 };

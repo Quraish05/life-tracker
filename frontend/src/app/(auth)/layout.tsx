@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/lib/auth-context";
-import { readNextPath } from "@/lib/next-path";
+import { readNextPath } from "@/lib/utils/next-path";
 import { Spinner } from "@/components/ui/atoms/spinner";
 
 /**

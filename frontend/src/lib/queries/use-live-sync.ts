@@ -5,7 +5,7 @@ import { useQueryClient } from "@tanstack/react-query";
 
 import { API_ORIGIN, API_V1_PREFIX, tokenStore } from "@/lib/api";
 import { useAuth } from "@/lib/auth-context";
-import { mealsKey } from "@/lib/use-meals";
+import { mealsKey } from "@/lib/queries/use-meals";
 
 /** Turn the http(s) API origin into a ws(s) URL for the live-sync endpoint. */
 function liveSyncUrl(token: string): string {

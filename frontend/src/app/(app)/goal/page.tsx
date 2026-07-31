@@ -2,7 +2,7 @@
 
 import { Controller, useForm } from "react-hook-form";
 
-import { useHealthGoal, useUpsertHealthGoal } from "@/lib/use-health-goal";
+import { useHealthGoal, useUpsertHealthGoal } from "@/lib/queries/use-health-goal";
 import type { HealthGoal } from "@/types/health-goal";
 import {
   activityLevels,

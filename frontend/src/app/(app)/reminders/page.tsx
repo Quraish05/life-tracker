@@ -4,8 +4,8 @@ import { useMemo, useState } from "react";
 
 import type { Reminder } from "@/types/reminder";
 import { PAGE_SIZE, STATUS_FILTERS } from "@/constants/reminders";
-import { useDeleteReminder, useReminders } from "@/lib/use-reminders";
-import { useNotes } from "@/lib/use-notes";
+import { useDeleteReminder, useReminders } from "@/lib/queries/use-reminders";
+import { useNotes } from "@/lib/queries/use-notes";
 import {
   useReminderNotifications,
   type PermissionState,

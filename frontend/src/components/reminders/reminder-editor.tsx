@@ -10,8 +10,8 @@ import {
   type TargetType,
 } from "@/lib/validations/reminder";
 import type { Reminder } from "@/types/reminder";
-import { useCreateReminder, useUpdateReminder } from "@/lib/use-reminders";
-import { useNotes } from "@/lib/use-notes";
+import { useCreateReminder, useUpdateReminder } from "@/lib/queries/use-reminders";
+import { useNotes } from "@/lib/queries/use-notes";
 import { Button } from "@/components/ui/atoms/button";
 import { FieldError, FormError } from "@/components/ui/atoms/form-error";
 import { FormField } from "@/components/ui/molecules/form-field";

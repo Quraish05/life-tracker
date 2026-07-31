@@ -8,8 +8,8 @@ import {
   useNoteSearch,
   useNotes,
   useTogglePin,
-} from "@/lib/use-notes";
-import { useReminders } from "@/lib/use-reminders";
+} from "@/lib/queries/use-notes";
+import { useReminders } from "@/lib/queries/use-reminders";
 import { FILTERS, type Filter } from "@/constants/notes";
 import { Button } from "@/components/ui/atoms/button";
 import { AccentText } from "@/components/ui/atoms/accent-text";

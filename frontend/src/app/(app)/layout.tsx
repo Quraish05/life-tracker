@@ -4,7 +4,7 @@ import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/lib/auth-context";
-import { currentReturnTarget } from "@/lib/next-path";
+import { currentReturnTarget } from "@/lib/utils/next-path";
 import { ReminderNotificationsProvider } from "@/lib/reminder-notifications";
 import Sidebar from "@/components/Sidebar";
 import { Spinner } from "@/components/ui/atoms/spinner";

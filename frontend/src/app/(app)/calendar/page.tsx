@@ -2,10 +2,10 @@
 
 import { useMemo, useState } from "react";
 
-import { useMeals } from "@/lib/use-meals";
-import { useExercises } from "@/lib/use-exercises";
-import { useNotes } from "@/lib/use-notes";
-import { useReminders } from "@/lib/use-reminders";
+import { useMeals } from "@/lib/queries/use-meals";
+import { useExercises } from "@/lib/queries/use-exercises";
+import { useNotes } from "@/lib/queries/use-notes";
+import { useReminders } from "@/lib/queries/use-reminders";
 import {
   addMonths,
   formatMonthTitle,
