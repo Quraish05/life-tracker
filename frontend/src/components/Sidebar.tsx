@@ -5,8 +5,8 @@ import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 
 import { useAuth } from "@/lib/auth-context";
-import { useFoods } from "@/lib/use-food";
-import { useIngredients } from "@/lib/use-ingredients";
+import { useFoods } from "@/lib/queries/use-food";
+import { useIngredients } from "@/lib/queries/use-ingredients";
 import { cn } from "@/lib/utils";
 import { AiQuotaBadge } from "@/components/ai/ai-quota";
 import { ThemeToggle } from "@/components/ui/atoms/theme-toggle";

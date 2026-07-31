@@ -1,6 +1,6 @@
 "use client";
 
-import { useLiveSync } from "@/lib/use-live-sync";
+import { useLiveSync } from "@/lib/queries/use-live-sync";
 
 /**
  * Mounts the live-sync WebSocket for the whole app. Renders nothing — it exists

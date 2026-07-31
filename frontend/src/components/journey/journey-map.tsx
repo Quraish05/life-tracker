@@ -2,11 +2,11 @@
 
 import Link from "next/link";
 
-import { useFoods } from "@/lib/use-food";
-import { useExercises } from "@/lib/use-exercises";
-import { useHealthGoal } from "@/lib/use-health-goal";
-import { useSummaries } from "@/lib/use-insights";
-import { useMeals } from "@/lib/use-meals";
+import { useFoods } from "@/lib/queries/use-food";
+import { useExercises } from "@/lib/queries/use-exercises";
+import { useHealthGoal } from "@/lib/queries/use-health-goal";
+import { useSummaries } from "@/lib/queries/use-insights";
+import { useMeals } from "@/lib/queries/use-meals";
 import { monthRange, weekRange } from "@/components/calendar/_lib";
 import { JOURNEY_STEPS } from "@/components/journey/steps";
 import { AccentText } from "@/components/ui/atoms/accent-text";

@@ -3,11 +3,11 @@
 import { useMemo } from "react";
 import Link from "next/link";
 
-import { useFoods } from "@/lib/use-food";
-import { useMeals } from "@/lib/use-meals";
-import { useExercises } from "@/lib/use-exercises";
-import { useNotes } from "@/lib/use-notes";
-import { useReminders } from "@/lib/use-reminders";
+import { useFoods } from "@/lib/queries/use-food";
+import { useMeals } from "@/lib/queries/use-meals";
+import { useExercises } from "@/lib/queries/use-exercises";
+import { useNotes } from "@/lib/queries/use-notes";
+import { useReminders } from "@/lib/queries/use-reminders";
 import { todayISO, weekRange } from "@/components/calendar/_lib";
 import { reminderStatus } from "@/components/reminders/_lib";
 import { JourneyMap } from "@/components/journey/journey-map";

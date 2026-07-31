@@ -3,15 +3,15 @@
 import { use, useState } from "react";
 import Link from "next/link";
 
-import { useFoods } from "@/lib/use-food";
-import { useCreateMeal, useDeleteMeal, useMeals } from "@/lib/use-meals";
+import { useFoods } from "@/lib/queries/use-food";
+import { useCreateMeal, useDeleteMeal, useMeals } from "@/lib/queries/use-meals";
 import {
   useCreateExercise,
   useDeleteExercise,
   useExercises,
-} from "@/lib/use-exercises";
-import { useNotes } from "@/lib/use-notes";
-import { useReminders } from "@/lib/use-reminders";
+} from "@/lib/queries/use-exercises";
+import { useNotes } from "@/lib/queries/use-notes";
+import { useReminders } from "@/lib/queries/use-reminders";
 import type { MealSlot } from "@/lib/validations/meal";
 import {
   MAIN_SLOTS,

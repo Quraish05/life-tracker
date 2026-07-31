@@ -12,7 +12,7 @@ import {
 import { tokenStore } from "@/lib/api";
 import { pushApi, urlBase64ToUint8Array } from "@/lib/push";
 import { playReminderChime, unlockReminderSound } from "@/lib/reminder-sound";
-import { useAckReminder, useDueReminders } from "@/lib/use-reminders";
+import { useAckReminder, useDueReminders } from "@/lib/queries/use-reminders";
 
 const VAPID_PUBLIC_KEY = process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY;
 

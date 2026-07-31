@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 
 import type { Ingredient } from "@/types/ingredient";
-import { useDeleteIngredient, useIngredients } from "@/lib/use-ingredients";
+import { useDeleteIngredient, useIngredients } from "@/lib/queries/use-ingredients";
 import { AccentText } from "@/components/ui/atoms/accent-text";
 import { Button } from "@/components/ui/atoms/button";
 import { IconButton } from "@/components/ui/atoms/icon-button";

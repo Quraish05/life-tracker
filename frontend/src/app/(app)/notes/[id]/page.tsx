@@ -4,7 +4,7 @@ import { use, useMemo, useState } from "react";
 import Link from "next/link";
 
 import type { Note } from "@/types/note";
-import { useNotes } from "@/lib/use-notes";
+import { useNotes } from "@/lib/queries/use-notes";
 import { Button } from "@/components/ui/atoms/button";
 import { EmptyState } from "@/components/ui/molecules/empty-state";
 import { AccentText } from "@/components/ui/atoms/accent-text";

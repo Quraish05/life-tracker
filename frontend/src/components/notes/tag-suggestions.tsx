@@ -5,7 +5,7 @@ import { useWatch, type Control } from "react-hook-form";
 import { isQuotaError } from "@/lib/api";
 import { canSuggestTags } from "@/lib/notes";
 import { useAiQuota } from "@/lib/use-ai-quota";
-import { useSuggestTags } from "@/lib/use-notes";
+import { useSuggestTags } from "@/lib/queries/use-notes";
 import {
   MAX_TAGS,
   normalizeTag,

@@ -6,8 +6,8 @@ import { zodResolver } from "@hookform/resolvers/zod";
 
 import { ingredientSchema, type IngredientInput } from "@/lib/validations/ingredient";
 import type { Ingredient } from "@/types/ingredient";
-import { useCreateIngredient, useUpdateIngredient } from "@/lib/use-ingredients";
-import { useFoods, useUpdateFood } from "@/lib/use-food";
+import { useCreateIngredient, useUpdateIngredient } from "@/lib/queries/use-ingredients";
+import { useFoods, useUpdateFood } from "@/lib/queries/use-food";
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/atoms/button";
 import { FormError } from "@/components/ui/atoms/form-error";

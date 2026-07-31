@@ -3,7 +3,7 @@
 import { useMemo, useState } from "react";
 
 import type { FoodItem } from "@/types/food";
-import { useDeleteFood, useFoods } from "@/lib/use-food";
+import { useDeleteFood, useFoods } from "@/lib/queries/use-food";
 import { AccentText } from "@/components/ui/atoms/accent-text";
 import { Button } from "@/components/ui/atoms/button";
 import { EmptyState } from "@/components/ui/molecules/empty-state";
