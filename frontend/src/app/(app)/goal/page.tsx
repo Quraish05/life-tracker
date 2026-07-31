@@ -39,7 +39,7 @@ export default function GoalPage() {
   const { data: goal, isLoading } = useHealthGoal();
 
   return (
-    <div className="mx-auto max-w-2xl px-4 py-8 tablet:px-6 tablet:py-10">
+    <div className="mx-auto max-w-6xl px-4 py-8 tablet:px-6 tablet:py-10">
       <PageHeader
         eyebrow="Health goal"
         title={

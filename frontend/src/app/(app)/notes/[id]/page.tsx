@@ -39,7 +39,7 @@ export default function NoteDetailPage({
 
   if (isLoading && !note) {
     return (
-      <div className="mx-auto max-w-3xl px-6 py-10">
+      <div className="mx-auto max-w-6xl px-4 py-8 tablet:px-6 tablet:py-10">
         <p className="text-sm text-muted">Loading…</p>
       </div>
     );
@@ -47,7 +47,7 @@ export default function NoteDetailPage({
 
   if (!note) {
     return (
-      <div className="mx-auto max-w-3xl px-6 py-10">
+      <div className="mx-auto max-w-6xl px-4 py-8 tablet:px-6 tablet:py-10">
         <EmptyState
           icon="🔍"
           title={

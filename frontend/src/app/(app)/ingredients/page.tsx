@@ -35,7 +35,7 @@ export default function IngredientsPage() {
   }
 
   return (
-    <div className="mx-auto max-w-4xl px-4 py-8 tablet:px-6 tablet:py-10">
+    <div className="mx-auto max-w-6xl px-4 py-8 tablet:px-6 tablet:py-10">
       <header className="flex flex-wrap items-end justify-between gap-4">
         <div>
           <p className="text-xs font-bold uppercase tracking-[0.08em] text-muted">
