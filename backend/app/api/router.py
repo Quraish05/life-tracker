@@ -6,6 +6,7 @@ from app.api.routes import (
     food,
     health,
     health_goals,
+    ingredients,
     insights,
     meals,
     notes,
@@ -21,6 +22,7 @@ api_router.include_router(notes.router)
 api_router.include_router(reminders.router)
 api_router.include_router(push.router)
 api_router.include_router(food.router)
+api_router.include_router(ingredients.router)
 api_router.include_router(meals.router)
 api_router.include_router(exercises.router)
 api_router.include_router(health_goals.router)
