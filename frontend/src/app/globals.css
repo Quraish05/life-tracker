@@ -118,6 +118,19 @@
   animation: rise-in 0.22s ease-out both;
 }
 
+/* Slide-in from the right edge — for drawers / side sheets. */
+@keyframes slide-in-right {
+  from {
+    transform: translateX(100%);
+  }
+  to {
+    transform: none;
+  }
+}
+.animate-slide-in-right {
+  animation: slide-in-right 0.24s cubic-bezier(0.2, 0.8, 0.2, 1) both;
+}
+
 /* Fancy display font helper for highlighted keywords */
 .font-display {
   font-family: var(--font-display), Georgia, serif;

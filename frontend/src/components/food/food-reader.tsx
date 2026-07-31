@@ -29,24 +29,13 @@ function SectionLabel({ children }: { children: ReactNode }) {
   );
 }
 
-/** The empty aside shown when nothing in the library is selected. */
-function NoSelection() {
-  return (
-    <div className="flex min-h-64 flex-col items-center justify-center rounded-xl border border-dashed border-border bg-surface/50 p-6 text-center">
-      <span className="text-3xl">🍽️</span>
-      <p className="mt-3 text-sm text-muted">
-        Pick a food from the list to read it.
-      </p>
-    </div>
-  );
-}
-
-/** Detail aside of the food library: the selected food, read in full. */
+/** Detail view of the food library: the selected food, read in full. Rendered
+ * inside the right-hand Drawer, so it provides no card chrome of its own. */
 export function FoodReader({ food, onEdit, onDelete }: Props) {
   const activity = useFoodActivity(food?.id ?? null);
   const createMeal = useCreateMeal();
 
-  if (!food) return <NoSelection />;
+  if (!food) return null;
 
   // Capture the id so the logNow closure doesn't trip control-flow narrowing.
   const foodId = food.id;
@@ -75,7 +64,7 @@ export function FoodReader({ food, onEdit, onDelete }: Props) {
       : "Log this now";
 
   return (
-    <div className="rounded-xl border border-border bg-surface p-5">
+    <div>
       {/* Header — emoji, name, and a one-line meta */}
       <div className="flex items-center gap-3">
         <span className="flex h-11 w-11 flex-none items-center justify-center rounded-lg bg-foreground/5 text-xl">
