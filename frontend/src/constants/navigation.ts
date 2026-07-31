@@ -16,8 +16,7 @@ export type NavGroup = {
 /**
  * The sidebar's information architecture, split into two intents: things you
  * do day-to-day ("Track") and things you look back on ("Reflect"). Every entry
- * maps to a real route — the redesign's "Log an entry" action and global
- * search aren't routes yet, so they're deliberately absent here.
+ * maps to a real route — global search isn't a route yet, so it's absent here.
  */
 export const NAV_GROUPS: NavGroup[] = [
   {
@@ -25,6 +24,7 @@ export const NAV_GROUPS: NavGroup[] = [
     items: [
       { label: "Today", href: "/dashboard", icon: "🏠" },
       { label: "Calendar", href: "/calendar", icon: "🗓️" },
+      { label: "Log an entry", href: "/log", icon: "✨" },
       { label: "Food", href: "/food", icon: "🍽️", badge: "food" },
       { label: "Ingredients", href: "/ingredients", icon: "🥕", badge: "ingredients" },
       { label: "Reminders", href: "/reminders", icon: "⏰" },
