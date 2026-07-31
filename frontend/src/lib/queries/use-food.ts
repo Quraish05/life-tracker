@@ -5,16 +5,39 @@ import {
   type UseMutationResult,
 } from "@tanstack/react-query";
 
-import { foodApi } from "@/lib/food";
-import type { FoodItem } from "@/types/food";
+import { foodApi, type NutritionEstimateInput } from "@/lib/food";
+import type { FoodItem, NutritionEstimate } from "@/types/food";
 import type { FoodItemInput } from "@/lib/validations/food";
 
 /** Single cache key for the foods list — mutations invalidate it to refetch. */
 export const foodKey = ["foods"] as const;
 
+/** Per-food activity cache key (count / top slot / recent logs). */
+export const foodActivityKey = (id: number) => ["food-activity", id] as const;
+
 /** The current user's foods, cached and kept fresh across the app. */
 export function useFoods() {
   return useQuery({ queryKey: foodKey, queryFn: foodApi.list });
+}
+
+/** A single food's logging activity, fetched lazily when one is selected. */
+export function useFoodActivity(id: number | null) {
+  return useQuery({
+    queryKey: foodActivityKey(id ?? 0),
+    queryFn: () => foodApi.activity(id as number),
+    enabled: id != null,
+  });
+}
+
+/** Ask the AI to estimate a food's per-serving nutrition (proposes, doesn't save). */
+export function useEstimateNutrition(): UseMutationResult<
+  NutritionEstimate,
+  Error,
+  NutritionEstimateInput
+> {
+  return useMutation({
+    mutationFn: (input: NutritionEstimateInput) => foodApi.estimateNutrition(input),
+  });
 }
 
 /** Shared success handler: pull the freshly-changed list back from the server. */
