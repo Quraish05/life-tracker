@@ -29,6 +29,14 @@ export function useFoodActivity(id: number | null) {
   });
 }
 
+/** Cache key for the "log again" rail of most-logged foods. */
+export const frequentFoodKey = ["food-frequent"] as const;
+
+/** The user's most-logged foods (with usual slot) for the log-again rail. */
+export function useFrequentFoods() {
+  return useQuery({ queryKey: frequentFoodKey, queryFn: foodApi.frequent });
+}
+
 /** Ask the AI to estimate a food's per-serving nutrition (proposes, doesn't save). */
 export function useEstimateNutrition(): UseMutationResult<
   NutritionEstimate,

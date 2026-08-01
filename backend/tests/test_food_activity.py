@@ -14,6 +14,7 @@ from fastapi import HTTPException
 from app.api.routes.food import (
     estimate_food_nutrition,
     get_food_activity,
+    list_frequent_food,
 )
 from app.models.food import FoodItem
 from app.models.meal_log import MealLog
@@ -115,6 +116,62 @@ async def test_activity_404_for_food_not_owned(db):
     with pytest.raises(HTTPException) as exc:
         await get_food_activity(alice_food.id, bob, db)
     assert exc.value.status_code == 404
+
+
+# ---- frequent ---------------------------------------------------------------
+
+
+async def test_frequent_ranks_by_count_and_picks_top_slot(db):
+    user = await _make_user(db)
+    yogurt = await _make_food(db, user, "Greek yogurt bowl")
+    burrito = await _make_food(db, user, "Chicken burrito bowl")
+    # Yogurt: 3 logs (2 breakfast, 1 lunch) -> top slot breakfast, count 3.
+    await _log(db, user, yogurt, "breakfast", date(2026, 7, 20))
+    await _log(db, user, yogurt, "breakfast", date(2026, 7, 21))
+    await _log(db, user, yogurt, "lunch", date(2026, 7, 22))
+    # Burrito: 1 log -> ranks below yogurt.
+    await _log(db, user, burrito, "lunch", date(2026, 7, 22))
+
+    frequent = await list_frequent_food(user, db)
+
+    assert [f.name for f in frequent] == ["Greek yogurt bowl", "Chicken burrito bowl"]
+    assert frequent[0].count == 3
+    assert frequent[0].top_slot == "breakfast"
+    assert frequent[0].food_id == yogurt.id
+    assert frequent[1].count == 1
+
+
+async def test_frequent_empty_when_nothing_logged(db):
+    user = await _make_user(db)
+    await _make_food(db, user)
+
+    assert await list_frequent_food(user, db) == []
+
+
+async def test_frequent_ignores_other_users(db):
+    alice = await _make_user(db, "alice")
+    bob = await _make_user(db, "bob")
+    alice_food = await _make_food(db, alice, "Alice bowl")
+    bob_food = await _make_food(db, bob, "Bob bowl")
+    await _log(db, alice, alice_food, "lunch", date(2026, 7, 20))
+    await _log(db, bob, bob_food, "dinner", date(2026, 7, 20))
+
+    frequent = await list_frequent_food(alice, db)
+
+    assert [f.name for f in frequent] == ["Alice bowl"]
+
+
+async def test_frequent_capped_at_limit(db):
+    from app.api.routes.food import _FREQUENT_LIMIT
+
+    user = await _make_user(db)
+    for i in range(_FREQUENT_LIMIT + 3):
+        food = await _make_food(db, user, f"Food {i}")
+        await _log(db, user, food, "lunch", date(2026, 7, 20))
+
+    frequent = await list_frequent_food(user, db)
+
+    assert len(frequent) == _FREQUENT_LIMIT
 
 
 # ---- estimate route quota wiring -------------------------------------------

@@ -11,6 +11,7 @@ import { FoodListPanel } from "@/components/food/food-list-panel";
 import { FoodReader } from "@/components/food/food-reader";
 import { FoodEditor } from "@/components/food/food-editor";
 import { DeleteDialog } from "@/components/notes/delete-dialog";
+import { Drawer } from "@/components/ui/molecules/drawer";
 
 type SortKey = "recent" | "name";
 
@@ -43,18 +44,16 @@ export default function FoodPage() {
     );
   }, [foods, query, sort]);
 
-  // The reader shows the selection when it's in view, else the first result —
-  // so searching, or deleting the open food, always lands on something sensible
+  // The detail Drawer opens only on an explicit selection that's still in view —
+  // so searching away from, or deleting, the open food just closes the drawer
   // without a synchronizing effect.
-  const activeId =
-    selectedId != null && visible.some((d) => d.id === selectedId)
-      ? selectedId
-      : (visible[0]?.id ?? null);
-  const active = visible.find((d) => d.id === activeId) ?? null;
+  const selected =
+    selectedId != null ? (visible.find((d) => d.id === selectedId) ?? null) : null;
 
   async function confirmDelete() {
     if (!deleting) return;
     await deleteFood.mutateAsync(deleting.id);
+    if (selectedId === deleting.id) setSelectedId(null);
     setDeleting(null);
   }
 
@@ -111,39 +110,39 @@ export default function FoodPage() {
           action={<Button onClick={() => setEditing("new")}>+ New food</Button>}
         />
       ) : (
-        <div className="mt-6 grid gap-6 laptop:grid-cols-[minmax(0,1fr)_360px] laptop:items-start">
-          {/* Main pane — the scannable food list */}
-          <div>
-            <div className="mb-3 flex items-center justify-end">
-              <label className="flex items-center gap-1.5 text-[11px] font-semibold text-muted">
-                Sort
-                <select
-                  value={sort}
-                  onChange={(e) => setSort(e.target.value as SortKey)}
-                  className="rounded-md border border-border bg-surface px-2 py-1 text-[11px] font-semibold text-foreground transition focus:border-grape focus:outline-none"
-                >
-                  <option value="recent">Recently updated</option>
-                  <option value="name">Name (A–Z)</option>
-                </select>
-              </label>
-            </div>
-            <FoodListPanel
-              foods={visible}
-              activeId={activeId}
-              onSelect={setSelectedId}
-            />
+        <div className="mt-6">
+          {/* The scannable food list — full width; a row opens the detail Drawer */}
+          <div className="mb-3 flex items-center justify-end">
+            <label className="flex items-center gap-1.5 text-[11px] font-semibold text-muted">
+              Sort
+              <select
+                value={sort}
+                onChange={(e) => setSort(e.target.value as SortKey)}
+                className="rounded-md border border-border bg-surface px-2 py-1 text-[11px] font-semibold text-foreground transition focus:border-grape focus:outline-none"
+              >
+                <option value="recent">Recently updated</option>
+                <option value="name">Name (A–Z)</option>
+              </select>
+            </label>
           </div>
-
-          {/* Detail aside — the selected food in full */}
-          <div className="laptop:sticky laptop:top-6">
-            <FoodReader
-              key={active?.id ?? "empty"}
-              food={active}
-              onEdit={setEditing}
-              onDelete={setDeleting}
-            />
-          </div>
+          <FoodListPanel
+            foods={visible}
+            activeId={selected?.id ?? null}
+            onSelect={setSelectedId}
+          />
         </div>
+      )}
+
+      {/* Detail Drawer — the selected food, read in full */}
+      {selected && (
+        <Drawer eyebrow="Food" onClose={() => setSelectedId(null)}>
+          <FoodReader
+            key={selected.id}
+            food={selected}
+            onEdit={setEditing}
+            onDelete={setDeleting}
+          />
+        </Drawer>
       )}
 
       {editing !== null && (

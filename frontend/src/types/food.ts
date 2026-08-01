@@ -41,3 +41,15 @@ export type FoodActivity = {
   /** Newest logs first. */
   recent: MealLog[];
 };
+
+/**
+ * A "log again" shortcut: a frequently-logged food plus the slot it's usually
+ * eaten in and its total log count. Powers the log page's one-tap-again rail —
+ * tapping it re-logs the food straight into `top_slot`.
+ */
+export type FrequentFood = {
+  food_id: number;
+  name: string;
+  count: number;
+  top_slot: MealSlot;
+};

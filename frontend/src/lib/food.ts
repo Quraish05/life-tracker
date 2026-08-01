@@ -1,6 +1,11 @@
 import { ApiError, request, tokenStore } from "@/lib/api";
 import type { FoodItemInput, Ingredient } from "@/lib/validations/food";
-import type { FoodActivity, FoodItem, NutritionEstimate } from "@/types/food";
+import type {
+  FoodActivity,
+  FoodItem,
+  FrequentFood,
+  NutritionEstimate,
+} from "@/types/food";
 
 /** The draft a food's nutrition is estimated from (works before it's saved). */
 export type NutritionEstimateInput = {
@@ -44,4 +49,8 @@ export const foodApi = {
   /** How a food has been logged: count, top slot, and recent logs. */
   activity: (id: number): Promise<FoodActivity> =>
     request<FoodActivity>(`/food/${id}/activity`, { token: authToken() }),
+
+  /** The user's most-logged foods with their usual slot (log-again rail). */
+  frequent: (): Promise<FrequentFood[]> =>
+    request<FrequentFood[]>("/food/frequent", { token: authToken() }),
 };

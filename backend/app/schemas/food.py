@@ -123,3 +123,18 @@ class FoodActivity(BaseModel):
     count: int
     top_slot: MealSlot | None = None
     recent: list[MealLogRead] = Field(default_factory=list)
+
+
+class FrequentFood(BaseModel):
+    """A single "log again" shortcut: a food the user logs often, with the slot
+    they usually eat it in and how many times they've logged it.
+
+    Powers the log page's "one tap again" rail — tapping one logs the food
+    straight into ``top_slot``. Only foods that still exist are returned (a
+    deleted food's logs keep their name but null the FK, so they drop out).
+    """
+
+    food_id: int
+    name: str
+    count: int
+    top_slot: MealSlot
