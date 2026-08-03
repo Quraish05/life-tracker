@@ -6,6 +6,7 @@ from sqlalchemy import (
     ForeignKey,
     Integer,
     String,
+    Text,
     UniqueConstraint,
     func,
 )
@@ -15,12 +16,13 @@ from app.db.base import Base
 
 
 class DailySummaryRecord(Base):
-    """A saved snapshot of a day's AI summary, for progress tracking.
+    """A saved day summary — the user's own text, optionally with AI stats.
 
-    One row per user per day (``user_id`` + ``summary_date`` unique). The user
-    generates a summary on demand and explicitly *saves* it here; re-saving a day
-    replaces the row. Values are a historical snapshot — they don't change if the
-    day's meals/workouts are edited later.
+    One row per user per day (``user_id`` + ``summary_date`` unique). ``note`` is
+    the editable free-text summary (typed by hand, or AI-drafted then kept/edited)
+    and is the primary field. The structured calorie/assessment fields are a
+    *snapshot* filled in only when the summary was AI-generated — all nullable, so
+    a hand-typed note-only summary is valid. Re-saving a day replaces the row.
     """
 
     __tablename__ = "daily_summaries"
@@ -33,15 +35,18 @@ class DailySummaryRecord(Base):
         ForeignKey("users.id", ondelete="CASCADE"), index=True
     )
     summary_date: Mapped[date] = mapped_column(Date, index=True)
-    calories_in: Mapped[int] = mapped_column(Integer)
-    calories_out: Mapped[int] = mapped_column(Integer)
+    # The editable free-text summary — the star of the record.
+    note: Mapped[str | None] = mapped_column(Text, default=None)
+    # AI snapshot fields — populated only on an AI-generated summary, else null.
+    calories_in: Mapped[int | None] = mapped_column(Integer, default=None)
+    calories_out: Mapped[int | None] = mapped_column(Integer, default=None)
     target_calories: Mapped[int | None] = mapped_column(Integer, default=None)
     # on_track | off_track | no_data
-    assessment: Mapped[str] = mapped_column(String(16))
-    headline: Mapped[str] = mapped_column(String(200))
-    tip: Mapped[str] = mapped_column(String(200))
-    # Which model produced it, for transparency.
-    model: Mapped[str] = mapped_column(String(64))
+    assessment: Mapped[str | None] = mapped_column(String(16), default=None)
+    headline: Mapped[str | None] = mapped_column(String(200), default=None)
+    tip: Mapped[str | None] = mapped_column(String(200), default=None)
+    # Which model produced the AI snapshot, for transparency.
+    model: Mapped[str | None] = mapped_column(String(64), default=None)
     created_at: Mapped[datetime] = mapped_column(
         DateTime(timezone=True), server_default=func.now()
     )

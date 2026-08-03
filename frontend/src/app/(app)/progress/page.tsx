@@ -5,7 +5,7 @@ import Link from "next/link";
 
 import { useSummaries } from "@/lib/queries/use-insights";
 import { monthRange, parseISODate, weekRange } from "@/components/calendar/_lib";
-import { ASSESSMENT_META } from "@/components/calendar/day-summary";
+import { ASSESSMENT_META } from "@/components/insights/day-summary-editor";
 import { AccentText } from "@/components/ui/atoms/accent-text";
 import { Card } from "@/components/ui/atoms/card";
 import { Chip } from "@/components/ui/atoms/chip";
@@ -34,7 +34,10 @@ export default function ProgressPage() {
   const { data: summaries = [], isLoading } = useSummaries(range.start, range.end);
 
   const rollup = useMemo(() => {
-    const withData = summaries.filter((s) => s.assessment !== "no_data");
+    // Only AI-generated summaries carry an assessment + calorie numbers.
+    const withData = summaries.filter(
+      (s) => s.assessment != null && s.assessment !== "no_data",
+    );
     const onTrack = summaries.filter((s) => s.assessment === "on_track").length;
     const offTrack = summaries.filter((s) => s.assessment === "off_track").length;
     const avg = (pick: (s: (typeof summaries)[number]) => number) =>
@@ -44,8 +47,9 @@ export default function ProgressPage() {
     return {
       onTrack,
       offTrack,
-      avgIn: avg((s) => s.calories_in),
-      avgOut: avg((s) => s.calories_out),
+      hasCalories: withData.length > 0,
+      avgIn: avg((s) => s.calories_in ?? 0),
+      avgOut: avg((s) => s.calories_out ?? 0),
     };
   }, [summaries]);
 
@@ -87,7 +91,7 @@ export default function ProgressPage() {
               Nothing <AccentText tone="grape">saved yet</AccentText>
             </>
           }
-          description="Open a day on the calendar, summarize it, and hit “Save to progress” to start tracking."
+          description="Open a day, write or generate its summary, and save it to start tracking."
         />
       ) : (
         <>
@@ -109,9 +113,11 @@ export default function ProgressPage() {
                   <span className="text-sm font-medium text-muted"> off track</span>
                 </p>
               </div>
-              <div className="text-sm text-muted">
-                avg 🔥 ~{rollup.avgIn} in · ~{rollup.avgOut} out
-              </div>
+              {rollup.hasCalories && (
+                <div className="text-sm text-muted">
+                  avg 🔥 ~{rollup.avgIn} in · ~{rollup.avgOut} out
+                </div>
+              )}
             </div>
           </Card>
 
@@ -127,15 +133,23 @@ export default function ProgressPage() {
                     <span className="font-semibold text-foreground group-hover:text-grape">
                       {shortDate(s.summary_date)}
                     </span>
-                    <Chip tone={ASSESSMENT_META[s.assessment].tone} size="sm">
-                      {ASSESSMENT_META[s.assessment].label}
-                    </Chip>
-                    <span className="text-sm text-muted">
-                      🔥 ~{s.calories_in} in · ~{s.calories_out} out
-                      {s.target_calories != null && <> · target ~{s.target_calories}</>}
-                    </span>
+                    {s.assessment && (
+                      <Chip tone={ASSESSMENT_META[s.assessment].tone} size="sm">
+                        {ASSESSMENT_META[s.assessment].label}
+                      </Chip>
+                    )}
+                    {s.calories_in != null && (
+                      <span className="text-sm text-muted">
+                        🔥 ~{s.calories_in} in · ~{s.calories_out} out
+                        {s.target_calories != null && <> · target ~{s.target_calories}</>}
+                      </span>
+                    )}
                   </div>
-                  <p className="text-sm text-muted">{s.headline}</p>
+                  {(s.note ?? s.headline) && (
+                    <p className="line-clamp-2 text-sm text-muted">
+                      {s.note ?? s.headline}
+                    </p>
+                  )}
                 </Link>
               </li>
             ))}

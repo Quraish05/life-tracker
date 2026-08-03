@@ -26,6 +26,7 @@ _SCHEMA: dict = {
         "assessment",
         "headline",
         "tip",
+        "narrative",
     ],
     "properties": {
         "calories_in": {
@@ -64,6 +65,16 @@ _SCHEMA: dict = {
                 "string if there is nothing useful to add."
             ),
         },
+        "narrative": {
+            "type": "string",
+            "description": (
+                "A short, friendly prose summary of the day in 2-4 sentences, "
+                "written in second person ('You had...'). Mention what they ate "
+                "and how they moved, and how it felt relative to the goal. This is "
+                "the editable summary the user sees, so make it read naturally — "
+                "not a list, not clinical."
+            ),
+        },
     },
 }
 
@@ -89,8 +100,10 @@ loss, enough protein/calories for muscle gain).
 
 headline: one short sentence. tip: one concrete, doable suggestion (or empty \
 string). Keep both under ~140 characters, warm and specific, never preachy. \
-These are rough estimates from free text — never imply clinical precision. \
-Respond only via the provided JSON schema.\
+narrative: 2-4 natural sentences recapping the day (what they ate, how they \
+moved, how it went vs the goal) in second person — this is the summary the user \
+reads and edits, so make it flow. These are rough estimates from free text — \
+never imply clinical precision. Respond only via the provided JSON schema.\
 """
 
 
@@ -161,6 +174,10 @@ async def summarize_day(
                 assessment="no_data",
                 headline="Nothing logged for this day yet.",
                 tip="Log a meal or a workout to get a summary.",
+                narrative=(
+                    "Nothing's logged for this day yet — add a meal or a workout "
+                    "and I can summarize it for you."
+                ),
             ),
             active_model(),
         )

@@ -1,6 +1,7 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { Suspense, useMemo, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import { useQueryClient } from "@tanstack/react-query";
 
 import type { FrequentFood } from "@/types/food";
@@ -28,7 +29,11 @@ import { OneTapAgain } from "@/components/log/one-tap-again";
 import { LibraryRail } from "@/components/log/library-rail";
 import { LogMealModal } from "@/components/log/log-meal-modal";
 import { LogExerciseModal } from "@/components/log/log-exercise-modal";
+import { DaySummaryEditor } from "@/components/insights/day-summary-editor";
 import { pickerLabel, shiftISODate } from "@/components/log/_lib";
+
+/** YYYY-MM-DD, the shape calendar/[date] redirects with. */
+const ISO_DATE = /^\d{4}-\d{2}-\d{2}$/;
 
 /** The active modal, if any. "meal" carries the slot it opened from. */
 type ModalState =
@@ -41,9 +46,14 @@ type ModalState =
 const SECTION_LABEL =
   "text-[10px] font-bold uppercase tracking-[0.12em] text-muted";
 
-export default function LogPage() {
+function LogPageContent() {
   const queryClient = useQueryClient();
-  const [date, setDate] = useState<string>(todayISO());
+  const searchParams = useSearchParams();
+  // Preselect the day from ?date= (how calendar/[date] hands off), else today.
+  const [date, setDate] = useState<string>(() => {
+    const q = searchParams.get("date");
+    return q && ISO_DATE.test(q) ? q : todayISO();
+  });
   const [modal, setModal] = useState<ModalState>(null);
 
   const { data: meals = [] } = useMeals(date, date);
@@ -126,6 +136,14 @@ export default function LogPage() {
             />
           </div>
         </section>
+
+        <section className="mt-7">
+          <p className={SECTION_LABEL}>Day summary</p>
+          <div className="mt-3">
+            {/* Remount per day so the saved note loads for the selected date. */}
+            <DaySummaryEditor key={date} date={date} />
+          </div>
+        </section>
       </div>
 
       {/* Right rail */}
@@ -183,6 +201,15 @@ export default function LogPage() {
         />
       )}
     </div>
+  );
+}
+
+/** `useSearchParams` needs a Suspense boundary during static generation. */
+export default function LogPage() {
+  return (
+    <Suspense fallback={null}>
+      <LogPageContent />
+    </Suspense>
   );
 }
 
