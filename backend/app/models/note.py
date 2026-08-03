@@ -12,7 +12,7 @@ from sqlalchemy import (
     Text,
     func,
 )
-from sqlalchemy.dialects.postgresql import TSVECTOR
+from sqlalchemy.dialects.postgresql import JSONB, TSVECTOR
 from sqlalchemy.orm import Mapped, mapped_column
 
 from app.db.base import Base
@@ -32,13 +32,22 @@ class Note(Base):
     user_id: Mapped[int] = mapped_column(
         ForeignKey("users.id", ondelete="CASCADE"), index=True
     )
+    # journal | note | checklist. A checklist carries `items`; a plain note or
+    # journal entry carries `body_md`.
     kind: Mapped[str] = mapped_column(String(16))
     title: Mapped[str] = mapped_column(String(120))
     body_md: Mapped[str] = mapped_column(Text)
+    # Checklist items — a list of {"text": str, "done": bool}. Empty for
+    # non-checklist notes. Not full-text indexed (only title/body_md are).
+    items: Mapped[list[dict]] = mapped_column(JSONB, default=list, server_default="[]")
     # Present only for journal entries.
     entry_date: Mapped[date | None] = mapped_column(Date, default=None)
     # Hashtag-style slugs, stored normalized and de-duped.
     tags: Mapped[list[str]] = mapped_column(ARRAY(String(24)), default=list)
+    # Single-select bucket a note lives in (slug, e.g. "eating-out"). Null = no
+    # folder. The label/colour for each slug lives on the frontend; the server
+    # only stores and normalizes the slug. Tags stay for multi-label / AI use.
+    folder: Mapped[str | None] = mapped_column(String(40), default=None)
     # Optional mood, only meaningful for journal entries.
     mood: Mapped[str | None] = mapped_column(String(16), default=None)
     pinned: Mapped[bool] = mapped_column(Boolean, default=False)

@@ -22,7 +22,9 @@ from app.services.note_search import search_notes
 from app.services.tag_suggestion import suggest_tags
 
 # Fields that make up a note's editable body (used to merge partial updates).
-_NOTE_FIELDS = ("kind", "title", "body_md", "entry_date", "tags", "mood", "pinned")
+_NOTE_FIELDS = (
+    "kind", "title", "body_md", "entry_date", "tags", "folder", "items", "mood", "pinned",
+)
 
 router = APIRouter(prefix="/notes", tags=["notes"])
 
@@ -141,8 +143,11 @@ async def update_note(
             detail=exc.errors()[0].get("msg", "Invalid note update"),
         ) from exc
 
+    # model_dump() so nested schemas (checklist ``items``) land as plain
+    # dicts the JSONB column can store — not Pydantic objects.
+    validated_data = validated.model_dump()
     for field in _NOTE_FIELDS:
-        setattr(note, field, getattr(validated, field))
+        setattr(note, field, validated_data[field])
 
     await db.commit()
     await db.refresh(note)

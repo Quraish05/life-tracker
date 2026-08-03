@@ -73,6 +73,7 @@ export default function NoteDetailPage({
       {isEditing && (
         <NoteEditor
           note={note}
+          fixedKind={note.kind}
           allTags={allTags}
           onAddReminder={(n) => {
             setIsEditing(false);

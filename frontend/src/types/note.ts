@@ -1,4 +1,4 @@
-import type { MoodKey, NoteKind } from "@/lib/validations/note";
+import type { ChecklistItem, MoodKey, NoteKind } from "@/lib/validations/note";
 
 /** A journal entry or free-form note. */
 export type Note = {
@@ -10,6 +10,10 @@ export type Note = {
   entry_date: string | null;
   /** Hashtag-style slugs — normalized server-side. */
   tags: string[];
+  /** Single-select folder slug (e.g. "eating-out"), or null for none. */
+  folder: string | null;
+  /** Checklist rows; empty for journal/note kinds. */
+  items: ChecklistItem[];
   /** Optional mood for journal entries. */
   mood: MoodKey | null;
   pinned: boolean;

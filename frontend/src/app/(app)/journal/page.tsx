@@ -8,14 +8,11 @@ import {
   useNoteSearch,
   useNotes,
   useTogglePin,
-  useUpdateNote,
 } from "@/lib/queries/use-notes";
 import { useReminders } from "@/lib/queries/use-reminders";
-import { NOTE_FOLDERS } from "@/constants/notes";
 import { Button } from "@/components/ui/atoms/button";
 import { AccentText } from "@/components/ui/atoms/accent-text";
 import { Chip } from "@/components/ui/atoms/chip";
-import { Card } from "@/components/ui/atoms/card";
 import { CardGrid } from "@/components/ui/atoms/card-grid";
 import { PageHeader } from "@/components/ui/molecules/page-header";
 import { EmptyState } from "@/components/ui/molecules/empty-state";
@@ -25,15 +22,19 @@ import { DeleteDialog } from "@/components/notes/delete-dialog";
 import { FollowUpSuggestions } from "@/components/notes/follow-up-suggestions";
 import { ReminderEditor } from "@/components/reminders/reminder-editor";
 
-export default function NotesPage() {
+/**
+ * Journal page — daily entries with a date + mood. This reuses the existing
+ * note card/editor unchanged; only journal-kind entries are shown here. (The
+ * Notes half of the old combined page now lives at `/notes` with its own
+ * folder-based redesign.)
+ */
+export default function JournalPage() {
   const { data: notes = [], isLoading } = useNotes();
   const { data: reminders = [] } = useReminders();
   const deleteNote = useDeleteNote();
   const togglePinMutation = useTogglePin();
-  const updateNote = useUpdateNote();
 
-  // null = show all folders; otherwise a folder slug.
-  const [folderFilter, setFolderFilter] = useState<string | null>(null);
+  const [tagFilter, setTagFilter] = useState<string | null>(null);
   const [query, setQuery] = useState("");
 
   // null = closed, "new" = create, Note = edit that note.
@@ -52,39 +53,32 @@ export default function NotesPage() {
     return counts;
   }, [reminders]);
 
-  // Notes + checklists live here; journal entries have their own page.
-  const plainNotes = useMemo(
-    () => notes.filter((n) => n.kind !== "journal"),
+  // Only journal entries belong on this page.
+  const journalNotes = useMemo(
+    () => notes.filter((n) => n.kind === "journal"),
     [notes],
   );
 
   const allTags = useMemo(() => {
     const counts = new Map<string, number>();
-    for (const n of plainNotes) {
+    for (const n of journalNotes) {
       for (const t of n.tags) counts.set(t, (counts.get(t) ?? 0) + 1);
     }
     return [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([t]) => t);
-  }, [plainNotes]);
-
-  // Per-folder note counts, for the filter chips (only folders in use appear).
-  const folderCounts = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const n of plainNotes) {
-      if (n.folder) counts.set(n.folder, (counts.get(n.folder) ?? 0) + 1);
-    }
-    return counts;
-  }, [plainNotes]);
+  }, [journalNotes]);
 
   const visible = useMemo(() => {
-    if (!folderFilter) return plainNotes;
-    return plainNotes.filter((n) => n.folder === folderFilter);
-  }, [plainNotes, folderFilter]);
+    return journalNotes.filter((n) => {
+      if (tagFilter && !n.tags.includes(tagFilter)) return false;
+      return true;
+    });
+  }, [journalNotes, tagFilter]);
 
   const [submitted, setSubmitted] = useState("");
   const isSearching = submitted.trim().length > 0;
   const search = useNoteSearch(submitted);
-  // Search spans every note; keep notes + checklists on this page.
-  const hits = (search.data ?? []).filter((h) => h.kind !== "journal");
+  // Search spans all notes; keep only journal hits on this page.
+  const hits = (search.data ?? []).filter((h) => h.kind === "journal");
 
   async function confirmDelete() {
     if (!deleting) return;
@@ -96,34 +90,26 @@ export default function NotesPage() {
     togglePinMutation.mutate({ id: note.id, pinned: !note.pinned });
   }
 
-  // Tick a checklist item off (or back on) straight from the card.
-  function toggleItem(note: Note, index: number) {
-    const items = note.items.map((it, i) =>
-      i === index ? { ...it, done: !it.done } : it,
-    );
-    updateNote.mutate({ id: note.id, input: { items } });
-  }
-
   return (
     <div className="mx-auto max-w-6xl px-4 py-8 tablet:px-6 tablet:py-10">
       <PageHeader
         eyebrow="Reflect"
         title={
           <>
-            Notes · <AccentText>the things you keep</AccentText>
+            Your <AccentText>thoughts</AccentText>, captured
           </>
         }
-        action={<Button onClick={() => setEditing("new")}>+ New note</Button>}
+        subtitle="Daily journal entries — how the day went, and how you felt."
+        action={<Button onClick={() => setEditing("new")}>+ New entry</Button>}
       />
 
-      {/* Search + folder filter chips */}
-      <div className="mb-4 flex flex-wrap items-center gap-3">
+      <div className="mb-6 flex flex-wrap items-center justify-end gap-3">
         <form
           onSubmit={(e) => {
             e.preventDefault();
             setSubmitted(query.trim());
           }}
-          className="relative min-w-[16rem] flex-1"
+          className="relative w-full max-w-xs"
           role="search"
         >
           <input
@@ -134,52 +120,48 @@ export default function NotesPage() {
               setQuery(value);
               if (value.trim() === "") setSubmitted("");
             }}
-            placeholder="Search notes and checklists…"
-            aria-label="Search notes"
-            className="w-full rounded-full border border-transparent bg-surface/70 py-2.5 pl-5 pr-11 text-sm text-foreground placeholder:text-muted/60 transition focus:border-grape focus:bg-surface focus:outline-none focus:ring-4 focus:ring-ring"
+            placeholder="Search journal…"
+            aria-label="Search journal"
+            className="w-full rounded-full border border-transparent bg-surface/70 py-2 pl-4 pr-11 text-sm text-foreground placeholder:text-muted/60 transition focus:border-grape focus:bg-surface focus:outline-none focus:ring-4 focus:ring-ring"
           />
           <button
             type="submit"
             aria-label="Search"
             disabled={query.trim() === ""}
-            className="absolute right-1.5 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-grape text-white transition hover:bg-grape/90 focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-40 disabled:hover:bg-grape"
+            className="absolute right-1 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-grape text-white transition hover:bg-grape/90 focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-40 disabled:hover:bg-grape"
           >
             →
           </button>
         </form>
-
-        <div className="flex flex-wrap items-center gap-1.5">
-          <FolderChip
-            label="All"
-            count={plainNotes.length}
-            active={folderFilter === null}
-            onClick={() => setFolderFilter(null)}
-          />
-          {NOTE_FOLDERS.filter((f) => (folderCounts.get(f.slug) ?? 0) > 0).map((f) => (
-            <FolderChip
-              key={f.slug}
-              label={f.label}
-              count={folderCounts.get(f.slug) ?? 0}
-              active={folderFilter === f.slug}
-              onClick={() =>
-                setFolderFilter(folderFilter === f.slug ? null : f.slug)
-              }
-            />
-          ))}
-        </div>
       </div>
 
-      {/* Count line */}
-      {!isSearching && (
-        <div className="mb-4 flex items-center justify-between text-xs font-semibold uppercase tracking-wide text-muted/70">
-          <span>
-            {visible.length} note{visible.length === 1 ? "" : "s"}
+      {allTags.length > 0 && (
+        <div className="mb-6 flex flex-wrap items-center gap-1.5">
+          <span className="mr-1 text-xs font-semibold uppercase tracking-wide text-muted/70">
+            Tags
           </span>
-          <span>Pinned notes stay at the top</span>
+          {allTags.map((tag) => {
+            const active = tagFilter === tag;
+            return (
+              <Chip key={tag} asChild interactive tone={active ? "solid" : "soft"}>
+                <button type="button" onClick={() => setTagFilter(active ? null : tag)}>
+                  #{tag}
+                </button>
+              </Chip>
+            );
+          })}
+          {tagFilter && (
+            <button
+              type="button"
+              onClick={() => setTagFilter(null)}
+              className="rounded-full px-2.5 py-1 text-xs font-semibold text-muted transition hover:text-coral"
+            >
+              Clear ✕
+            </button>
+          )}
         </div>
       )}
 
-      {/* Content — backend full-text search when there's a query, else browse */}
       {isSearching ? (
         search.isLoading ? (
           <p className="text-sm text-muted">Searching…</p>
@@ -195,7 +177,7 @@ export default function NotesPage() {
                 Nothing <AccentText tone="grape">matches</AccentText>
               </>
             }
-            description={`No notes match “${submitted.trim()}”.`}
+            description={`No journal entries match “${submitted.trim()}”.`}
           />
         ) : (
           <>
@@ -212,7 +194,7 @@ export default function NotesPage() {
                   onEdit={setEditing}
                   onDelete={setDeleting}
                   onTogglePin={togglePin}
-                  onToggleItem={toggleItem}
+                  onTagClick={setTagFilter}
                   reminderCount={reminderCountByNote.get(hit.id) ?? 0}
                 />
               ))}
@@ -221,17 +203,29 @@ export default function NotesPage() {
         )
       ) : isLoading ? (
         <p className="text-sm text-muted">Loading…</p>
-      ) : plainNotes.length === 0 ? (
-        <EmptyState
-          icon="🗒️"
-          title={
-            <>
-              Nothing <AccentText tone="grape">kept</AccentText> yet
-            </>
-          }
-          description="Jot down an order that works, a recipe, or a shopping list to get started."
-          action={<Button onClick={() => setEditing("new")}>+ New note</Button>}
-        />
+      ) : visible.length === 0 ? (
+        journalNotes.length > 0 ? (
+          <EmptyState
+            icon="🔍"
+            title={
+              <>
+                Nothing <AccentText tone="grape">matches</AccentText>
+              </>
+            }
+            description="Try a different tag or search term."
+          />
+        ) : (
+          <EmptyState
+            icon="📓"
+            title={
+              <>
+                A blank <AccentText tone="grape">page</AccentText> awaits
+              </>
+            }
+            description="Write your first journal entry to get started."
+            action={<Button onClick={() => setEditing("new")}>+ New entry</Button>}
+          />
+        )
       ) : (
         <CardGrid>
           {visible.map((note) => (
@@ -241,19 +235,17 @@ export default function NotesPage() {
               onEdit={setEditing}
               onDelete={setDeleting}
               onTogglePin={togglePin}
-              onToggleItem={toggleItem}
+              onTagClick={setTagFilter}
               reminderCount={reminderCountByNote.get(note.id) ?? 0}
             />
           ))}
-          <NewNoteTile onClick={() => setEditing("new")} />
         </CardGrid>
       )}
 
       {editing !== null && (
         <NoteEditor
           note={editing === "new" ? null : editing}
-          fixedKind="note"
-          presetFolder={folderFilter}
+          fixedKind="journal"
           allTags={allTags}
           onAddReminder={(note) => {
             setEditing(null);
@@ -294,45 +286,5 @@ export default function NotesPage() {
         />
       )}
     </div>
-  );
-}
-
-/** A pill in the folder filter bar: label + count, active when selected. */
-function FolderChip({
-  label,
-  count,
-  active,
-  onClick,
-}: {
-  label: string;
-  count: number;
-  active: boolean;
-  onClick: () => void;
-}) {
-  return (
-    <Chip asChild interactive size="lg" tone={active ? "solid" : "soft"}>
-      <button type="button" onClick={onClick} aria-pressed={active}>
-        {label}{" "}
-        <span className={active ? "text-on-accent/70" : "text-grape-deep/60"}>
-          {count}
-        </span>
-      </button>
-    </Chip>
-  );
-}
-
-/** The dashed "add" tile that closes out the grid. */
-function NewNoteTile({ onClick }: { onClick: () => void }) {
-  return (
-    <Card asChild interactive tone="dashed" padding="none">
-      <button
-        type="button"
-        onClick={onClick}
-        className="flex min-h-[9rem] flex-col items-center justify-center gap-1 text-muted transition hover:text-grape"
-      >
-        <span className="text-2xl leading-none">+</span>
-        <span className="text-sm font-semibold">New note</span>
-      </button>
-    </Card>
   );
 }
