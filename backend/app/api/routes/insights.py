@@ -25,6 +25,7 @@ router = APIRouter(prefix="/insights", tags=["insights"])
 
 # Fields copied from the save payload onto a stored record.
 _RECORD_FIELDS = (
+    "note",
     "calories_in",
     "calories_out",
     "target_calories",
