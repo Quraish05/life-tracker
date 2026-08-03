@@ -25,6 +25,7 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: "Today", href: "/dashboard", icon: "🏠" },
       { label: "Calendar", href: "/calendar", icon: "🗓️" },
       { label: "Log an entry", href: "/log", icon: "✨" },
+      { label: "Assistant", href: "/chat", icon: "💬" },
       { label: "Food", href: "/food", icon: "🍽️", badge: "food" },
       { label: "Ingredients", href: "/ingredients", icon: "🥕", badge: "ingredients" },
       { label: "Reminders", href: "/reminders", icon: "⏰" },

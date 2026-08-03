@@ -12,6 +12,50 @@
 
 ---
 
+## 2026-08-01 — AI roadmap read against CCAF coverage; prioritise chat+tools, then RAG+evals · _exploring_
+
+**Why:** with the Log-an-entry hub + `/food/frequent` merged (PR #35), asked which
+remaining AI/backend features best enhance *both* the product and CCAF exam prep.
+Framed the existing roadmap (BUILD-PLAN R3/R4/R5) by which CCAF domain each slice
+proves, to find the highest-leverage next work rather than more of the same.
+
+**What we already cover (Domain 4 — structured output):** the three shipped AI
+features — nutrition estimation, tag suggestion, follow-up extraction — already
+demonstrate CCAF **4.1** (explicit criteria), **4.2** (few-shot), **4.3** (strict
+JSON schema + nullable-to-prevent-hallucination + enum/"unclear"), **4.4**
+(validation-retry), and **5.5** (confidence → human-in-the-loop), all on the
+shared `ai_client.py` engine. So Domain 4 is well-covered; the gaps are elsewhere.
+
+**CCAF-coverage gaps → the slice that fills each (none built yet):**
+- **Tool use / function calling + streaming** → Slice 11 (Chat + tools). Largest
+  missing capability area; also the strongest product demo ("talk to your tracker").
+- **RAG / retrieval / grounding / citations** → Slice 12 (Ask my journal); the
+  `note_chunks(embedding vector(768))` schema is already sketched in BUILD-PLAN.
+- **Systematic evals (golden sets, LLM-as-judge, prompt-regression in CI)** →
+  Slice 12 + R5/D10 (Langfuse + eval harness).
+- **Cost/latency observability, prompt caching, budget caps** → R5/A2 (Redis
+  caching + distributed rate-limit) and D10; Anthropic prompt caching is a quick
+  add to `ai_client.py`.
+- **Agentic loop + human-in-the-loop planning** → Slice 13 (Coach agent).
+- **Safety / guardrails / PII handling** → *not planned anywhere yet* — a genuine
+  gap worth a small dedicated slice.
+- **Off-request-path async AI** → R5/B4 (arq + Redis): the inline 5–10s model
+  calls become enqueue→return→poll/stream.
+
+**Recommendation (for CCAF breadth-per-hour):** do **Slice 11 (chat + tools,
+streaming)** next — it opens the entire tool-use + streaming domain, reuses the
+service layer, and is the most demo-able feature. Then **Slice 12 (RAG over
+journal) + a golden-set eval**, which is where Langfuse tracing naturally lands.
+Infra-first alternative stands (BUILD-PLAN's own order: A1 → A2 → B4 → D10) if
+optimising the DevOps résumé angle instead; async AI workers (B4) is the keystone
+that makes 11/12/13 production-grade either way.
+
+**Status:** exploring — no slice chosen yet; this is the framing for that choice.
+**Links:** BUILD-PLAN R3 (slices 9–13), R5 (A2/B4/D10); handbook Ch 10
+(AI nutrition estimation); `ai_client.py`.
+
+---
+
 ## 2026-07-30 — Reminder dispatch must survive Render's sleeping free tier · _exploring_
 
 **Why:** Render's free web tier spins the process down after inactivity, so the

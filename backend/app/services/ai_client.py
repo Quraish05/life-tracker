@@ -57,6 +57,15 @@ def _anthropic_client() -> AsyncAnthropic:
     return AsyncAnthropic(api_key=settings.anthropic_api_key)
 
 
+def anthropic_client() -> AsyncAnthropic:
+    """The shared async Anthropic client — for the streaming/tool-use chat feature.
+
+    Structured features go through ``generate_structured``; the chat assistant
+    drives its own streaming tool loop and needs the raw client, so expose it.
+    """
+    return _anthropic_client()
+
+
 @lru_cache(maxsize=1)
 def _gemini_client() -> genai.Client:
     """The Gemini (Google AI Studio) client, built once from the configured key."""
