@@ -31,19 +31,31 @@ class ChecklistItem(BaseModel):
         return value.strip()
 
 
+# The slug pipeline, as (pattern, replacement) steps — order matters. Kept in
+# lockstep with `normalizeTag`/`normalizeFolder` on the frontend.
+_SLUG_STEPS = (
+    (r"^#+", ""),         # drop leading hashes
+    (r"\s+", "-"),        # whitespace → dash
+    (r"[^a-z0-9-]", ""),  # drop other punctuation
+    (r"-+", "-"),         # collapse repeated dashes
+)
+
+
+def _slugify(raw: str) -> str:
+    """Lowercase + run the shared slug pipeline. May return ""."""
+    slug = raw.strip().lower()
+    for pattern, repl in _SLUG_STEPS:
+        slug = re.sub(pattern, repl, slug)
+    return slug.strip("-")
+
+
 def normalize_tag(raw: str) -> str:
     """Slugify a raw tag so the same idea always groups together.
 
     Mirrors `normalizeTag` on the frontend: "#Work Stuff" -> "work-stuff".
     Returns "" if nothing usable remains.
     """
-    slug = raw.strip().lower()
-    slug = re.sub(r"^#+", "", slug)
-    slug = re.sub(r"\s+", "-", slug)
-    slug = re.sub(r"[^a-z0-9-]", "", slug)
-    slug = re.sub(r"-+", "-", slug)
-    slug = slug.strip("-")
-    return slug[:24]
+    return _slugify(raw)[:24]
 
 
 def normalize_folder(raw: str | None) -> str | None:
@@ -54,13 +66,7 @@ def normalize_folder(raw: str | None) -> str | None:
     """
     if raw is None:
         return None
-    slug = raw.strip().lower()
-    slug = re.sub(r"^#+", "", slug)
-    slug = re.sub(r"\s+", "-", slug)
-    slug = re.sub(r"[^a-z0-9-]", "", slug)
-    slug = re.sub(r"-+", "-", slug)
-    slug = slug.strip("-")
-    return slug[:MAX_FOLDER] or None
+    return _slugify(raw)[:MAX_FOLDER] or None
 
 
 class NoteBase(BaseModel):
