@@ -34,7 +34,8 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     title: "Reflect",
     items: [
-      { label: "Journal & Notes", href: "/notes", icon: "📓" },
+      { label: "Journal", href: "/journal", icon: "📓" },
+      { label: "Notes", href: "/notes", icon: "🗒️" },
       { label: "Patterns", href: "/progress", icon: "📈" },
       { label: "Goal", href: "/goal", icon: "🎯" },
     ],

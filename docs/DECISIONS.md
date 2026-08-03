@@ -12,6 +12,43 @@
 
 ---
 
+## 2026-08-03 — Notes redesign: single-select folders (+ tags for AI), split Notes/Journal, checklist as a third kind · _decision_
+
+**Why:** redesigning the Notes page from the mockup raised three coupled choices —
+how to categorise notes, whether Notes and Journal share a page, and how to model
+checklists.
+
+**Categorise — folder vs. tags:** chose a **new single-select `folder`** field
+*and kept the existing free-text `tags` array*, rather than picking one. They
+answer different questions: a folder is the one bucket a note lives in (the
+mockup's chip counts prove single-membership — 2+1+2+1 = 6), tags are many-per-
+note. For "AI-proofing" a controlled single-select folder is the *more* reliable
+categorical signal (stable dimension to classify into / aggregate over), while
+tags stay open-vocabulary for search + AI suggestion. Rejected *folder-only*
+(loses the built tag+AI system) and *tags-only* (single-folder semantics faked on
+a multi-value field). Folder is stored as a slug string on `notes` with the
+label/colour living on the frontend (`NOTE_FOLDERS`), not a `folders` table —
+a per-user folders table with in-app CRUD is **parked** until user-defined
+folders are actually wanted.
+
+**Split Notes/Journal:** the one combined `/notes` page (kind toggle) became two
+nav items — `/journal` (unchanged UI, journal entries) and `/notes` (the
+redesign). Journal's own redesign is parked; it reuses the existing card/editor
+so nothing breaks meanwhile.
+
+**Checklist:** modelled as a **third `kind`** (`journal | note | checklist`),
+mapping 1:1 to the editor's Note/Checklist toggle, with items in a JSONB `items`
+column (`[{text, done}]`). Rejected a separate `is_checklist` boolean / "items is
+not null" discriminator as less explicit. Per-kind rules: checklist needs ≥1 item
+(body optional); note/journal need a body and carry no items.
+
+**Status:** decided; built this session (folder + items migrations, editor
+redesign, `/journal` split, checklist rendering + inline tick-off). Tests green.
+**Links:** handbook Ch 4 (Notes & journal); `schemas/note.py`,
+`constants/notes.ts`, `note-editor.tsx`.
+
+---
+
 ## 2026-08-01 — AI roadmap read against CCAF coverage; prioritise chat+tools, then RAG+evals · _exploring_
 
 **Why:** with the Log-an-entry hub + `/food/frequent` merged (PR #35), asked which
