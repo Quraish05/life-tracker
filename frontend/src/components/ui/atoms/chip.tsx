@@ -1,4 +1,4 @@
-import * as React from "react";
+import { type ComponentProps } from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 
@@ -49,7 +49,7 @@ const chipVariants = cva(
 );
 
 interface ChipProps
-  extends React.ComponentProps<"span">,
+  extends ComponentProps<"span">,
     VariantProps<typeof chipVariants> {
   asChild?: boolean;
 }

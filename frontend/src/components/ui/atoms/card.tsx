@@ -1,4 +1,4 @@
-import * as React from "react";
+import { type ComponentProps } from "react";
 import { Slot } from "@radix-ui/react-slot";
 import { cva, type VariantProps } from "class-variance-authority";
 
@@ -36,7 +36,7 @@ const cardVariants = cva("rounded-2xl", {
 });
 
 interface CardProps
-  extends React.ComponentProps<"div">,
+  extends ComponentProps<"div">,
     VariantProps<typeof cardVariants> {
   asChild?: boolean;
 }

@@ -6,6 +6,7 @@ import {
   useContext,
   useEffect,
   useState,
+  type ReactNode,
 } from "react";
 
 import { authApi, tokenStore } from "@/lib/api";
@@ -25,7 +26,7 @@ type AuthContextValue = {
 
 const AuthContext = createContext<AuthContextValue | null>(null);
 
-export function AuthProvider({ children }: { children: React.ReactNode }) {
+export function AuthProvider({ children }: { children: ReactNode }) {
   const [user, setUser] = useState<User | null>(null);
   const [isLoading, setIsLoading] = useState(true);
 

@@ -1,19 +1,19 @@
-import * as React from "react";
+import { type ComponentProps, type ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 import { Card } from "@/components/ui/atoms/card";
 import { IconTile } from "@/components/ui/atoms/icon-tile";
 
 interface EmptyStateProps
-  extends Omit<React.ComponentProps<"section">, "title"> {
+  extends Omit<ComponentProps<"section">, "title"> {
   /** Emoji or icon shown in the tile. */
-  icon: React.ReactNode;
+  icon: ReactNode;
   /** Heading — compose an <AccentText> inside to highlight a word. */
-  title: React.ReactNode;
+  title: ReactNode;
   /** Supporting copy explaining the state or next step. */
-  description: React.ReactNode;
+  description: ReactNode;
   /** Optional call to action (e.g. a "+ New" Button). */
-  action?: React.ReactNode;
+  action?: ReactNode;
 }
 
 /** Centered dashed-card placeholder for empty lists and blank sections. */

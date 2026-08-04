@@ -1,9 +1,9 @@
-import * as React from "react";
+import { type ComponentProps } from "react";
 
 import { cn } from "@/lib/utils";
 import { Button } from "@/components/ui/atoms/button";
 
-interface PaginationProps extends React.ComponentProps<"nav"> {
+interface PaginationProps extends ComponentProps<"nav"> {
   /** Current page, 1-indexed. */
   page: number;
   /** Total number of pages. */

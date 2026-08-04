@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, type ReactNode } from "react";
 import { useRouter } from "next/navigation";
 
 import { useAuth } from "@/lib/auth-context";
@@ -16,7 +16,7 @@ import { Spinner } from "@/components/ui/atoms/spinner";
  */
 export default function AuthLayout({
   children,
-}: Readonly<{ children: React.ReactNode }>) {
+}: Readonly<{ children: ReactNode }>) {
   const router = useRouter();
   const { user, isLoading } = useAuth();
 

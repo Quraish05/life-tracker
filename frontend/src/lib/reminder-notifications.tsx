@@ -7,6 +7,7 @@ import {
   useEffect,
   useRef,
   useState,
+  type ReactNode,
 } from "react";
 
 import { tokenStore } from "@/lib/api";
@@ -78,7 +79,7 @@ export function useReminderNotifications(): NotificationsContextValue {
 export function ReminderNotificationsProvider({
   children,
 }: {
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   // The provider only mounts client-side (behind the auth gate), so a lazy
   // initializer reads the real permission without a setState-in-effect.

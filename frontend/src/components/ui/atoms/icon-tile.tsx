@@ -1,4 +1,4 @@
-import * as React from "react";
+import { type ComponentProps } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
@@ -24,7 +24,7 @@ const iconTileVariants = cva(
 );
 
 interface IconTileProps
-  extends React.ComponentProps<"div">,
+  extends ComponentProps<"div">,
     VariantProps<typeof iconTileVariants> {}
 
 /** Rounded square holding an emoji or icon — used for stat badges and empty states. */

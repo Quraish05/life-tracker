@@ -1,9 +1,9 @@
-import * as React from "react";
+import { type ComponentProps } from "react";
 
 import { cn } from "@/lib/utils";
 
 /** Responsive 1→2→3 column grid for cards, with consistent gaps. */
-function CardGrid({ className, ...props }: React.ComponentProps<"div">) {
+function CardGrid({ className, ...props }: ComponentProps<"div">) {
   return (
     <div
       data-slot="card-grid"
