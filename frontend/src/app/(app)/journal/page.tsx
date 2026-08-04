@@ -1,290 +1,177 @@
 "use client";
 
 import { useMemo, useState } from "react";
+import { useRouter } from "next/navigation";
 
 import type { Note } from "@/types/note";
-import {
-  useDeleteNote,
-  useNoteSearch,
-  useNotes,
-  useTogglePin,
-} from "@/lib/queries/use-notes";
-import { useReminders } from "@/lib/queries/use-reminders";
+import { useDeleteNote, useNotes } from "@/lib/queries/use-notes";
+import type { MoodKey } from "@/lib/validations/note";
+import { useDeleteWithUndo } from "@/lib/hooks/use-delete-with-undo";
 import { Button } from "@/components/ui/atoms/button";
-import { AccentText } from "@/components/ui/atoms/accent-text";
-import { Chip } from "@/components/ui/atoms/chip";
-import { CardGrid } from "@/components/ui/atoms/card-grid";
-import { PageHeader } from "@/components/ui/molecules/page-header";
-import { EmptyState } from "@/components/ui/molecules/empty-state";
-import { NoteCard } from "@/components/notes/note-card";
-import { NoteEditor } from "@/components/notes/note-editor";
-import { DeleteDialog } from "@/components/notes/delete-dialog";
-import { FollowUpSuggestions } from "@/components/notes/follow-up-suggestions";
-import { ReminderEditor } from "@/components/reminders/reminder-editor";
+import { UndoToast } from "@/components/ui/molecules/undo-toast";
+import { useNoteEditorStack } from "@/components/notes/use-note-editor-stack";
+import { EntryPreviewDrawer } from "@/components/journal/entry-preview-drawer";
+import { EntryRow } from "@/components/journal/entry-row";
+import { MoodFilterBar } from "@/components/journal/mood-filter-bar";
+import { computeStreak, groupByMonth } from "@/components/journal/_lib";
 
-/**
- * Journal page — daily entries with a date + mood. This reuses the existing
- * note card/editor unchanged; only journal-kind entries are shown here. (The
- * Notes half of the old combined page now lives at `/notes` with its own
- * folder-based redesign.)
- */
 export default function JournalPage() {
   const { data: notes = [], isLoading } = useNotes();
-  const { data: reminders = [] } = useReminders();
   const deleteNote = useDeleteNote();
-  const togglePinMutation = useTogglePin();
+  const router = useRouter();
 
-  const [tagFilter, setTagFilter] = useState<string | null>(null);
   const [query, setQuery] = useState("");
+  const [mood, setMood] = useState<"all" | MoodKey>("all");
+  const [selectedId, setSelectedId] = useState<number | null>(null);
 
-  // null = closed, "new" = create, Note = edit that note.
-  const [editing, setEditing] = useState<Note | "new" | null>(null);
-  const [deleting, setDeleting] = useState<Note | null>(null);
-  const [remindingNote, setRemindingNote] = useState<Note | null>(null);
-  const [suggestingNote, setSuggestingNote] = useState<Note | null>(null);
+  const editors = useNoteEditorStack({ fixedKind: "journal" });
+  const { pending, canUndo, startDelete, undoDelete } = useDeleteWithUndo<Note>({
+    onCommit: (id) => deleteNote.mutate(id),
+  });
 
-  const reminderCountByNote = useMemo(() => {
-    const counts = new Map<number, number>();
-    for (const r of reminders) {
-      if (r.target_type === "note" && r.target_id != null) {
-        counts.set(r.target_id, (counts.get(r.target_id) ?? 0) + 1);
-      }
-    }
-    return counts;
-  }, [reminders]);
+  function handleDelete(note: Note) {
+    if (selectedId === note.id) setSelectedId(null);
+    startDelete(note);
+  }
 
-  // Only journal entries belong on this page.
+  // Journal entries only, newest date first.
   const journalNotes = useMemo(
-    () => notes.filter((n) => n.kind === "journal"),
+    () =>
+      notes
+        .filter((n) => n.kind === "journal")
+        .sort((a, b) => (b.entry_date ?? "").localeCompare(a.entry_date ?? "")),
     [notes],
   );
 
-  const allTags = useMemo(() => {
-    const counts = new Map<string, number>();
-    for (const n of journalNotes) {
-      for (const t of n.tags) counts.set(t, (counts.get(t) ?? 0) + 1);
-    }
-    return [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([t]) => t);
-  }, [journalNotes]);
+  const q = query.trim().toLowerCase();
+  const visible = useMemo(
+    () =>
+      journalNotes.filter((n) => {
+        if (pending && n.id === pending.id) return false;
+        if (mood !== "all" && n.mood !== mood) return false;
+        if (q && !`${n.title} ${n.body_md} ${n.tags.join(" ")}`.toLowerCase().includes(q))
+          return false;
+        return true;
+      }),
+    [journalNotes, pending, mood, q],
+  );
 
-  const visible = useMemo(() => {
-    return journalNotes.filter((n) => {
-      if (tagFilter && !n.tags.includes(tagFilter)) return false;
-      return true;
-    });
-  }, [journalNotes, tagFilter]);
+  const groups = useMemo(() => groupByMonth(visible), [visible]);
+  const streak = useMemo(() => computeStreak(journalNotes), [journalNotes]);
 
-  const [submitted, setSubmitted] = useState("");
-  const isSearching = submitted.trim().length > 0;
-  const search = useNoteSearch(submitted);
-  // Search spans all notes; keep only journal hits on this page.
-  const hits = (search.data ?? []).filter((h) => h.kind === "journal");
+  const selected = selectedId != null ? visible.find((n) => n.id === selectedId) ?? null : null;
 
-  async function confirmDelete() {
-    if (!deleting) return;
-    await deleteNote.mutateAsync(deleting.id);
-    setDeleting(null);
-  }
-
-  function togglePin(note: Note) {
-    togglePinMutation.mutate({ id: note.id, pinned: !note.pinned });
-  }
+  const isFiltering = q.length > 0 || mood !== "all";
+  const totalLabel = `${journalNotes.length} ${journalNotes.length === 1 ? "entry" : "entries"}`;
+  const countLabel = isFiltering
+    ? `Showing ${visible.length} of ${journalNotes.length}`
+    : "Newest first";
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 tablet:px-6 tablet:py-10">
-      <PageHeader
-        eyebrow="Reflect"
-        title={
-          <>
-            Your <AccentText>thoughts</AccentText>, captured
-          </>
-        }
-        subtitle="Daily journal entries — how the day went, and how you felt."
-        action={<Button onClick={() => setEditing("new")}>+ New entry</Button>}
-      />
-
-      <div className="mb-6 flex flex-wrap items-center justify-end gap-3">
-        <form
-          onSubmit={(e) => {
-            e.preventDefault();
-            setSubmitted(query.trim());
-          }}
-          className="relative w-full max-w-xs"
-          role="search"
-        >
-          <input
-            type="search"
-            value={query}
-            onChange={(e) => {
-              const value = e.target.value;
-              setQuery(value);
-              if (value.trim() === "") setSubmitted("");
-            }}
-            placeholder="Search journal…"
-            aria-label="Search journal"
-            className="w-full rounded-full border border-transparent bg-surface/70 py-2 pl-4 pr-11 text-sm text-foreground placeholder:text-muted/60 transition focus:border-grape focus:bg-surface focus:outline-none focus:ring-4 focus:ring-ring"
-          />
-          <button
-            type="submit"
-            aria-label="Search"
-            disabled={query.trim() === ""}
-            className="absolute right-1 top-1/2 flex h-8 w-8 -translate-y-1/2 items-center justify-center rounded-full bg-grape text-white transition hover:bg-grape/90 focus:outline-none focus:ring-2 focus:ring-ring disabled:opacity-40 disabled:hover:bg-grape"
-          >
-            →
-          </button>
-        </form>
+    <div className="mx-auto flex h-full max-w-6xl flex-col px-4 py-8 tablet:px-6 tablet:py-10">
+      {/* Header */}
+      <div className="flex items-end gap-4">
+        <div className="flex-1">
+          <p className="text-[11px] font-bold uppercase tracking-[0.08em] text-muted">
+            Reflect
+          </p>
+          <h1 className="mt-1.5 text-3xl font-normal tracking-tight text-foreground">
+            Journal ·{" "}
+            <span className="font-display italic text-grape">{totalLabel}</span>
+          </h1>
+        </div>
+        <Button onClick={editors.openNew}>+ New entry</Button>
       </div>
 
-      {allTags.length > 0 && (
-        <div className="mb-6 flex flex-wrap items-center gap-1.5">
-          <span className="mr-1 text-xs font-semibold uppercase tracking-wide text-muted/70">
-            Tags
-          </span>
-          {allTags.map((tag) => {
-            const active = tagFilter === tag;
-            return (
-              <Chip key={tag} asChild interactive tone={active ? "solid" : "soft"}>
-                <button type="button" onClick={() => setTagFilter(active ? null : tag)}>
-                  #{tag}
-                </button>
-              </Chip>
-            );
-          })}
-          {tagFilter && (
-            <button
-              type="button"
-              onClick={() => setTagFilter(null)}
-              className="rounded-full px-2.5 py-1 text-xs font-semibold text-muted transition hover:text-coral"
-            >
-              Clear ✕
-            </button>
-          )}
+      {/* Search + mood filters */}
+      <div className="mt-4 flex flex-wrap items-center gap-2">
+        <div className="flex min-w-[14rem] flex-1 items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2">
+          <span className="text-xs text-muted">🔍</span>
+          <input
+            type="text"
+            value={query}
+            onChange={(e) => setQuery(e.target.value)}
+            placeholder="Search entries…"
+            aria-label="Search journal entries"
+            className="min-w-0 flex-1 border-0 bg-transparent text-sm text-foreground outline-none placeholder:text-muted/60"
+          />
         </div>
-      )}
+        <MoodFilterBar value={mood} onChange={setMood} />
+      </div>
 
-      {isSearching ? (
-        search.isLoading ? (
-          <p className="text-sm text-muted">Searching…</p>
-        ) : search.isError ? (
-          <p className="text-sm text-coral">
-            {search.error instanceof Error ? search.error.message : "Search failed."}
-          </p>
-        ) : hits.length === 0 ? (
-          <EmptyState
-            icon="🔍"
-            title={
-              <>
-                Nothing <AccentText tone="grape">matches</AccentText>
-              </>
-            }
-            description={`No journal entries match “${submitted.trim()}”.`}
-          />
-        ) : (
-          <>
-            <p className="mb-4 text-xs font-semibold uppercase tracking-wide text-muted/70">
-              {hits.length} result{hits.length > 1 ? "s" : ""} · ranked by relevance
-              {search.isFetching && " · updating…"}
+      {/* Count + streak */}
+      <div className="mt-4 flex items-center gap-3 border-b border-border pb-3 text-[11px] text-muted">
+        <span>{countLabel}</span>
+        {streak >= 2 && (
+          <span className="ml-auto font-bold text-grape">{streak}-day streak</span>
+        )}
+      </div>
+
+      {/* List */}
+      <div className="mt-4 flex-1">
+        {isLoading ? (
+          <p className="text-sm text-muted">Loading…</p>
+        ) : visible.length === 0 ? (
+          <div className="flex min-h-[240px] flex-col items-center justify-center gap-3 rounded-xl border border-dashed border-border text-center">
+            <span className="text-2xl">📓</span>
+            <p className="text-sm font-bold text-foreground">
+              {isFiltering ? "Nothing matches that filter" : "No entries yet"}
             </p>
-            <CardGrid>
-              {hits.map((hit) => (
-                <NoteCard
-                  key={hit.id}
-                  note={hit}
-                  snippet={hit.snippet}
-                  onEdit={setEditing}
-                  onDelete={setDeleting}
-                  onTogglePin={togglePin}
-                  onTagClick={setTagFilter}
-                  reminderCount={reminderCountByNote.get(hit.id) ?? 0}
-                />
-              ))}
-            </CardGrid>
-          </>
-        )
-      ) : isLoading ? (
-        <p className="text-sm text-muted">Loading…</p>
-      ) : visible.length === 0 ? (
-        journalNotes.length > 0 ? (
-          <EmptyState
-            icon="🔍"
-            title={
-              <>
-                Nothing <AccentText tone="grape">matches</AccentText>
-              </>
-            }
-            description="Try a different tag or search term."
-          />
+            <p className="max-w-[40ch] text-xs leading-relaxed text-muted">
+              {isFiltering
+                ? "Try a different mood or clear the search — your other entries are still here."
+                : "A line a day is enough. Write your first entry to get started."}
+            </p>
+            {!isFiltering && (
+              <Button variant="secondary" size="sm" onClick={editors.openNew}>
+                Write today&rsquo;s entry
+              </Button>
+            )}
+          </div>
         ) : (
-          <EmptyState
-            icon="📓"
-            title={
-              <>
-                A blank <AccentText tone="grape">page</AccentText> awaits
-              </>
-            }
-            description="Write your first journal entry to get started."
-            action={<Button onClick={() => setEditing("new")}>+ New entry</Button>}
-          />
-        )
-      ) : (
-        <CardGrid>
-          {visible.map((note) => (
-            <NoteCard
-              key={note.id}
-              note={note}
-              onEdit={setEditing}
-              onDelete={setDeleting}
-              onTogglePin={togglePin}
-              onTagClick={setTagFilter}
-              reminderCount={reminderCountByNote.get(note.id) ?? 0}
-            />
-          ))}
-        </CardGrid>
-      )}
+          groups.map((g) => (
+            <div key={g.title} className="mb-2">
+              <p className="mb-2 mt-2.5 text-[10px] font-bold uppercase tracking-[0.1em] text-muted">
+                {g.title}
+              </p>
+              <div className="flex flex-col gap-1.5">
+                {g.items.map((note) => (
+                  <EntryRow
+                    key={note.id}
+                    note={note}
+                    active={selectedId === note.id}
+                    onSelect={() => setSelectedId(note.id)}
+                    onOpen={() => router.push(`/journal/${note.id}`)}
+                    onEdit={() => editors.openEdit(note)}
+                    onDelete={() => handleDelete(note)}
+                  />
+                ))}
+              </div>
+            </div>
+          ))
+        )}
+      </div>
 
-      {editing !== null && (
-        <NoteEditor
-          note={editing === "new" ? null : editing}
-          fixedKind="journal"
-          allTags={allTags}
-          onAddReminder={(note) => {
-            setEditing(null);
-            setRemindingNote(note);
-          }}
-          onSuggestFollowUps={(note) => {
-            setEditing(null);
-            setSuggestingNote(note);
-          }}
-          onClose={() => setEditing(null)}
-          onSaved={() => setEditing(null)}
+      {/* Preview drawer */}
+      {selected && (
+        <EntryPreviewDrawer
+          note={selected}
+          onClose={() => setSelectedId(null)}
+          onEdit={editors.openEdit}
+          onDelete={handleDelete}
         />
       )}
 
-      {remindingNote && (
-        <ReminderEditor
-          reminder={null}
-          presetTarget={{ targetType: "note", targetId: remindingNote.id }}
-          onClose={() => setRemindingNote(null)}
-          onSaved={() => setRemindingNote(null)}
-        />
-      )}
+      {/* Delete confirmation + undo */}
+      <UndoToast
+        open={pending != null}
+        message="Entry deleted"
+        canUndo={canUndo}
+        onUndo={undoDelete}
+      />
 
-      {suggestingNote && (
-        <FollowUpSuggestions
-          note={suggestingNote}
-          onClose={() => setSuggestingNote(null)}
-          onDone={() => setSuggestingNote(null)}
-        />
-      )}
-
-      {deleting && (
-        <DeleteDialog
-          title={deleting.title}
-          isDeleting={deleteNote.isPending}
-          onCancel={() => setDeleting(null)}
-          onConfirm={confirmDelete}
-        />
-      )}
+      {/* Create / edit → reminder → follow-up */}
+      {editors.modals}
     </div>
   );
 }
