@@ -1,6 +1,6 @@
 "use client";
 
-import * as React from "react";
+import { type ReactNode } from "react";
 import { useEffect } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
@@ -26,13 +26,13 @@ const drawerPanelVariants = cva(
 interface DrawerProps extends VariantProps<typeof drawerPanelVariants> {
   onClose: () => void;
   /** Rendered in the header bar; pair with the built-in close button. */
-  title?: React.ReactNode;
+  title?: ReactNode;
   /** Optional small uppercase eyebrow above the title. */
-  eyebrow?: React.ReactNode;
+  eyebrow?: ReactNode;
   /** Sticky footer (e.g. primary actions). */
-  footer?: React.ReactNode;
+  footer?: ReactNode;
   className?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }
 
 /**

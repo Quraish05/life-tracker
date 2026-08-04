@@ -1,3 +1,5 @@
+import type { ComponentProps } from "react";
+
 import { cn } from "@/lib/utils";
 
 /**
@@ -5,7 +7,7 @@ import { cn } from "@/lib/utils";
  * defaults to `size-5`. Carries an accessible label unless one is provided by a
  * parent `role="status"` region (pass `aria-hidden` in that case).
  */
-function Spinner({ className, ...props }: React.ComponentProps<"span">) {
+function Spinner({ className, ...props }: ComponentProps<"span">) {
   return (
     <span
       role="status"

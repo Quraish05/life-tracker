@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useMemo, useState, type KeyboardEvent } from "react";
 
 import { MAX_TAGS, normalizeTag } from "@/lib/validations/note";
 
@@ -37,7 +37,7 @@ export function TagInput({ value, onChange, suggestions = [], max = MAX_TAGS }: 
     onChange(value.filter((t) => t !== tag));
   }
 
-  function onKeyDown(e: React.KeyboardEvent<HTMLInputElement>) {
+  function onKeyDown(e: KeyboardEvent<HTMLInputElement>) {
     if (e.key === "Enter" || e.key === ",") {
       e.preventDefault();
       addTag(draft);

@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import type { ReactNode } from "react";
 import { Montserrat, DM_Serif_Display } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/lib/providers";
@@ -27,7 +28,7 @@ const noFlashTheme = `(function(){try{var t=localStorage.getItem("theme");if(t!=
 export default function RootLayout({
   children,
 }: Readonly<{
-  children: React.ReactNode;
+  children: ReactNode;
 }>) {
   return (
     <html

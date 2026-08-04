@@ -1,15 +1,15 @@
-import * as React from "react";
+import { type ComponentProps, type ReactNode, useId } from "react";
 
 import { FieldError } from "@/components/ui/atoms/form-error";
 import { Input } from "@/components/ui/atoms/input";
 import { Label } from "@/components/ui/atoms/label";
 
-interface FormFieldProps extends React.ComponentProps<"input"> {
+interface FormFieldProps extends ComponentProps<"input"> {
   label: string;
   /** Validation message; when present the field renders in its invalid state. */
   error?: string;
   /** Optional trailing content in the label row, e.g. a "Forgot?" link. */
-  action?: React.ReactNode;
+  action?: ReactNode;
 }
 
 function FormField({
@@ -20,7 +20,7 @@ function FormField({
   className,
   ...props
 }: FormFieldProps) {
-  const generatedId = React.useId();
+  const generatedId = useId();
   const fieldId = id ?? props.name ?? generatedId;
   const errorId = `${fieldId}-error`;
 

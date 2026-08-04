@@ -1,19 +1,19 @@
-import * as React from "react";
+import { type ComponentProps, type ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 
 interface PageHeaderProps extends Omit<
-  React.ComponentProps<"header">,
+  ComponentProps<"header">,
   "title"
 > {
   /** Small colored kicker above the title. */
-  eyebrow: React.ReactNode;
+  eyebrow: ReactNode;
   /** Main heading — compose an <AccentText> inside to highlight a word. */
-  title: React.ReactNode;
+  title: ReactNode;
   /** Optional supporting line beneath the title. */
-  subtitle?: React.ReactNode;
+  subtitle?: ReactNode;
   /** Optional trailing content (e.g. a primary Button), right-aligned. */
-  action?: React.ReactNode;
+  action?: ReactNode;
 }
 
 /** Standard page masthead: eyebrow + title + subtitle, with an optional action. */

@@ -1,4 +1,4 @@
-import * as React from "react";
+import { type ComponentProps } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
@@ -16,7 +16,7 @@ const accentTextVariants = cva("font-display italic", {
 });
 
 interface AccentTextProps
-  extends React.ComponentProps<"span">,
+  extends ComponentProps<"span">,
     VariantProps<typeof accentTextVariants> {}
 
 /** Inline display-font accent for highlighting a word inside a heading. */

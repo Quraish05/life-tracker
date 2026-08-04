@@ -20,10 +20,8 @@ import { CardGrid } from "@/components/ui/atoms/card-grid";
 import { PageHeader } from "@/components/ui/molecules/page-header";
 import { EmptyState } from "@/components/ui/molecules/empty-state";
 import { NoteCard } from "@/components/notes/note-card";
-import { NoteEditor } from "@/components/notes/note-editor";
 import { DeleteDialog } from "@/components/notes/delete-dialog";
-import { FollowUpSuggestions } from "@/components/notes/follow-up-suggestions";
-import { ReminderEditor } from "@/components/reminders/reminder-editor";
+import { useNoteEditorStack } from "@/components/notes/use-note-editor-stack";
 
 export default function NotesPage() {
   const { data: notes = [], isLoading } = useNotes();
@@ -36,11 +34,7 @@ export default function NotesPage() {
   const [folderFilter, setFolderFilter] = useState<string | null>(null);
   const [query, setQuery] = useState("");
 
-  // null = closed, "new" = create, Note = edit that note.
-  const [editing, setEditing] = useState<Note | "new" | null>(null);
   const [deleting, setDeleting] = useState<Note | null>(null);
-  const [remindingNote, setRemindingNote] = useState<Note | null>(null);
-  const [suggestingNote, setSuggestingNote] = useState<Note | null>(null);
 
   const reminderCountByNote = useMemo(() => {
     const counts = new Map<number, number>();
@@ -65,6 +59,13 @@ export default function NotesPage() {
     }
     return [...counts.entries()].sort((a, b) => b[1] - a[1]).map(([t]) => t);
   }, [plainNotes]);
+
+  // Editor → reminder → follow-up modal stack, preselecting the active folder.
+  const editors = useNoteEditorStack({
+    fixedKind: "note",
+    presetFolder: folderFilter,
+    allTags,
+  });
 
   // Per-folder note counts, for the filter chips (only folders in use appear).
   const folderCounts = useMemo(() => {
@@ -113,7 +114,7 @@ export default function NotesPage() {
             Notes · <AccentText>the things you keep</AccentText>
           </>
         }
-        action={<Button onClick={() => setEditing("new")}>+ New note</Button>}
+        action={<Button onClick={editors.openNew}>+ New note</Button>}
       />
 
       {/* Search + folder filter chips */}
@@ -209,7 +210,7 @@ export default function NotesPage() {
                   key={hit.id}
                   note={hit}
                   snippet={hit.snippet}
-                  onEdit={setEditing}
+                  onEdit={editors.openEdit}
                   onDelete={setDeleting}
                   onTogglePin={togglePin}
                   onToggleItem={toggleItem}
@@ -230,7 +231,7 @@ export default function NotesPage() {
             </>
           }
           description="Jot down an order that works, a recipe, or a shopping list to get started."
-          action={<Button onClick={() => setEditing("new")}>+ New note</Button>}
+          action={<Button onClick={editors.openNew}>+ New note</Button>}
         />
       ) : (
         <CardGrid>
@@ -238,52 +239,18 @@ export default function NotesPage() {
             <NoteCard
               key={note.id}
               note={note}
-              onEdit={setEditing}
+              onEdit={editors.openEdit}
               onDelete={setDeleting}
               onTogglePin={togglePin}
               onToggleItem={toggleItem}
               reminderCount={reminderCountByNote.get(note.id) ?? 0}
             />
           ))}
-          <NewNoteTile onClick={() => setEditing("new")} />
+          <NewNoteTile onClick={editors.openNew} />
         </CardGrid>
       )}
 
-      {editing !== null && (
-        <NoteEditor
-          note={editing === "new" ? null : editing}
-          fixedKind="note"
-          presetFolder={folderFilter}
-          allTags={allTags}
-          onAddReminder={(note) => {
-            setEditing(null);
-            setRemindingNote(note);
-          }}
-          onSuggestFollowUps={(note) => {
-            setEditing(null);
-            setSuggestingNote(note);
-          }}
-          onClose={() => setEditing(null)}
-          onSaved={() => setEditing(null)}
-        />
-      )}
-
-      {remindingNote && (
-        <ReminderEditor
-          reminder={null}
-          presetTarget={{ targetType: "note", targetId: remindingNote.id }}
-          onClose={() => setRemindingNote(null)}
-          onSaved={() => setRemindingNote(null)}
-        />
-      )}
-
-      {suggestingNote && (
-        <FollowUpSuggestions
-          note={suggestingNote}
-          onClose={() => setSuggestingNote(null)}
-          onDone={() => setSuggestingNote(null)}
-        />
-      )}
+      {editors.modals}
 
       {deleting && (
         <DeleteDialog

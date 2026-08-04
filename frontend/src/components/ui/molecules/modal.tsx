@@ -1,4 +1,4 @@
-import * as React from "react";
+import { type ComponentProps, type ReactNode } from "react";
 import { cva, type VariantProps } from "class-variance-authority";
 
 import { cn } from "@/lib/utils";
@@ -13,7 +13,7 @@ function ModalOverlay({
   children,
 }: {
   className?: string;
-  children: React.ReactNode;
+  children: ReactNode;
 }) {
   return (
     <div
@@ -44,7 +44,7 @@ const modalDialogVariants = cva(
 );
 
 interface ModalDialogProps
-  extends React.ComponentProps<"div">,
+  extends ComponentProps<"div">,
     VariantProps<typeof modalDialogVariants> {
   /** "alertdialog" for confirmations that demand a response; else "dialog". */
   role?: "dialog" | "alertdialog";
@@ -68,7 +68,7 @@ function ModalDialog({
   );
 }
 
-interface ModalHeaderProps extends React.ComponentProps<"div"> {
+interface ModalHeaderProps extends ComponentProps<"div"> {
   onClose: () => void;
 }
 

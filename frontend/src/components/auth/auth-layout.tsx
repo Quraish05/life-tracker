@@ -1,4 +1,4 @@
-import * as React from "react";
+import { type ComponentProps, type ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
 import { ThemeToggle } from "@/components/ui/atoms/theme-toggle";
@@ -8,8 +8,8 @@ function BrandPanel({
   title,
   description,
 }: {
-  title: React.ReactNode;
-  description: React.ReactNode;
+  title: ReactNode;
+  description: ReactNode;
 }) {
   return (
     <div className="relative hidden flex-col justify-between overflow-hidden bg-gradient-to-br from-lilac via-blush to-peach p-10 dark:from-[#2a1530] dark:via-[#221428] dark:to-[#1a0f1e] laptop:flex laptop:p-14">
@@ -41,7 +41,7 @@ function BrandPanel({
 }
 
 /** Styled card that wraps the form fields. Forwards all native form props. */
-function AuthCard({ className, ...props }: React.ComponentProps<"form">) {
+function AuthCard({ className, ...props }: ComponentProps<"form">) {
   return (
     <form
       className={cn(
@@ -54,12 +54,12 @@ function AuthCard({ className, ...props }: React.ComponentProps<"form">) {
 }
 
 interface AuthScreenProps {
-  brandTitle: React.ReactNode;
-  brandDescription: React.ReactNode;
-  title: React.ReactNode;
-  subtitle: React.ReactNode;
-  footer: React.ReactNode;
-  children: React.ReactNode;
+  brandTitle: ReactNode;
+  brandDescription: ReactNode;
+  title: ReactNode;
+  subtitle: ReactNode;
+  footer: ReactNode;
+  children: ReactNode;
 }
 
 /** Full split-screen auth layout: brand panel + centered form column. */

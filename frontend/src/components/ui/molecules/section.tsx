@@ -1,11 +1,11 @@
-import * as React from "react";
+import { type ComponentProps, type ReactNode } from "react";
 
 import { Chip } from "@/components/ui/atoms/chip";
 
 interface SectionProps
-  extends Omit<React.ComponentProps<"section">, "title"> {
+  extends Omit<ComponentProps<"section">, "title"> {
   /** Uppercase section label. */
-  title: React.ReactNode;
+  title: ReactNode;
   /** Optional item count rendered as a trailing chip. */
   count?: number;
 }
