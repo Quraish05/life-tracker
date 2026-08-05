@@ -12,7 +12,6 @@ from app.models.note import Note
 from app.models.user import User
 from app.schemas.note import NoteCreate
 
-
 # --- Folder normalization -------------------------------------------------
 
 
