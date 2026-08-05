@@ -29,6 +29,7 @@ data model → the flow both directions → the tricky part in depth → how to 
 - ✅ **[Ch 9. Full-text search](04-full-text-search.md)** — Postgres FTS over notes: a generated `tsvector` column, GIN index, ranked results, and the first real-Postgres test harness
 - ✅ **[Ch 10. AI nutrition estimation](05-ai-nutrition-estimation.md)** — schema-constrained structured output: the "✨ Ask AI" estimator, the shared provider engine, validate-and-retry, and quota/failure mapping
 - ✅ **[Ch 11. Agentic tool use (chat assistant)](06-ai-chat-tools.md)** — the streaming, tool-using chat: a manual `stop_reason == "tool_use"` loop over SSE, four user-scoped tools, and quota/cost control (the CCAF agentic-AI reference)
+- ✅ **[Ch 12. Retrieval-augmented journal (hybrid RAG)](08-journal-rag.md)** — "Ask my journal": pgvector + local embeddings, hybrid dense+FTS retrieval fused with RRF, MMR diversity, and grounded cited answers (the CCAF retrieval/grounding reference)
 
 ### Part III — Cross-cutting concerns
 - 🚧 **Ch 5. Background work** — the in-process asyncio loop pattern, lifespan wiring, and when you'd outgrow it _(planned)_

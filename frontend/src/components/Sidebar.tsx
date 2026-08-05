@@ -260,15 +260,20 @@ function UserCard() {
   return (
     <div className="mt-auto border-t border-border/60 px-3 py-3">
       <div className="flex items-center gap-2.5 px-1">
-        <Avatar initial={initial} />
-        <div className="min-w-0 flex-1">
-          <p className="truncate text-xs font-bold text-foreground">
-            {user?.username ?? "User"}
-          </p>
-          <p className="truncate text-[11px] text-muted">
-            {user?.email ?? "Signed in"}
-          </p>
-        </div>
+        <Link
+          href="/profile"
+          className="flex min-w-0 flex-1 items-center gap-2.5 rounded-lg py-1 transition hover:bg-grape/10"
+        >
+          <Avatar initial={initial} />
+          <div className="min-w-0 flex-1">
+            <p className="truncate text-xs font-bold text-foreground">
+              {user?.username ?? "User"}
+            </p>
+            <p className="truncate text-[11px] text-muted">
+              {user?.email ?? "Signed in"}
+            </p>
+          </div>
+        </Link>
         <ThemeToggle />
       </div>
       <AiQuotaBadge className="mt-2 w-full justify-center" />

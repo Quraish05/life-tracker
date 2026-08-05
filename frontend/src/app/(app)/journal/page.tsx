@@ -10,6 +10,7 @@ import { useDeleteWithUndo } from "@/lib/hooks/use-delete-with-undo";
 import { Button } from "@/components/ui/atoms/button";
 import { UndoToast } from "@/components/ui/molecules/undo-toast";
 import { useNoteEditorStack } from "@/components/notes/use-note-editor-stack";
+import { AskJournal } from "@/components/journal/ask-journal";
 import { EntryPreviewDrawer } from "@/components/journal/entry-preview-drawer";
 import { EntryRow } from "@/components/journal/entry-row";
 import { MoodFilterBar } from "@/components/journal/mood-filter-bar";
@@ -59,7 +60,10 @@ export default function JournalPage() {
   const groups = useMemo(() => groupByMonth(visible), [visible]);
   const streak = useMemo(() => computeStreak(journalNotes), [journalNotes]);
 
-  const selected = selectedId != null ? visible.find((n) => n.id === selectedId) ?? null : null;
+  // Resolve against all journal entries (not just the filtered view) so a citation
+  // chip from "Ask my journal" can open its entry even when it's filtered out.
+  const selected =
+    selectedId != null ? journalNotes.find((n) => n.id === selectedId) ?? null : null;
 
   const isFiltering = q.length > 0 || mood !== "all";
   const totalLabel = `${journalNotes.length} ${journalNotes.length === 1 ? "entry" : "entries"}`;
@@ -81,6 +85,11 @@ export default function JournalPage() {
           </h1>
         </div>
         <Button onClick={editors.openNew}>+ New entry</Button>
+      </div>
+
+      {/* Ask my journal (RAG) */}
+      <div className="mt-5">
+        <AskJournal onOpenEntry={setSelectedId} />
       </div>
 
       {/* Search + mood filters */}

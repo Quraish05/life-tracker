@@ -18,6 +18,9 @@ dependencies = [
     "anthropic>=0.119.0",
     "google-genai>=2.14.0",
     "structlog>=24.1.0",
+    # RAG: pgvector column type for SQLAlchemy + local, free sentence embeddings.
+    "pgvector>=0.3.6",
+    "sentence-transformers>=3.0.0",
 ]
 
 [dependency-groups]

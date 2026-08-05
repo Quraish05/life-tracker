@@ -22,6 +22,7 @@ from urllib.parse import urlsplit, urlunsplit
 
 import pytest
 import pytest_asyncio
+from sqlalchemy import text
 from sqlalchemy.ext.asyncio import AsyncSession, create_async_engine
 
 import app.models  # noqa: F401 — register every model on Base.metadata
@@ -57,6 +58,10 @@ def _create_schema():
     async def _reset(create: bool) -> None:
         engine = create_async_engine(TEST_DATABASE_URL)
         async with engine.begin() as conn:
+            if create:
+                # note_chunks uses a pgvector column; the extension must exist
+                # before create_all builds the table + HNSW index.
+                await conn.execute(text("CREATE EXTENSION IF NOT EXISTS vector"))
             await conn.run_sync(Base.metadata.drop_all)
             if create:
                 await conn.run_sync(Base.metadata.create_all)

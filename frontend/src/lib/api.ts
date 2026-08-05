@@ -90,4 +90,19 @@ export const authApi = {
     request<AuthResponse>("/auth/login", { method: "POST", body: input }),
 
   me: (token: string) => request<User>("/auth/me", { token }),
+
+  /**
+   * DEMO/DEV ONLY: reset the caller's AI usage to full. The backend only
+   * registers this route outside production, so it 404s there — the UI also
+   * hides the button outside `next dev` (see IS_DEV).
+   */
+  resetAiQuota: (token: string) =>
+    request<User>("/auth/dev/reset-ai-quota", { method: "POST", token }),
 };
+
+/**
+ * True only under `next dev`. Gates demo-only affordances (e.g. the AI-quota
+ * reset button) so they never render in a production build. The backend route
+ * is gated independently on ENVIRONMENT, which is the real protection.
+ */
+export const IS_DEV = process.env.NODE_ENV !== "production";

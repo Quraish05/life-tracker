@@ -3,6 +3,7 @@ from sqlalchemy import select
 
 from app.api.deps import UNAUTHORIZED_RESPONSE, CurrentUser, DbSession
 from app.api.responses import error_response
+from app.core.config import settings
 from app.core.security import (
     create_access_token,
     hash_password,
@@ -94,3 +95,29 @@ async def login(payload: UserLogin, db: DbSession) -> Token:
 async def read_me(current_user: CurrentUser) -> User:
     """Return the profile of the user identified by the Bearer token."""
     return current_user
+
+
+# --- Demo/dev only -------------------------------------------------------
+#
+# A convenience for local testing: reset the caller's AI usage so a demo user
+# doesn't burn the small free pool. This route is registered ONLY when the
+# environment is not "production", so in production it does not exist at all
+# (404, and absent from the OpenAPI schema) — the frontend button is a
+# secondary guard; this is the real one. To disable it, set ENVIRONMENT=production.
+if settings.environment != "production":
+
+    @router.post(
+        "/dev/reset-ai-quota",
+        response_model=UserRead,
+        summary="[dev only] Reset the caller's AI quota to full",
+        responses={**UNAUTHORIZED_RESPONSE},
+    )
+    async def reset_ai_quota(current_user: CurrentUser, db: DbSession) -> User:
+        """Reset the signed-in user's AI usage count to 0 (full pool again).
+
+        DEMO/DEV ONLY — not registered when ``ENVIRONMENT=production``.
+        """
+        current_user.ai_usage_count = 0
+        await db.commit()
+        await db.refresh(current_user)
+        return current_user

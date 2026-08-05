@@ -116,3 +116,11 @@ export function formatDayLong(iso: string): string {
     year: "numeric",
   });
 }
+
+/** "Jul 26" from a YYYY-MM-DD string — a compact day label for chips/badges. */
+export function formatDayShort(iso: string): string {
+  return parseISODate(iso).toLocaleDateString(undefined, {
+    month: "short",
+    day: "numeric",
+  });
+}
