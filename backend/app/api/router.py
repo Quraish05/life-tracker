@@ -9,6 +9,7 @@ from app.api.routes import (
     health_goals,
     ingredients,
     insights,
+    journal,
     meals,
     notes,
     push,
@@ -29,4 +30,5 @@ api_router.include_router(meals.router)
 api_router.include_router(exercises.router)
 api_router.include_router(health_goals.router)
 api_router.include_router(insights.router)
+api_router.include_router(journal.router)
 api_router.include_router(ws.router)

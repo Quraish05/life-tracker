@@ -18,6 +18,7 @@ from app.schemas.note_ai import (
     TagSuggestionsResponse,
 )
 from app.services.follow_up_extraction import suggest_follow_ups
+from app.services.journal_index import reindex_note_safe
 from app.services.note_search import search_notes
 from app.services.tag_suggestion import suggest_tags
 
@@ -70,6 +71,8 @@ async def create_note(payload: NoteCreate, current_user: CurrentUser, db: DbSess
     db.add(note)
     await db.commit()
     await db.refresh(note)
+    # Keep the journal RAG index fresh (best-effort; a journal-only no-op otherwise).
+    await reindex_note_safe(db, note)
     return note
 
 
@@ -151,6 +154,8 @@ async def update_note(
 
     await db.commit()
     await db.refresh(note)
+    # Re-embed the entry so edits are reflected in journal search (best-effort).
+    await reindex_note_safe(db, note)
     return note
 
 
