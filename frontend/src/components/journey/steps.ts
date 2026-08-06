@@ -1,5 +1,5 @@
-// The core Life Tracker loop, shared by the landing "how it works" strip
-// (static) and the dashboard journey map (state-aware).
+// The core Thyme loop, shared by the landing "how it works" strip
+// and the dashboard journey map (state-aware).
 
 export type JourneyStep = {
   key: string;

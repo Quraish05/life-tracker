@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import type { ReactNode } from "react";
-import { Montserrat, DM_Serif_Display } from "next/font/google";
+import { Montserrat, DM_Serif_Display, Caveat } from "next/font/google";
 import "./globals.css";
 import { Providers } from "@/lib/providers";
 
@@ -16,8 +16,15 @@ const dmSerifDisplay = DM_Serif_Display({
   style: ["normal", "italic"],
 });
 
+// Handwriting accent used across the marketing landing (annotations, counters).
+const caveat = Caveat({
+  variable: "--font-caveat",
+  subsets: ["latin"],
+  weight: ["400", "700"],
+});
+
 export const metadata: Metadata = {
-  title: "Life Tracker",
+  title: "Thyme",
   description: "Track your life, one day at a time.",
 };
 
@@ -33,7 +40,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${montserrat.variable} ${dmSerifDisplay.variable} h-full antialiased`}
+      className={`${montserrat.variable} ${dmSerifDisplay.variable} ${caveat.variable} h-full antialiased`}
     >
       <head>
         <script dangerouslySetInnerHTML={{ __html: noFlashTheme }} />

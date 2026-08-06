@@ -60,6 +60,7 @@
   /* Fonts */
   --font-sans: var(--font-montserrat);
   --font-display: var(--font-dm-serif-display);
+  --font-hand: var(--font-caveat);
 
   /* Layer A — brand accents (dusk palette) */
   --color-grape: var(--grape); /* wine (light) / rose (dark) — primary */
@@ -135,6 +136,11 @@
 .font-display {
   font-family: var(--font-display), Georgia, serif;
   font-weight: 400;
+}
+
+/* Handwriting accent — marketing annotations, counters, entry samples. */
+.font-hand {
+  font-family: var(--font-hand), cursive;
 }
 
 body {

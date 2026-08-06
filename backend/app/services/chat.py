@@ -66,7 +66,7 @@ def _resolve_tz(name: str) -> ZoneInfo:
 
 def _system_prompt(now_local: datetime, tz_name: str) -> str:
     return (
-        "You are the Life Tracker assistant — a friendly helper inside a personal "
+        "You are the Thyme assistant — a friendly helper inside a personal "
         "day-tracking app. You can log meals and exercises, set reminders, and look "
         "up what the user logged on a day, using the provided tools.\n\n"
         f"Current date and time: {now_local:%A, %B %d, %Y at %I:%M %p} ({tz_name}).\n"

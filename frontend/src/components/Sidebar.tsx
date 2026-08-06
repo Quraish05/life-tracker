@@ -9,6 +9,7 @@ import { useFoods } from "@/lib/queries/use-food";
 import { useIngredients } from "@/lib/queries/use-ingredients";
 import { cn } from "@/lib/utils";
 import { AiQuotaBadge } from "@/components/ai/ai-quota";
+import { BrandMark } from "@/components/ui/atoms/logo";
 import { ThemeToggle } from "@/components/ui/atoms/theme-toggle";
 import {
   MOBILE_TABS,
@@ -90,18 +91,6 @@ export default function Sidebar() {
   );
 }
 
-/** Square brand chip — the accent-filled "LT" mark from the redesign. */
-function BrandMark({ size = 30 }: { size?: number }) {
-  return (
-    <div
-      className="flex flex-none items-center justify-center rounded-md bg-grape font-bold text-on-accent"
-      style={{ height: size, width: size, fontSize: size <= 30 ? 11 : 12 }}
-    >
-      LT
-    </div>
-  );
-}
-
 /** Round gradient avatar with the user's initial. */
 function Avatar({ initial, size = 30 }: { initial: string; size?: number }) {
   return (
@@ -168,7 +157,7 @@ function DesktopRail() {
           href="/dashboard"
           className="min-w-0 flex-1 truncate text-[15px] font-bold text-foreground transition hover:opacity-80"
         >
-          Life <span className="font-display italic text-grape">Tracker</span>
+          Thyme
         </Link>
         <button
           type="button"
@@ -364,9 +353,7 @@ function SlideUpMenu({ onClose }: { onClose: () => void }) {
       <div className="flex items-center justify-between pb-4">
         <div className="flex items-center gap-2.5">
           <BrandMark size={34} />
-          <span className="text-base font-bold text-foreground">
-            Life <span className="font-display italic text-grape">Tracker</span>
-          </span>
+          <span className="text-base font-bold text-foreground">Thyme</span>
         </div>
         <button
           type="button"

@@ -42,7 +42,7 @@ export function HeroActions() {
 
   if (user) {
     return (
-      <div className="mt-8 flex justify-center">
+      <div className="mt-8 flex">
         <Button asChild size="lg">
           <Link href="/dashboard">Take me to the dashboard →</Link>
         </Button>
@@ -51,7 +51,7 @@ export function HeroActions() {
   }
 
   return (
-    <div className="mt-8 flex flex-wrap items-center justify-center gap-3">
+    <div className="mt-8 flex flex-wrap items-center gap-3">
       <Button asChild size="lg">
         <Link href="/register">Create your account</Link>
       </Button>
@@ -62,16 +62,21 @@ export function HeroActions() {
   );
 }
 
-/** Closing CTA button: get started, or go to the dashboard. */
+/**
+ * Closing CTA — the site's secondary call-to-action, styled as the design's dark
+ * pill so it reads on the grape panel: "Go to your dashboard →" for a returning
+ * (logged-in) visitor, "Get started — it's free →" otherwise.
+ */
 export function ClosingCtaButton() {
   const { user } = useAuth();
 
   return (
-    <Button asChild variant="secondary" size="lg">
-      <Link href={user ? "/dashboard" : "/register"}>
-        {user ? "Go to your dashboard" : "Get started — it’s free"}
-      </Link>
-    </Button>
+    <Link
+      href={user ? "/dashboard" : "/register"}
+      className="inline-flex items-center gap-2 rounded-full bg-background px-8 py-4 text-sm font-bold text-foreground shadow-lg transition hover:bg-surface"
+    >
+      {user ? "Go to your dashboard →" : "Get started — it’s free →"}
+    </Link>
   );
 }
 
