@@ -1,6 +1,7 @@
 import { type ComponentProps, type ReactNode } from "react";
 
 import { cn } from "@/lib/utils";
+import { BrandMark } from "@/components/ui/atoms/logo";
 import { ThemeToggle } from "@/components/ui/atoms/theme-toggle";
 
 /** Left marketing panel shared by the auth screens. */
@@ -18,12 +19,8 @@ function BrandPanel({
       <div className="pointer-events-none absolute -bottom-28 right-0 h-80 w-80 rounded-full bg-mint/60 blur-3xl dark:bg-grape/[0.07]" />
 
       <div className="relative flex items-center gap-2.5">
-        <div className="flex h-10 w-10 rotate-3 items-center justify-center rounded-xl bg-gradient-to-br from-grape to-coral text-sm font-bold text-white shadow-lg shadow-grape/30">
-          LT
-        </div>
-        <span className="text-lg font-bold tracking-tight text-foreground">
-          Life <span className="font-display italic text-grape">Tracker</span>
-        </span>
+        <BrandMark size={40} className="rounded-xl shadow-lg shadow-grape/30" />
+        <span className="text-lg font-bold tracking-tight text-foreground">Thyme</span>
       </div>
 
       <div className="relative max-w-md">
@@ -80,12 +77,8 @@ function AuthScreen({
         <div className="w-full max-w-sm">
           {/* Compact brand — only when the marketing panel is hidden. */}
           <div className="mb-8 flex items-center justify-center gap-2.5 laptop:hidden">
-            <div className="flex h-9 w-9 rotate-3 items-center justify-center rounded-xl bg-gradient-to-br from-grape to-coral text-sm font-bold text-white shadow-md shadow-grape/30">
-              LT
-            </div>
-            <span className="text-lg font-bold tracking-tight text-foreground">
-              Life <span className="font-display italic text-grape">Tracker</span>
-            </span>
+            <BrandMark size={36} className="rounded-xl shadow-md shadow-grape/30" />
+            <span className="text-lg font-bold tracking-tight text-foreground">Thyme</span>
           </div>
           <div className="mb-8 text-center">
             <h2 className="text-3xl font-bold tracking-tight text-foreground">

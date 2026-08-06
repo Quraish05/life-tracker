@@ -46,8 +46,7 @@ export function JourneyMap() {
         <div>
           <p className="text-sm font-semibold text-grape">Your journey</p>
           <p className="text-sm text-muted">
-            A few steps to get the most out of{" "}
-            <AccentText>Life Tracker</AccentText>.
+            A few steps to get the most out of <AccentText>Thyme</AccentText>.
           </p>
         </div>
         <span className="rounded-full bg-lilac/40 px-2.5 py-1 text-xs font-semibold text-grape-deep">

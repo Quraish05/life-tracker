@@ -10,7 +10,7 @@ class Settings(BaseSettings):
 
     model_config = SettingsConfigDict(env_file=".env", env_ignore_empty=True, extra="ignore")
 
-    project_name: str = "Life Tracker API"
+    project_name: str = "Thyme API"
     version: str = "0.1.0"
     api_v1_prefix: str = "/api/v1"
     debug: bool = False
