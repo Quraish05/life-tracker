@@ -3,7 +3,7 @@
 import { useState } from "react";
 
 import { isQuotaError } from "@/lib/api";
-import { useAskJournal } from "@/lib/queries/use-journal";
+import { useAskJournal, useSaveInsight } from "@/lib/queries/use-journal";
 import { useAiQuota } from "@/lib/use-ai-quota";
 import { AiLimitNotice, AiQuotaHint } from "@/components/ai/ai-quota";
 import { formatDayShort } from "@/components/calendar/_lib";
@@ -18,16 +18,37 @@ import { Chip } from "@/components/ui/atoms/chip";
  */
 export function AskJournal({ onOpenEntry }: { onOpenEntry: (noteId: number) => void }) {
   const ask = useAskJournal();
+  const save = useSaveInsight();
   const quota = useAiQuota();
   const [question, setQuestion] = useState("");
+  // The question whose answer has been saved — so the button reads "Saved" only
+  // for the answer currently on screen, and resets when a new one arrives.
+  const [savedQuestion, setSavedQuestion] = useState<string | null>(null);
 
   const outOfCredits = quota.exhausted || isQuotaError(ask.error);
   const canAsk = question.trim().length >= 3 && !ask.isPending && !outOfCredits;
   const answer = ask.data;
+  const asked = ask.variables ?? "";
+  const savable = Boolean(answer && answer.citations.length > 0);
+  const isSaved = savable && savedQuestion === asked;
 
   function submit() {
     if (!canAsk) return;
+    setSavedQuestion(null);
     ask.mutate(question.trim(), { onSuccess: () => quota.refresh() });
+  }
+
+  function saveAnswer() {
+    if (!answer || !savable || isSaved || save.isPending) return;
+    save.mutate(
+      {
+        question: asked,
+        answer: answer.answer,
+        citations: answer.citations,
+        model: answer.model,
+      },
+      { onSuccess: () => setSavedQuestion(asked) },
+    );
   }
 
   return (
@@ -85,6 +106,22 @@ export function AskJournal({ onOpenEntry }: { onOpenEntry: (noteId: number) => v
                   </button>
                 </Chip>
               ))}
+            </div>
+          )}
+          {savable && (
+            <div className="mt-3 flex items-center gap-3">
+              <Button
+                type="button"
+                variant="secondary"
+                size="sm"
+                onClick={saveAnswer}
+                disabled={isSaved || save.isPending}
+              >
+                {isSaved ? "✓ Saved to Patterns" : save.isPending ? "Saving…" : "＋ Save to Patterns"}
+              </Button>
+              {save.isError && !isSaved && (
+                <span className="text-xs text-coral">Couldn&rsquo;t save. Try again.</span>
+              )}
             </div>
           )}
         </div>

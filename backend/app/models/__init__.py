@@ -4,6 +4,7 @@ from app.models.exercise_log import ExerciseLog
 from app.models.food import FoodItem
 from app.models.health_goal import HealthGoal
 from app.models.ingredient import Ingredient
+from app.models.journal_insight import JournalInsight
 from app.models.meal_log import MealLog
 from app.models.note import Note
 from app.models.note_chunk import NoteChunk
@@ -17,6 +18,7 @@ __all__ = [
     "FoodItem",
     "HealthGoal",
     "Ingredient",
+    "JournalInsight",
     "MealLog",
     "Note",
     "NoteChunk",
