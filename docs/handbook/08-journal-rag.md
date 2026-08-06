@@ -1,6 +1,6 @@
 # Chapter 12 — Retrieval-augmented journal (hybrid RAG)
 
-**Last updated:** 2026-08-05 · **Status:** ✅ current with `feat/journal-rag` (Slice 12)
+**Last updated:** 2026-08-05 · **Status:** ✅ current with `feat/journal-patterns` (Slice 12 + saved Patterns, §12.10)
 
 **Why we did this.** The product thesis is *"your day, in one place — and an AI
 that has actually read it."* We had structured-output AI ([Ch 10](05-ai-nutrition-estimation.md))
@@ -220,7 +220,7 @@ narrowing:
    advanced retrieval passes: [rag-practice · 05-advanced-retrieval.md](https://github.com/Quraish05/rag-practice/blob/main/handbook/05-advanced-retrieval.md).)
 5. **Reranking — deliberately *not* here.** A cross-encoder re-scoring the
    shortlist is the classic next precision step, but it needs a model that doesn't
-   fit this stack cleanly, so it's a fast-follow (§12.10). Theory:
+   fit this stack cleanly, so it's a fast-follow (§12.11). Theory:
    [rag-practice · 07-reranking.md](https://github.com/Quraish05/rag-practice/blob/main/handbook/07-reranking.md).
 
 The next section is the same five steps **in code**. (Term refresher any time:
@@ -497,7 +497,66 @@ answer citing the June→July sleep-thread entries.
 
 ---
 
-## 12.10 Future enhancements
+## 12.10 Saving answers as Patterns
+
+A RAG answer was, until now, **ephemeral** — a React Query mutation result that
+vanished on the next question. But some answers are worth keeping ("every rough
+night this month I'd skipped dinner"), so a saved answer becomes a **finding** on
+a new **Patterns** page. This is the same *Desk Insights* concept from the design:
+the answer is the *claim*, its citations are the *evidence*, and the user can vote
+**"was this true for you?"**.
+
+**One rule shapes the model: store a snapshot, not links.** A finding must still
+read correctly after the journal entry it cites is edited or deleted, so
+[`JournalInsight`](../../backend/app/models/journal_insight.py) copies each
+citation's `{note_id, entry_date, title, snippet}` into a JSONB column rather than
+FK-linking the note — exactly the snapshot approach
+[`DailySummaryRecord`](../../backend/app/models/daily_summary.py) uses for its AI
+fields. `note_chunks` is derived data you can rebuild; a saved finding is a
+*record* you must not silently lose. The `helpful` vote is a nullable boolean
+(`null` unvoted · `true` "that's me" · `false` "off base").
+
+**The endpoints are plain CRUD** on the existing journal router
+([journal.py](../../backend/app/api/routes/journal.py)) — and, unlike `/journal/ask`,
+they make **no model call**, so there's no quota and no credit. Saving persists an
+answer the client already has:
+
+```
+POST   /journal/insights          save {question, answer, citations, model}
+GET    /journal/insights          list, newest first (created_at desc, id desc)
+PATCH  /journal/insights/{id}     set the helpful vote (or null to clear)
+DELETE /journal/insights/{id}     remove it
+```
+
+Every handler is scoped to `current_user` and returns **404** (not 403) when a row
+isn't the caller's — the same `_get_owned_*` pattern as
+[notes.py](../../backend/app/api/routes/notes.py). The list's tie-break on
+`id desc` keeps "newest first" deterministic even when rows share a timestamp
+(which they do inside a test transaction).
+
+**Frontend.** A **"Save to Patterns"** button appears under an answer
+([ask-journal.tsx](../../frontend/src/components/journal/ask-journal.tsx)) — but
+only when the answer actually cites entries, so the canned no-data replies aren't
+savable. The new [Patterns page](../../frontend/src/app/(app)/patterns/page.tsx) is
+a two-pane view built from the saved findings: a **findings list** on the left and
+an **evidence panel** on the right (the selected finding's citations as dated
+quote cards linking to the entry, plus the Yes / Off-base vote and a "how this was
+computed" model footer).
+
+**Nav note — "Patterns" moved.** The nav slot previously labelled *Patterns*
+actually pointed at `/progress`, which shows **daily calorie summaries** — a
+mismatch with the design. That entry is now labelled **Progress** (route
+unchanged), and **Patterns** → `/patterns` is the new journal-insights surface
+([navigation.ts](../../frontend/src/constants/navigation.ts)).
+
+> **Deliberately deferred.** The design's Patterns page also sketches
+> *word-vs-outcome bars* and *suggested actions* — both need computed analytics no
+> data feeds yet, so they're out of scope here. This slice is strictly "keep an
+> answer you liked".
+
+---
+
+## 12.11 Future enhancements
 
 - **`search_journal` chat tool** — the immediate fast-follow: wire the
   endpoint-agnostic `retrieve()` into the assistant's tools so it can answer

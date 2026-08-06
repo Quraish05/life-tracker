@@ -17,3 +17,26 @@ export type AskJournalResponse = {
   /** Which model produced the answer — surfaced for transparency. */
   model: string;
 };
+
+/**
+ * A saved "Ask my journal" answer — a *finding* on the Patterns page. The answer
+ * is the claim, the citations are its evidence (a snapshot taken when saved), and
+ * `helpful` is the "was this true for you?" vote (null = unanswered).
+ */
+export type JournalInsight = {
+  id: number;
+  question: string;
+  answer: string;
+  citations: JournalCitation[];
+  model: string | null;
+  helpful: boolean | null;
+  created_at: string;
+};
+
+/** Payload to save an answer — the RAG response plus the question that produced it. */
+export type SaveInsightPayload = {
+  question: string;
+  answer: string;
+  citations: JournalCitation[];
+  model: string | null;
+};
