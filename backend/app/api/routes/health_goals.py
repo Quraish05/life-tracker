@@ -1,9 +1,15 @@
+from datetime import date
+
 from fastapi import APIRouter
 from sqlalchemy import select
 
+from app.api.ai_errors import ai_errors_as_http
+from app.api.ai_quota import QUOTA_EXCEEDED_RESPONSE, enforce_ai_quota, record_ai_usage
 from app.api.deps import UNAUTHORIZED_RESPONSE, CurrentUser, DbSession
 from app.models.health_goal import HealthGoal
+from app.schemas.goal_eval import EvalScope, GoalEvaluationResponse
 from app.schemas.health_goal import HealthGoalRead, HealthGoalUpsert
+from app.services.goal_evaluator import evaluate_goal
 
 router = APIRouter(prefix="/health-goal", tags=["health"])
 
@@ -60,3 +66,31 @@ async def upsert_health_goal(
     await db.commit()
     await db.refresh(goal)
     return goal
+
+
+@router.post(
+    "/evaluate",
+    response_model=GoalEvaluationResponse,
+    summary="AI read on how a period aligns with the goal (Goal Evaluator)",
+    responses={**UNAUTHORIZED_RESPONSE, **QUOTA_EXCEEDED_RESPONSE},
+)
+async def evaluate_health_goal(
+    current_user: CurrentUser,
+    db: DbSession,
+    scope: EvalScope = "week",
+) -> GoalEvaluationResponse:
+    """Evaluate today or the last 7 days against the user's goal.
+
+    The dashboard's numbers are computed client-side and free; this is the one
+    paid piece. Quota is enforced up front, but a credit is charged **only when
+    the model actually runs** — a no-data window (no goal, or nothing logged) is
+    free.
+    """
+    enforce_ai_quota(current_user)
+    with ai_errors_as_http("Could not evaluate your goal right now. Please try again."):
+        result = await evaluate_goal(db, current_user, scope, today=date.today())
+    if result.used_model:
+        await record_ai_usage(current_user, db)
+    return GoalEvaluationResponse(
+        model=result.model, scope=scope, evaluation=result.evaluation
+    )
