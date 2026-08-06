@@ -1,6 +1,10 @@
 import { ApiError, request, tokenStore } from "@/lib/api";
 import type { HealthGoalInput } from "@/lib/validations/health-goal";
-import type { HealthGoal } from "@/types/health-goal";
+import type {
+  EvalScope,
+  GoalEvaluationResponse,
+  HealthGoal,
+} from "@/types/health-goal";
 
 /**
  * Health goal data layer — a thin client over the backend `health-goal` API.
@@ -23,6 +27,13 @@ export const healthGoalApi = {
     request<HealthGoal>("/health-goal", {
       method: "PUT",
       body: input,
+      token: authToken(),
+    }),
+
+  /** On-demand AI read on how a window (today or the last 7 days) aligns with the goal. */
+  evaluate: (scope: EvalScope): Promise<GoalEvaluationResponse> =>
+    request<GoalEvaluationResponse>(`/health-goal/evaluate?scope=${scope}`, {
+      method: "POST",
       token: authToken(),
     }),
 };
