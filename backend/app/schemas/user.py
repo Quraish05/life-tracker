@@ -12,6 +12,13 @@ class UserCreate(BaseModel):
     password: str = Field(min_length=8, max_length=72)
 
 
+class GoogleAuthRequest(BaseModel):
+    """Google Sign-In payload: the ID token (a JWT) issued by Google Identity
+    Services in the browser. The backend verifies it against Google's certs."""
+
+    credential: str = Field(min_length=1)
+
+
 class UserLogin(BaseModel):
     model_config = ConfigDict(
         json_schema_extra={

@@ -37,7 +37,6 @@ export const NAV_GROUPS: NavGroup[] = [
       { label: "Journal", href: "/journal", icon: "📓" },
       { label: "Notes", href: "/notes", icon: "🗒️" },
       { label: "Patterns", href: "/patterns", icon: "📈" },
-      { label: "Progress", href: "/progress", icon: "📊" },
       { label: "Goals", href: "/goal", icon: "🎯" },
     ],
   },

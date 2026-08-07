@@ -9,6 +9,7 @@ import {
 import { FeatureCarousel } from "@/components/landing/feature-carousel";
 import { BowlClock, BrandLockup } from "@/components/ui/atoms/logo";
 import { ThemeToggle } from "@/components/ui/atoms/theme-toggle";
+import { AI_FREE_LIMIT } from "@/constants/ai";
 
 // Thyme marketing landing. Server component (the only interactive piece — the
 // feature carousel and the auth-aware CTAs — are client islands). Theme-aware:
@@ -434,7 +435,7 @@ export default function LandingPage() {
               </p>
               <p className="mt-3.5 text-4xl font-bold tracking-tight">Free</p>
               <p className="mt-1.5 text-[13px] text-muted/70">
-                10 AI actions a month
+                {AI_FREE_LIMIT} AI actions to start
               </p>
               <div className="mt-5 flex flex-col gap-2.5 text-[13.5px] text-muted">
                 <span>✓ Unlimited logs, dishes and notes</span>

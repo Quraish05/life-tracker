@@ -4,6 +4,7 @@ from app.models.exercise_log import ExerciseLog
 from app.models.food import FoodItem
 from app.models.health_goal import HealthGoal
 from app.models.ingredient import Ingredient
+from app.models.job import Job
 from app.models.journal_insight import JournalInsight
 from app.models.meal_log import MealLog
 from app.models.note import Note
@@ -11,6 +12,7 @@ from app.models.note_chunk import NoteChunk
 from app.models.push_subscription import PushSubscription
 from app.models.reminder import Reminder
 from app.models.user import User
+from app.models.weekly_recap import WeeklyRecap
 
 __all__ = [
     "DailySummaryRecord",
@@ -18,6 +20,7 @@ __all__ = [
     "FoodItem",
     "HealthGoal",
     "Ingredient",
+    "Job",
     "JournalInsight",
     "MealLog",
     "Note",
@@ -25,4 +28,5 @@ __all__ = [
     "PushSubscription",
     "Reminder",
     "User",
+    "WeeklyRecap",
 ]

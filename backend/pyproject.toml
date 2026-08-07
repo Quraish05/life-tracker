@@ -14,6 +14,8 @@ dependencies = [
     "alembic>=1.18.5",
     "bcrypt>=5.0.0",
     "pyjwt>=2.10.0",
+    # Verifies Google Sign-In ID tokens offline against Google's public certs.
+    "google-auth>=2.35.0",
     "pywebpush>=2.0.0",
     "anthropic>=0.119.0",
     "google-genai>=2.14.0",
@@ -21,6 +23,8 @@ dependencies = [
     # RAG: pgvector column type for SQLAlchemy + local, free sentence embeddings.
     "pgvector>=0.3.6",
     "sentence-transformers>=3.0.0",
+    # Cron-spec parsing for the background job scheduler (app/services/jobs).
+    "croniter>=3.0.0",
 ]
 
 [dependency-groups]
