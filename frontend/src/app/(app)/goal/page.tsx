@@ -11,6 +11,7 @@ import { AlignmentBars } from "@/components/goal/alignment-bars";
 import { EditGoalModal } from "@/components/goal/edit-goal-modal";
 import { FocusGoalCard } from "@/components/goal/focus-goal-card";
 import { GoalEvaluator } from "@/components/goal/goal-evaluator";
+import { ProgressHistory } from "@/components/goal/progress-history";
 import { TodayAgainstGoal } from "@/components/goal/today-against-goal";
 
 /**
@@ -67,6 +68,8 @@ export default function GoalPage() {
           </aside>
         </div>
       )}
+
+      {goal && <ProgressHistory />}
 
       {editing && (
         <EditGoalModal initial={goal ?? null} onClose={() => setEditing(false)} />

@@ -18,7 +18,9 @@ class User(Base):
     id: Mapped[int] = mapped_column(primary_key=True)
     username: Mapped[str] = mapped_column(String(50), unique=True, index=True)
     email: Mapped[str] = mapped_column(String(255), unique=True, index=True)
-    hashed_password: Mapped[str] = mapped_column(String(255))
+    # Nullable: users who sign in with Google (SSO) have no password. Only
+    # password (email/login) accounts set this. See app/api/routes/auth.py.
+    hashed_password: Mapped[str | None] = mapped_column(String(255), nullable=True)
     # Authorization role — see ROLE_* constants above.
     role: Mapped[str] = mapped_column(
         String(20), nullable=False, server_default=ROLE_USER

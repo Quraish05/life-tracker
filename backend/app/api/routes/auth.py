@@ -1,5 +1,8 @@
+import re
+
 from fastapi import APIRouter, HTTPException, status
 from sqlalchemy import select
+from sqlalchemy.ext.asyncio import AsyncSession
 
 from app.api.deps import UNAUTHORIZED_RESPONSE, CurrentUser, DbSession
 from app.api.responses import error_response
@@ -7,10 +10,17 @@ from app.core.config import settings
 from app.core.security import (
     create_access_token,
     hash_password,
+    verify_google_id_token,
     verify_password,
 )
 from app.models.user import User
-from app.schemas.user import Token, UserCreate, UserLogin, UserRead
+from app.schemas.user import (
+    GoogleAuthRequest,
+    Token,
+    UserCreate,
+    UserLogin,
+    UserRead,
+)
 
 router = APIRouter(prefix="/auth", tags=["auth"])
 
@@ -18,6 +28,28 @@ router = APIRouter(prefix="/auth", tags=["auth"])
 USER_EXISTS = "A user with this {field} already exists."
 NO_ACCOUNT = "No account found for this email. Please register first."
 BAD_CREDENTIALS = "Incorrect email or password."
+GOOGLE_DISABLED = "Google Sign-In is not configured on this server."
+GOOGLE_INVALID = "Could not verify your Google sign-in. Please try again."
+GOOGLE_UNVERIFIED = "Your Google account has no verified email address."
+
+
+async def _unique_username(db: AsyncSession, email: str) -> str:
+    """Derive a unique, valid username from a Google account's email.
+
+    Uses the email's local part, stripped to ``[a-z0-9_]`` and padded to the
+    3–30 char rule, then appends a numeric suffix until it's unused.
+    """
+    base = re.sub(r"[^a-z0-9_]", "", email.split("@", 1)[0].lower()) or "user"
+    if len(base) < 3:
+        base = f"{base}user"
+    base = base[:30]
+
+    candidate, n = base, 0
+    while await db.scalar(select(User.id).where(User.username == candidate)) is not None:
+        n += 1
+        suffix = str(n)
+        candidate = f"{base[: 30 - len(suffix)]}{suffix}"
+    return candidate
 
 
 def _token_for(user: User) -> Token:
@@ -83,6 +115,53 @@ async def login(payload: UserLogin, db: DbSession) -> Token:
         raise HTTPException(
             status_code=status.HTTP_401_UNAUTHORIZED, detail=BAD_CREDENTIALS
         )
+    return _token_for(user)
+
+
+@router.post(
+    "/google",
+    response_model=Token,
+    summary="Sign in (or sign up) with Google",
+    responses={
+        status.HTTP_401_UNAUTHORIZED: error_response(
+            "The Google credential could not be verified", GOOGLE_INVALID
+        ),
+        status.HTTP_503_SERVICE_UNAVAILABLE: error_response(
+            "Google Sign-In is not configured", GOOGLE_DISABLED
+        ),
+    },
+)
+async def google_auth(payload: GoogleAuthRequest, db: DbSession) -> Token:
+    """Verify a Google ID token, then log the user in — creating the account on
+    first sign-in (find-or-create by email). SSO accounts have no password."""
+    if not settings.google_client_id:
+        raise HTTPException(
+            status_code=status.HTTP_503_SERVICE_UNAVAILABLE, detail=GOOGLE_DISABLED
+        )
+
+    try:
+        claims = verify_google_id_token(payload.credential)
+    except ValueError:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail=GOOGLE_INVALID
+        ) from None
+
+    email = (claims.get("email") or "").lower()
+    if not email or not claims.get("email_verified", False):
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED, detail=GOOGLE_UNVERIFIED
+        )
+
+    user = await db.scalar(select(User).where(User.email == email))
+    if user is None:
+        user = User(
+            username=await _unique_username(db, email),
+            email=email,
+            hashed_password=None,
+        )
+        db.add(user)
+        await db.commit()
+        await db.refresh(user)
     return _token_for(user)
 
 

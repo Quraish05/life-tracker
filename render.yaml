@@ -26,3 +26,5 @@ services:
         sync: false
       - key: CORS_ORIGINS # e.g. ["https://your-app.vercel.app"]  (JSON array)
         sync: false
+      - key: GOOGLE_CLIENT_ID # OAuth "Web application" client id (same value used on the frontend)
+        sync: false

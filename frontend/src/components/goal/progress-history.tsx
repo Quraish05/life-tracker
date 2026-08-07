@@ -10,7 +10,6 @@ import { AccentText } from "@/components/ui/atoms/accent-text";
 import { Card } from "@/components/ui/atoms/card";
 import { Chip } from "@/components/ui/atoms/chip";
 import { EmptyState } from "@/components/ui/molecules/empty-state";
-import { PageHeader } from "@/components/ui/molecules/page-header";
 
 type Period = "week" | "month";
 
@@ -22,7 +21,13 @@ function shortDate(iso: string): string {
   });
 }
 
-export default function ProgressPage() {
+/**
+ * Saved daily-summary history for the Goal dashboard — how logging has tracked
+ * against the goal over a week or month. Formerly the standalone /progress page;
+ * folded in here so "how it's going" lives in one place. Reads the same saved
+ * summaries (only AI-generated ones carry an assessment + calorie numbers).
+ */
+export function ProgressHistory() {
   const [period, setPeriod] = useState<Period>("week");
 
   const range = useMemo(() => {
@@ -34,7 +39,6 @@ export default function ProgressPage() {
   const { data: summaries = [], isLoading } = useSummaries(range.start, range.end);
 
   const rollup = useMemo(() => {
-    // Only AI-generated summaries carry an assessment + calorie numbers.
     const withData = summaries.filter(
       (s) => s.assessment != null && s.assessment !== "no_data",
     );
@@ -54,31 +58,26 @@ export default function ProgressPage() {
   }, [summaries]);
 
   return (
-    <div className="mx-auto max-w-6xl px-4 py-8 tablet:px-6 tablet:py-10">
-      <PageHeader
-        eyebrow="Progress"
-        title={
-          <>
-            Your <AccentText>progress</AccentText> over time
-          </>
-        }
-        subtitle="Saved daily summaries — how your logging has tracked against your goal."
-      />
-
-      <div className="mb-6 flex rounded-full bg-surface/60 p-1 shadow-sm w-fit">
-        {(["week", "month"] as const).map((p) => (
-          <Chip
-            key={p}
-            asChild
-            interactive
-            size="lg"
-            tone={period === p ? "solid" : "ghost"}
-          >
-            <button type="button" onClick={() => setPeriod(p)}>
-              This {p}
-            </button>
-          </Chip>
-        ))}
+    <section className="mt-8">
+      <div className="mb-4 flex flex-wrap items-center justify-between gap-3">
+        <h2 className="text-xl font-bold tracking-tight text-foreground">
+          Progress <AccentText>over time</AccentText>
+        </h2>
+        <div className="flex rounded-full bg-surface/60 p-1 shadow-sm">
+          {(["week", "month"] as const).map((p) => (
+            <Chip
+              key={p}
+              asChild
+              interactive
+              size="lg"
+              tone={period === p ? "solid" : "ghost"}
+            >
+              <button type="button" onClick={() => setPeriod(p)}>
+                This {p}
+              </button>
+            </Chip>
+          ))}
+        </div>
       </div>
 
       {isLoading ? (
@@ -101,10 +100,7 @@ export default function ProgressPage() {
               <div>
                 <p className="text-2xl font-bold text-foreground">
                   {rollup.onTrack}
-                  <span className="text-sm font-medium text-muted">
-                    {" "}
-                    on track
-                  </span>
+                  <span className="text-sm font-medium text-muted"> on track</span>
                 </p>
               </div>
               <div>
@@ -156,6 +152,6 @@ export default function ProgressPage() {
           </ul>
         </>
       )}
-    </div>
+    </section>
   );
 }

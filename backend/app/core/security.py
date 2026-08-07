@@ -2,6 +2,8 @@ from datetime import UTC, datetime, timedelta
 
 import bcrypt
 import jwt
+from google.auth.transport import requests as google_requests
+from google.oauth2 import id_token
 
 from app.core.config import settings
 
@@ -27,3 +29,16 @@ def create_access_token(subject: str | int) -> str:
 def decode_access_token(token: str) -> dict:
     """Decode and verify a JWT, raising ``jwt.PyJWTError`` on any failure."""
     return jwt.decode(token, settings.secret_key, algorithms=[settings.jwt_algorithm])
+
+
+def verify_google_id_token(credential: str) -> dict:
+    """Verify a Google Sign-In ID token and return its claims.
+
+    Checks the token's signature against Google's public certs and that its
+    ``aud`` matches our configured client ID. Raises ``ValueError`` on any
+    failure (bad signature, wrong audience, expired). Returns the claims dict
+    (``email``, ``email_verified``, ``name``, ``sub``, …).
+    """
+    return id_token.verify_oauth2_token(
+        credential, google_requests.Request(), settings.google_client_id
+    )

@@ -43,6 +43,6 @@ export const JOURNEY_STEPS: JourneyStep[] = [
     icon: "📈",
     title: "Track progress",
     blurb: "Save summaries and watch your week take shape.",
-    href: "/progress",
+    href: "/goal",
   },
 ];

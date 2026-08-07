@@ -1,44 +1,13 @@
 "use client";
 
-import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
+import { useState } from "react";
 
-import { loginSchema, type LoginInput } from "@/lib/validations/auth";
-import { useAuth } from "@/lib/auth-context";
-import { ApiError } from "@/lib/api";
-import { readNextPath } from "@/lib/utils/next-path";
-import { AuthCard, AuthScreen } from "@/components/auth/auth-layout";
-import { Button } from "@/components/ui/atoms/button";
+import { AuthScreen } from "@/components/auth/auth-layout";
+import { GoogleButton } from "@/components/auth/google-button";
 import { FormError } from "@/components/ui/atoms/form-error";
-import { FormField } from "@/components/ui/molecules/form-field";
 
 export default function LoginPage() {
-  const router = useRouter();
-  const { login } = useAuth();
-  const {
-    register,
-    handleSubmit,
-    setError,
-    formState: { errors, isSubmitting },
-  } = useForm<LoginInput>({
-    resolver: zodResolver(loginSchema),
-    mode: "onTouched",
-  });
-
-  async function onSubmit(values: LoginInput) {
-    try {
-      await login(values);
-      router.replace(readNextPath() ?? "/dashboard");
-    } catch (err) {
-      const message =
-        err instanceof ApiError
-          ? err.message
-          : "Something went wrong. Please try again.";
-      setError("root", { message });
-    }
-  }
+  const [error, setError] = useState<string | undefined>();
 
   return (
     <AuthScreen
@@ -59,54 +28,20 @@ export default function LoginPage() {
       }
       title={
         <>
-          Welcome <span className="font-display italic text-grape">back</span>
+          Welcome to <span className="font-display italic text-grape">Thyme</span>
         </>
       }
-      subtitle="Let's pick up where you left off"
+      subtitle="Sign in or create your account with Google"
       footer={
-        <>
-          New here?{" "}
-          <Link
-            href="/register"
-            className="font-semibold text-grape hover:text-grape-deep"
-          >
-            Create an account
-          </Link>
-        </>
+        <span className="text-xs text-muted/80">
+          We only use your Google account to sign you in.
+        </span>
       }
     >
-      <AuthCard onSubmit={handleSubmit(onSubmit)} noValidate>
-        <FormError message={errors.root?.message} />
-        <FormField
-          label="Email"
-          id="email"
-          type="email"
-          autoComplete="email"
-          placeholder="you@example.com"
-          error={errors.email?.message}
-          {...register("email")}
-        />
-        <FormField
-          label="Password"
-          id="password"
-          type="password"
-          autoComplete="current-password"
-          placeholder="••••••••"
-          error={errors.password?.message}
-          action={
-            <Link
-              href="#"
-              className="text-xs font-semibold text-grape hover:text-grape-deep"
-            >
-              Forgot?
-            </Link>
-          }
-          {...register("password")}
-        />
-        <Button type="submit" size="block" disabled={isSubmitting}>
-          {isSubmitting ? "Signing in…" : "Sign in"}
-        </Button>
-      </AuthCard>
+      <div className="space-y-4 rounded-3xl border border-border/60 bg-surface/80 p-7 shadow-xl shadow-grape/10 backdrop-blur-xl">
+        <FormError message={error} />
+        <GoogleButton onError={setError} />
+      </div>
     </AuthScreen>
   );
 }

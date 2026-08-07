@@ -89,6 +89,13 @@ export const authApi = {
   login: (input: LoginInput) =>
     request<AuthResponse>("/auth/login", { method: "POST", body: input }),
 
+  /** Exchange a Google ID token (from Google Identity Services) for our session. */
+  google: (credential: string) =>
+    request<AuthResponse>("/auth/google", {
+      method: "POST",
+      body: { credential },
+    }),
+
   me: (token: string) => request<User>("/auth/me", { token }),
 
   /**

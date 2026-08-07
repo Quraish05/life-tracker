@@ -41,7 +41,7 @@ export default function PatternsPage() {
         eyebrow="Patterns"
         title={
           <>
-            What your <AccentText>journal</AccentText> knows that your numbers
+            What your <AccentText>journal </AccentText> knows that your numbers
             don&rsquo;t
           </>
         }
@@ -75,9 +75,7 @@ export default function PatternsPage() {
           </div>
 
           {/* Evidence panel for the selected finding */}
-          {current && (
-            <EvidencePanel key={current.id} insight={current} />
-          )}
+          {current && <EvidencePanel key={current.id} insight={current} />}
         </div>
       )}
     </div>
@@ -157,7 +155,10 @@ function EvidencePanel({ insight }: { insight: JournalInsight }) {
 
   // Toggle off when tapping the already-chosen vote.
   function cast(next: boolean) {
-    vote.mutate({ id: insight.id, helpful: insight.helpful === next ? null : next });
+    vote.mutate({
+      id: insight.id,
+      helpful: insight.helpful === next ? null : next,
+    });
   }
 
   return (
@@ -172,7 +173,9 @@ function EvidencePanel({ insight }: { insight: JournalInsight }) {
 
         <div className="mt-4 space-y-2">
           {insight.citations.length === 0 ? (
-            <p className="text-sm text-muted">No entries were cited for this answer.</p>
+            <p className="text-sm text-muted">
+              No entries were cited for this answer.
+            </p>
           ) : (
             insight.citations.map((c) => (
               <Link
@@ -184,7 +187,9 @@ function EvidencePanel({ insight }: { insight: JournalInsight }) {
                   <span className="text-xs font-bold text-foreground">
                     {c.entry_date ? formatDayShort(c.entry_date) : "Undated"}
                   </span>
-                  <span className="truncate text-[11px] text-muted">{c.title}</span>
+                  <span className="truncate text-[11px] text-muted">
+                    {c.title}
+                  </span>
                 </div>
                 <p className="mt-1.5 line-clamp-3 text-xs leading-relaxed text-muted">
                   “{c.snippet}”
@@ -201,8 +206,8 @@ function EvidencePanel({ insight }: { insight: JournalInsight }) {
           Was this true for you?
         </p>
         <p className="mt-2 text-xs text-muted">
-          Marking findings helps you tell the ones that landed from the ones that
-          missed.
+          Marking findings helps you tell the ones that landed from the ones
+          that missed.
         </p>
         <div className="mt-3 flex gap-2">
           <button

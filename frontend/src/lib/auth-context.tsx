@@ -19,6 +19,8 @@ type AuthContextValue = {
   isLoading: boolean;
   login: (input: LoginInput) => Promise<void>;
   register: (input: RegisterInput) => Promise<void>;
+  /** Sign in (or sign up) with a Google ID token from Google Identity Services. */
+  loginWithGoogle: (credential: string) => Promise<void>;
   logout: () => void;
   /** Re-fetch the signed-in user (e.g. to refresh the AI quota after a call). */
   refreshUser: () => Promise<void>;
@@ -71,6 +73,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     [applyAuth],
   );
 
+  const loginWithGoogle = useCallback(
+    async (credential: string) => applyAuth(await authApi.google(credential)),
+    [applyAuth],
+  );
+
   const logout = useCallback(() => {
     tokenStore.clear();
     setUser(null);
@@ -89,7 +96,15 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   return (
     <AuthContext.Provider
-      value={{ user, isLoading, login, register, logout, refreshUser }}
+      value={{
+        user,
+        isLoading,
+        login,
+        register,
+        loginWithGoogle,
+        logout,
+        refreshUser,
+      }}
     >
       {children}
     </AuthContext.Provider>

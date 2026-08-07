@@ -11,6 +11,7 @@ from app.core.bootstrap import sync_superadmin
 from app.core.config import settings
 from app.core.logging import configure_logging
 from app.db.session import engine
+from app.services.jobs.worker import run_worker_loop
 from app.services.reminder_dispatch import run_dispatch_loop
 
 logger = logging.getLogger(__name__)
@@ -29,25 +30,29 @@ async def lifespan(app: FastAPI):
         logger.exception("Superadmin bootstrap failed; continuing startup.")
 
     stop = asyncio.Event()
-    dispatch_task: asyncio.Task[None] | None = None
+    background_tasks: list[asyncio.Task[None]] = []
 
     # Start the background push dispatcher only when it's enabled AND keys are
     # configured — otherwise pushes would fail every tick.
     if settings.push_dispatch_enabled:
         if settings.vapid_private_key and settings.vapid_public_key:
-            dispatch_task = asyncio.create_task(run_dispatch_loop(stop))
+            background_tasks.append(asyncio.create_task(run_dispatch_loop(stop)))
         else:
             logger.warning(
                 "push_dispatch_enabled is set but VAPID keys are missing; "
                 "reminder push dispatch is disabled."
             )
 
+    # Start the background job worker (schedules + offloaded work) when enabled.
+    if settings.jobs_worker_enabled:
+        background_tasks.append(asyncio.create_task(run_worker_loop(stop)))
+
     try:
         yield
     finally:
         stop.set()
-        if dispatch_task is not None:
-            await dispatch_task
+        for task in background_tasks:
+            await task
         await engine.dispose()
 
 
